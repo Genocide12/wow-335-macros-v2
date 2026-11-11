@@ -1,0 +1,10 @@
+/targetenemy [noharm][dead]
+/startattack
+/cast [nomod,nostance:3]Стойка берсерка
+/cast Перехват
+/cast [mod:alt]Инстинкт смерти
+/use [mod:alt]13
+/cast Вихрь
+/cast Рассекающий удар
+/cast Кровожадность
+/cast [mod:alt]Устрашающий крик

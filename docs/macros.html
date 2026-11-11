@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Макросы — WoW 3.3.5 Fury</title>
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  .m-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: max-content max-content; overflow-y: auto; align-content: start; }
+  .m-card { display: flex; flex-direction: column; gap: 8px; overflow: visible; }
+  .m-card pre { font-size: 10.5px; line-height: 1.45; }
+  .m-head { display: flex; align-items: center; gap: 10px; }
+  .m-head img { width: 40px; height: 40px; border-radius: 9px; border: 1px solid var(--gold); }
+  .m-head .t b { display: block; font-size: 15px; color: #fff; }
+  .m-head .t span { font-size: 12px; color: var(--dim); }
+  .key { display: inline-flex; width: 26px; height: 26px; border-radius: 7px; background: #0a0c12;
+    border: 1px solid var(--gold); color: var(--gold2); align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; margin-left: auto; flex: 0 0 auto; }
+  .m-card pre { flex: 0 0 auto; max-height: 170px; }
+  .m-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 11px; font-weight: 700; color: var(--dim); border: 1px solid var(--line);
+    border-radius: 999px; padding: 3px 9px; }
+  .m-feats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 10px; border-top: 1px dashed var(--line); padding-top: 7px; }
+  .mf { display: flex; gap: 8px; align-items: center; }
+  .mf img { width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; }
+  .mf .t { font-size: 11.5px; line-height: 1.3; color: var(--dim); }
+  .mf .t b { color: var(--gold2); font-size: 12px; }
+  .m-note { font-size: 11.5px; color: var(--dim); border-top: 1px dashed var(--line); padding-top: 7px; line-height: 1.45; }
+  .m-note b { color: var(--gold2); }
+  /* modifiers card */
+  .mod-card { background: linear-gradient(160deg, var(--panel2), var(--panel)); }
+  .mod-row { display: flex; gap: 10px; align-items: center; background: rgba(10,12,18,.55); border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 10px; }
+  .mod-row img { width: 30px; height: 30px; border-radius: 7px; flex: 0 0 auto; }
+  .mod-row .t b { display: block; font-size: 13px; color: #fff; }
+  .mod-row .t span { font-size: 11.5px; color: var(--dim); }
+  .mod-k { display: inline-flex; min-width: 26px; height: 26px; border-radius: 7px; background: #0a0c12;
+    border: 1px solid var(--gold); color: var(--gold2); align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 800; margin-left: auto; padding: 0 7px; flex: 0 0 auto; }
+  @media (max-width: 860px) {
+    .m-grid { grid-template-rows: auto; }
+    .m-card { grid-column: auto !important; }
+    .m-feats { grid-template-columns: 1fr; }
+    .m-card pre { max-height: 220px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+<main>
+  <div class="grid m-grid" id="cards"></div>
+</main>
+</div>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/macros-data.js"></script>
+<script>
+const L10N = { ru: { copy: 'копировать' }, en: { copy: 'copy' } };
+// macro bodies come from macros-data.js (embedded, no fetch)
+const MACROS = [
+  {
+    file: '01-attack-rotation', key: 'Q', icon: 'inv_axe_66',
+    ru: ['Ротация — одна кнопка', 'Рывок → Победный раж → Кровожадность → Вихрь → Казнь'],
+    en: ['Rotation — one button', 'Charge → Victory Rush → Bloodthirst → Whirlwind → Execute'],
+    tags: { ru: ['одна цель', 'Shift — Удар героя', 'Alt — Боевой крик', 'Ctrl — Безрассудство'],
+            en: ['single target', 'Shift — Heroic Strike', 'Alt — Battle Shout', 'Ctrl — Recklessness'] },
+    feats: {
+      ru: [
+        { i: 'ability_warrior_charge', t: 'Рывок сам', d: 'вне боя макрос встанет в боевую стойку и рванёт к цели; в бою вернёт стойку берсерка' },
+        { i: 'ability_warrior_devastate', t: 'Победный раж первым', d: 'доступен только 20 сек после убийства — макрос бьёт им первым, окно не сгорает зря' },
+        { i: 'ability_racial_bloodrage', t: 'Кровавая ярость по КД', d: 'не занимает общий КД: жмёшь Q — ярость капает сама каждые 2 мин' },
+        { i: 'ability_rogue_ambush', t: 'Shift — Удар героя', d: 'сброс лишней ярости без общего КД; обычное нажатие добивает Казнью' },
+        { i: 'ability_warrior_battleshout', t: 'Alt — Боевой крик', d: 'обновление баффа по кнопке: в бою игра запрещает автокаст из /run (защита Blizzard), поэтому крик — на Alt' },
+        { i: 'ability_criticalstrike', t: 'Ctrl — Безрассудство', d: 'бурст: 3 следующих удара критуют; жми под Казнь или под героизм' },
+      ],
+      en: [
+        { i: 'ability_warrior_charge', t: 'Charge on its own', d: 'out of combat it charges from Battle Stance; in combat it returns you to Berserker Stance' },
+        { i: 'ability_warrior_devastate', t: 'Victory Rush first', d: 'available for 20 sec after a kill — the macro fires it immediately, before the window closes' },
+        { i: 'ability_racial_bloodrage', t: 'Rage on cooldown', d: 'off the GCD — press Q and Bloodrage fires itself every 2 minutes' },
+        { i: 'ability_rogue_ambush', t: 'Shift — Heroic Strike', d: 'rage dump off the GCD; a plain press falls through to Execute' },
+        { i: 'ability_warrior_battleshout', t: 'Alt — Battle Shout', d: 'buff refresh on demand: the game blocks Lua auto-casts in combat (Blizzard protection), so the shout rides on Alt' },
+        { i: 'ability_criticalstrike', t: 'Ctrl — Recklessness', d: 'burst: your next 3 specials crit; pop it with Execute or Bloodlust' },
+      ],
+    },
+    note: { ru: 'Каждое нажатие бьёт первый доступный удар списка — просто спамь Q. Почему Боевой крик на Alt: в бою макросам запрещено кастовать через /run — игра блокирует с сообщением «это действие доступно только для интерфейса Blizzard». Это правило 3.3.5a, и обойти его нельзя.',
+            en: 'Every press fires the first available ability — just spam Q. Why Battle Shout is on Alt: in combat macros are not allowed to cast through /run — the game blocks it with “this action is only available to the Blizzard UI”. That is a 3.3.5a rule and cannot be bypassed.' },
+  },
+  {
+    file: '02-aoe-pack', key: 'E', icon: 'ability_whirlwind',
+    ru: ['AoE — пак из 2+ мобов', 'Вихрь + Рассекающий удар + Кровожадность, Перехват, Ctrl — Инстинкт смерти'],
+    en: ['AoE — packs of 2+', 'Whirlwind + Cleave + Bloodthirst, Intercept, Ctrl — Death Wish'],
+    tags: { ru: ['AoE', 'Alt — Устрашающий крик', 'Ctrl — Инстинкт смерти'],
+            en: ['AoE', 'Alt — Intimidating Shout', 'Ctrl — Death Wish'] },
+    feats: {
+      ru: [
+        { i: 'ability_rogue_sprint', t: 'Перехват сам', d: 'из стойки берсерка макрос догонит убегающего моба в бою' },
+        { i: 'ability_whirlwind', t: 'Вихрь первым', d: 'бьёт каждого моба пакa обоими оружиями — главный AoE-удар' },
+        { i: 'ability_warrior_cleave', t: 'Рассекающий удар', d: 'каждый белый свинг бьёт по площади — ярость в урон без GCD' },
+        { i: 'spell_shadow_deathpact', t: 'Ctrl — Инстинкт смерти', d: 'талант «жажда смерти»: +20% урона на 30 сек, плюс аксессуар — жми дважды' },
+        { i: 'ability_golemthunderclap', t: 'Alt — Устрашающий крик', d: 'распугать пак, когда прижало; в русской версии клиента — «Устрашающий крик»' },
+        { i: 'ability_racial_bloodrage', t: 'Ярость по КД', d: 'Кровавая ярость капает из кнопки Q — в бою ты и так жмёшь обе' },
+      ],
+      en: [
+        { i: 'ability_rogue_sprint', t: 'Intercept on its own', d: 'from Berserker Stance it chases down runners in combat' },
+        { i: 'ability_whirlwind', t: 'Whirlwind first', d: 'hits every mob in the pack with both weapons — the core AoE hit' },
+        { i: 'ability_warrior_cleave', t: 'Cleave', d: 'every white swing hits the whole pack — rage into damage, off the GCD' },
+        { i: 'spell_shadow_deathpact', t: 'Ctrl — Death Wish', d: '+20% damage for 30 sec plus the trinket — press twice' },
+        { i: 'ability_golemthunderclap', t: 'Alt — Intimidating Shout', d: 'scatter the pack when cornered' },
+        { i: 'ability_racial_bloodrage', t: 'Rage on cooldown', d: 'Bloodrage drips from the Q button — you press both in combat anyway' },
+      ],
+    },
+    note: { ru: 'Вихрь на первом месте: в AoE он бьёт каждого моба обоими оружиями и ценится выше Кровожадности. На 2 целях чередуй Q и E. «Инстинкт смерти» — это талант «Жажда смерти» (Death Wish) в русском клиенте 3.3.5a.',
+            en: 'Whirlwind comes first: in AoE it hits every mob with both weapons and beats Bloodthirst. On exactly 2 targets alternate Q and E.' },
+  },
+  {
+    file: '03-interrupt', key: 'R', icon: 'inv_gauntlets_04',
+    ru: ['Сбить каст + аварийка', 'Зуботычина в цель под курсором; Alt — спасение, Ctrl — анти-страх'],
+    en: ['Interrupt + panic kit', 'Pummel into the mob under your cursor; Alt — survival, Ctrl — anti-fear'],
+    tags: { ru: ['мышь', 'без смены цели', 'Alt — аварийка', 'Ctrl — Ярость берсерка'],
+            en: ['mouseover', 'no target switch', 'Alt — panic', 'Ctrl — Berserker Rage'] },
+    feats: {
+      ru: [
+        { i: 'inv_gauntlets_04', t: 'Сбивай не меняя цель', d: 'Зуботычина летит в моба под курсором — твоя цель не переключается' },
+        { i: 'ability_racial_avatar', t: 'Стойка сама', d: 'не в стойке берсерка — сначала встанет в неё, со второго нажатия бьёт' },
+        { i: 'spell_shadow_charm', t: 'Alt — аварийный каскад', d: 'Каждый за себя (снимет контроль) → Оборонительная стойка → Разоружение → Провокация: жми несколько раз подряд' },
+        { i: 'ability_warrior_disarm', t: 'Защитная стойка в деле', d: 'Разоружение и Провокация — способности защитной стойки: спасают хила и гасят урон милишек' },
+        { i: 'spell_nature_ancestralguardian', t: 'Ctrl — Ярость берсерка', d: 'снимает страх/соблазн и даёт ярость с талантом — против кастеров контроля' },
+      ],
+      en: [
+        { i: 'inv_gauntlets_04', t: 'Interrupt without switching', d: 'Pummel goes into the mob under the cursor — your target stays' },
+        { i: 'ability_racial_avatar', t: 'Stance on its own', d: 'not in Berserker Stance — it swaps first, interrupts from the second press' },
+        { i: 'spell_shadow_charm', t: 'Alt — panic cascade', d: 'Every Man for Himself (breaks control) → Defensive Stance → Disarm → Taunt: press several times in a row' },
+        { i: 'ability_warrior_disarm', t: 'Defensive Stance at work', d: 'Disarm and Taunt are defensive-stance abilities: save your healer, mute melee damage' },
+        { i: 'spell_nature_ancestralguardian', t: 'Ctrl — Berserker Rage', d: 'breaks fear/sap and grants rage when talented — against control casters' },
+      ],
+    },
+    note: { ru: 'Alt+R — много нажатий = каскад: снять контроль → уйти в оборону → разоружить → провоцировать. Ctrl+R — снять страх. Зуботычина бьёт и по цели, и по мобу под курсором — держи мышь на кастующем.',
+            en: 'Alt+R pressed repeatedly is a cascade: break control → go defensive → disarm → taunt. Ctrl+R breaks fear. Pummel hits both your target and the mob under the cursor — keep the pointer on the caster.' },
+  },
+];
+const MODS = [
+  { icon: 'ability_rogue_ambush', k: 'Shift + Q',
+    ru: ['Удар героя', 'сброс лишней ярости — не в общем КД'],
+    en: ['Heroic Strike', 'rage dump — off the GCD'] },
+  { icon: 'ability_warrior_battleshout', k: 'Alt + Q',
+    ru: ['Боевой крик', 'обновить бафф на себе — в бою автокаст из /run запрещён игрой'],
+    en: ['Battle Shout', 'refresh your buff — the game blocks Lua auto-casts in combat'] },
+  { icon: 'ability_criticalstrike', k: 'Ctrl + Q',
+    ru: ['Безрассудство', 'бурст: 3 удара критуют'],
+    en: ['Recklessness', 'burst: 3 guaranteed crits'] },
+  { icon: 'spell_shadow_deathpact', k: 'Ctrl + E',
+    ru: ['Инстинкт смерти + аксессуар', 'жми дважды: +20% урона на 30 сек + тринкет'],
+    en: ['Death Wish + trinket', 'press twice: +20% damage for 30 sec + trinket'] },
+  { icon: 'ability_golemthunderclap', k: 'Alt + E',
+    ru: ['Устрашающий крик', 'распугать пак, когда прижало'],
+    en: ['Intimidating Shout', 'scatter the pack when cornered'] },
+  { icon: 'spell_shadow_charm', k: 'Alt + R',
+    ru: ['Аварийка: контроль → оборона', 'Каждый за себя → Оборонительная стойка → Разоружение → Провокация'],
+    en: ['Panic: control break → defense', 'Every Man for Himself → Defensive Stance → Disarm → Taunt'] },
+  { icon: 'spell_nature_ancestralguardian', k: 'Ctrl + R',
+    ru: ['Ярость берсерка', 'снять страх и получить ярость'],
+    en: ['Berserker Rage', 'break fear and gain rage'] },
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  const lang = window.W.lang;
+  const I = window.W.icon;
+  const L = L10N[lang] || L10N.ru;
+  document.title = (lang === 'ru' ? 'Макросы' : 'Macros') + ' — WoW 3.3.5 Fury';
+  const wrap = document.getElementById('cards');
+  const rows = [];
+  for (const m of MACROS) {
+    const body = (((window.MACRO_TXT || {})[lang] || {})[m.file] || '').trim();
+    const [name, sub] = m[lang];
+    const tags = (m.tags[lang] || []).map(t => `<span class="tag">${t}</span>`).join('');
+    const feats = (m.feats[lang] || []).map(f =>
+      `<div class="mf"><img src="${I(f.i)}" alt=""><div class="t"><b>${f.t}</b> — ${f.d}</div></div>`).join('');
+    rows.push(`
+    <section class="card m-card">
+      <div class="m-head">
+        <img src="${I(m.icon)}" alt="">
+        <div class="t"><b>${name}</b><span>${sub}</span></div>
+        <span class="key">${m.key}</span>
+      </div>
+      <div class="macro-box"><button class="copy-btn" data-copy="${encodeURIComponent(body)}">✓ ${L.copy}</button>
+      <pre>${body.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</pre></div>
+      <div class="m-meta">${tags}</div>
+      <div class="m-feats">${feats}</div>
+      <div class="m-note">${m.note[lang]}</div>
+    </section>`);
+  }
+  const mods = MODS.map(x => `
+    <div class="mod-row"><img src="${I(x.icon)}" alt="">
+      <div class="t"><b>${x[lang][0]}</b><span>${x[lang][1]}</span></div>
+      <span class="mod-k">${x.k}</span></div>`).join('');
+  rows.push(`
+    <section class="card m-card mod-card">
+      <div class="m-head">
+        <img src="${I('inv_misc_key_02')}" alt="">
+        <div class="t"><b>${lang === 'ru' ? 'Модификаторы' : 'Modifiers'}</b>
+          <span>${lang === 'ru' ? 'те же кнопки — с зажатым Shift, Alt или Ctrl' : 'same buttons — with Shift, Alt or Ctrl held'}</span></div>
+      </div>
+      <div class="m-feats" style="grid-template-columns:1fr">${mods}</div>
+      <div class="m-note">${lang === 'ru'
+        ? 'Макросы укладываются в лимит игры <b>255 символов</b> — весь extra-функционал живёт на модификаторах тех же трёх кнопок. В бою Blizzard запрещает макросам кастовать спеллы из Lua-кода (/run) — потому все проверки сделаны штатными средствами игры: приоритеты по кулдаунам, условия стойок и окон доступности.'
+        : 'Every macro fits the game\u2019s <b>255-character</b> limit — the extra features live on modifiers of the same three buttons. In combat Blizzard forbids macros from casting spells via Lua code (/run) — so every check uses the game\u2019s own tools: cooldown priorities, stance conditions and availability windows.'}</div>
+    </section>`);
+  wrap.innerHTML = rows.join('');
+});
+</script>
+</body>
+</html>

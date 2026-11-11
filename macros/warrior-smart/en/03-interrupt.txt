@@ -1,0 +1,8 @@
+#showtooltip
+/cast [nomod,@mouseover,harm,nodead][nomod]Pummel
+/cast [nomod,nostance:3]Berserker Stance
+/cast [mod:alt]Every Man for Himself
+/cast [mod:alt]Defensive Stance
+/cast [mod:alt]Disarm
+/cast [mod:alt]Taunt
+/cast [mod:alt]Berserker Rage

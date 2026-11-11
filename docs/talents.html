@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Таланты — WoW 3.3.5 Fury</title>
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  .t-layout { grid-template-columns: 250px 1fr; grid-template-rows: auto 1fr; gap: 12px; }
+  .t-tabs { grid-column: 1 / span 2; display: flex; gap: 8px; }
+  .t-tab { flex: 1; display: flex; align-items: center; gap: 9px; background: var(--panel2); border: 1px solid var(--line);
+    border-radius: 11px; padding: 8px 12px; cursor: pointer; font-weight: 700; font-size: 14px; color: var(--txt); }
+  .t-tab img { width: 28px; height: 28px; border-radius: 7px; }
+  .t-tab.on { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+  .t-tab .pts { margin-left: auto; font-size: 12px; color: var(--dim); font-weight: 800; }
+  /* build panel */
+  .b-panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+  .b-num { font-size: 34px; font-weight: 800; color: var(--gold2); text-align: center; line-height: 1; }
+  .b-sub { text-align: center; color: var(--dim); font-size: 12px; }
+  .b-link { text-align: center; }
+  .b-link textarea { width: 100%; background: #0a0c12; color: #9fb0d0; border: 1px solid var(--line); border-radius: 8px;
+    font-family: ui-monospace, monospace; font-size: 11px; padding: 6px; resize: none; height: 58px; }
+  .preset { display: flex; flex-direction: column; gap: 7px; }
+  .preset button { text-align: left; background: var(--panel2); border: 1px solid var(--line); color: var(--txt);
+    border-radius: 9px; padding: 8px 10px; cursor: pointer; font-size: 12.5px; font-weight: 600; line-height: 1.35; }
+  .preset button:hover { border-color: var(--gold); }
+  .preset button small { display: block; color: var(--dim); font-weight: 400; }
+  /* tree grid */
+  .t-tree { position: relative; background: url('assets/icons/bg/164.jpg') center/cover; border-radius: var(--r);
+    border: 1px solid var(--line); overflow: auto; }
+  .t-inner { position: relative; width: 400px; min-width: 100%; margin: 0 auto; padding: 14px 10px;
+    background: rgba(10, 12, 18, .82); min-height: 100%; }
+  .t-row { display: grid; grid-template-columns: repeat(4, 74px); justify-content: center; gap: 16px; margin-bottom: 22px; position: relative; z-index: 2; }
+  .tal { position: relative; width: 74px; }
+  .tal .frame { width: 64px; height: 64px; margin: 0 auto; border: 1px solid #3a4258; border-radius: 10px; overflow: hidden;
+    background: #05070c; cursor: pointer; position: relative; }
+  .tal .frame img { width: 100%; height: 100%; display: block; opacity: .45; filter: grayscale(.8); }
+  .tal.ok .frame img { opacity: 1; filter: none; }
+  .tal.ok .frame { border-color: var(--green); }
+  .tal.max .frame { border-color: var(--gold); }
+  .tal .rank { position: absolute; right: 0; bottom: 0; background: #05070c; border: 1px solid #3a4258; border-radius: 7px;
+    font-size: 11.5px; font-weight: 800; padding: 1px 5px; color: #fff; z-index: 2; }
+  .tal .rank.max { color: var(--gold2); }
+  .arrow { position: absolute; z-index: 1; color: #4d5a78; }
+  /* tooltip card */
+  .t-info { position: sticky; top: 0; }
+  .tipcard { background: #0b0d14; border: 1px solid var(--gold); border-radius: 12px; padding: 12px 14px; }
+  .tipcard img { width: 44px; height: 44px; border-radius: 9px; float: left; margin-right: 10px; }
+  .tipcard b { color: var(--gold2); font-size: 15px; }
+  .tipcard .req { color: var(--red); font-size: 12px; margin-top: 4px; }
+  .tipcard .desc { font-size: 12.5px; line-height: 1.5; color: var(--txt); margin-top: 6px; max-height: 150px; overflow-y: auto; white-space: pre-line; }
+  .tipcard .rk { color: var(--dim); font-size: 11.5px; margin-top: 6px; }
+  @media (max-width: 900px) {
+    .t-layout { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
+    .t-tabs { grid-column: auto; }
+    .b-panel { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .b-num { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+<main>
+  <div class="grid t-layout">
+    <div class="t-tabs" id="tabs"></div>
+    <section class="card b-panel" id="bpanel"></section>
+    <section class="t-tree" id="tree"><div class="t-inner" id="inner"></div></section>
+  </div>
+</main>
+</div>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/talents-data.js"></script>
+<script>
+(() => {
+  const lang = window.W.lang;
+  const I = window.W.icon; // icons come from the Wowhead CDN
+  const TREE_NAMES = { arms: ['Оружие', 'Arms'], fury: ['Неистовство', 'Fury'], prot: ['Защита', 'Protection'] };
+  const ICONS = { arms: 'ability_rogue_eviscerate', fury: 'ability_racial_avatar', prot: 'ability_warrior_defensivestance' };
+  // leveling build presets: talent id -> ranks (Fury DW leveling, from lvl 10)
+  const PRESETS = [
+    { ru: 'Старт прокачки (25 оч.)', en: 'Leveling start (25 pts)', pts: { 157: 5, 2250: 3, 158: 2, 159: 5, 1581: 5, 1542: 2, 155: 1, 165: 1 } },
+    { ru: 'Средний этап (35 оч.)', en: 'Mid leveling (35 pts)', pts: { 157: 5, 2250: 3, 158: 2, 159: 5, 1581: 5, 1542: 2, 155: 5, 165: 1, 1543: 2, 156: 5 } },
+    { ru: 'Мой билд 54 (45 оч.)', en: 'My lvl-54 build (45 pts)', pts: { 157: 5, 2250: 3, 158: 2, 159: 5, 1581: 5, 1542: 2, 155: 5, 165: 1, 1543: 2, 156: 5, 167: 1, 1658: 5, 1868: 1, 1655: 2, 1865: 1 } },
+  ];
+  const state = { tree: 'fury', pts: {}, tipTalent: null };
+  const TREES = TALENTS.trees;
+  const byId = {};
+  TREES.forEach(t => t.talents.forEach(x => byId[x.id] = { ...x, tree: t.key }));
+
+  const fmtDesc = (x, r) => {
+    // pick description of the current/next rank (desc text already plain)
+    return (lang === 'ru' ? x.rud : x.end);
+  };
+
+  function treePoints(treeKey) {
+    return TREES.find(t => t.key === treeKey).talents.reduce((s, x) => s + (state.pts[x.id] || 0), 0);
+  }
+  function totalPoints() { return Object.values(state.pts).reduce((a, b) => a + b, 0); }
+
+  function canLearn(x) {
+    const cur = state.pts[x.id] || 0;
+    if (cur >= x.rk) return false;
+    // tier requirement: 5 * row points in this tree
+    if (treePoints(x.tree) < x.r * 5) return false;
+    return x.req.every(([id, qty]) => (state.pts[id] || 0) >= qty);
+  }
+
+  function draw() {
+    // tabs (game order: Arms, Fury, Protection)
+    const ordered = ['arms', 'fury', 'prot'];
+    document.getElementById('tabs').innerHTML = ordered.map(key => {
+      const t = TREES.find(x => x.key === key);
+      const nm = TREE_NAMES[key][lang === 'ru' ? 0 : 1];
+      return `<div class="t-tab ${key === state.tree ? 'on' : ''}" data-tree="${key}">
+        <img src="${I(ICONS[key])}" alt="">${nm}
+        <span class="pts">${treePoints(key)}</span></div>`;
+    }).join('');
+    document.querySelectorAll('.t-tab').forEach(el => el.onclick = () => { state.tree = el.dataset.tree; draw(); });
+
+    // tree grid
+    const t = TREES.find(t => t.key === state.tree);
+    document.getElementById('tree').style.backgroundImage = `url(assets/icons/bg/${t.bg}.jpg)`;
+    const rows = [];
+    for (let r = 0; r < 11; r++) {
+      const cells = [0, 1, 2, 3].map(c => {
+        const x = t.talents.find(v => v.r === r && v.c === c);
+        if (!x) return '<div class="tal"></div>';
+        const cur = state.pts[x.id] || 0;
+        const cls = cur > 0 ? (cur === x.rk ? 'ok max' : 'ok') : '';
+        return `<div class="tal ${cls}" data-id="${x.id}">
+          <div class="frame"><img src="${I(x.ic)}" alt=""></div>
+          <span class="rank ${cur === x.rk ? 'max' : ''}">${cur}/${x.rk}</span></div>`;
+      }).join('');
+      rows.push(`<div class="t-row" data-r="${r}">${cells}</div>`);
+    }
+    // arrows between rows
+    let arrows = '';
+    t.talents.forEach(x => {
+      x.req.forEach(([id]) => {
+        const p = byId[id];
+        if (p.tree !== t.key) return;
+        arrows += arrowSvg(p, x);
+      });
+    });
+    document.getElementById('inner').innerHTML = rows.join('') + arrows;
+    document.querySelectorAll('.tal[data-id]').forEach(el => {
+      const x = byId[el.dataset.id];
+      el.onclick = (e) => {
+        if (canLearn(x)) { state.pts[x.id] = (state.pts[x.id] || 0) + 1; draw(); showTip(x); }
+        else if (e.shiftKey && (state.pts[x.id] || 0) > 0) { state.pts[x.id]--; draw(); showTip(x); }
+        else showTip(x);
+      };
+      el.onmouseenter = () => showTip(x, true);
+    });
+
+    // side panel
+    const b = document.getElementById('bpanel');
+    const pts = totalPoints();
+    const L = { ru: ['очков', 'Сброс', 'Код билда (вставь в /run-макрос экспорта не нужно — это просто ссылка)', 'Пресеты прокачки', 'Клик — вложить очко · Shift+клик — убрать · Наведи — описание'],
+                en: ['points', 'Reset', 'Build code', 'Leveling presets', 'Click — add a point · Shift+click — remove · Hover — description'] }[lang];
+    b.innerHTML = `
+      <div>
+        <div class="b-num">${pts}</div>
+        <div class="b-sub">${L[0]}</div>
+      </div>
+      <div class="b-link"><textarea readonly id="bcode">${buildCode()}</textarea></div>
+      <div class="preset">
+        <b style="font-size:13px;color:var(--gold2)">${L[3]}</b>
+        ${PRESETS.map((p, i) => `<button data-p="${i}">${lang === 'ru' ? p.ru : p.en}<small>${Object.values(p.pts).reduce((a, b) => a + b, 0)} ${L[0]}</small></button>`).join('')}
+      </div>
+      <button class="btn ghost" id="reset">${L[1]}</button>
+      <div class="small muted">${L[4]}</div>`;
+    document.getElementById('reset').onclick = () => { state.pts = {}; draw(); };
+    b.querySelectorAll('[data-p]').forEach(btn => btn.onclick = () => {
+      state.pts = { ...PRESETS[btn.dataset.p].pts }; draw();
+    });
+    if (state.tipTalent) showTip(byId[state.tipTalent]);
+  }
+
+  function arrowSvg(from, to) {
+    // vertical arrow from row of `from` to row of `to` (col centered)
+    const colX = c => 37 + c * 90; // 74px cell + 16 gap
+    const x1 = colX(from.c), y1 = from.r * 86 + 32;
+    const x2 = colX(to.c), y2 = to.r * 86 + 32;
+    const len = y2 - y1 - 24;
+    return `<svg class="arrow" style="left:${Math.min(x1, x2) - 6}px; top:${y1 + 12}px; width:${Math.abs(x2 - x1) + 20}px; height:${len + 14}px" viewBox="0 0 ${Math.abs(x2 - x1) + 20} ${len + 14}">
+      <line x1="10" y1="0" x2="10" x2="10" y2="${len}" stroke="#4d5a78" stroke-width="2"/>
+      <path d="M5 ${len} L15 ${len} L10 ${len + 9} Z" fill="#4d5a78"/></svg>`;
+  }
+
+  function showTip(x, hover) {
+    state.tipTalent = hover ? state.tipTalent : x.id;
+    const el = document.getElementById('inner');
+    let tip = el.querySelector('.tipcard');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'tipcard'; el.appendChild(tip); tip.style.position = 'absolute'; tip.style.zIndex = 10; }
+    const cur = state.pts[x.id] || 0;
+    const name = lang === 'ru' ? x.ru : x.en;
+    const reqs = x.req.map(([id, q]) => {
+      const p = byId[id];
+      const have = (state.pts[id] || 0);
+      return `<div class="${have >= q ? '' : 'req'}">${lang === 'ru' ? 'Требует' : 'Requires'} ${lang === 'ru' ? p.ru : p.en} ${have}/${q}</div>`;
+    }).join('');
+    const tier = treePoints(x.tree) < x.r * 5
+      ? `<div class="req">${lang === 'ru' ? `Требует ${x.r * 5} оч. в ветке` : `Requires ${x.r * 5} pts in tree`} (${treePoints(x.tree)})</div>` : '';
+    tip.innerHTML = `<img src="${I(x.ic)}" alt=""><b>${name}</b>
+      <div class="rk">${lang === 'ru' ? 'Ранг' : 'Rank'} ${cur}/${x.rk}</div>
+      ${reqs}${tier}<div class="desc">${fmtDesc(x, cur)}</div>`;
+    const slot = el.querySelector(`.tal[data-id="${x.id}"]`);
+    if (slot) {
+      const tr = el.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+      let left = sr.left - tr.left + 78;
+      if (left + 290 > tr.width) left = Math.max(4, sr.left - tr.left - 290);
+      tip.style.left = left + 'px';
+      tip.style.top = Math.max(4, sr.top - tr.top) + 'px';
+    }
+  }
+
+  function buildCode() {
+    // wowhead-style: 3 trees strings of digits by row-major order (rank per talent, no separators beyond padding)
+    return TREES.map(t => {
+      let s = '';
+      for (let r = 0; r < 11; r++) for (let c = 0; c < 4; c++) {
+        const x = t.talents.find(v => v.r === r && v.c === c);
+        s += x ? (state.pts[x.id] || 0) : '';
+      }
+      return s;
+    }).join('-');
+  }
+
+  document.title = (lang === 'ru' ? 'Таланты' : 'Talents') + ' — WoW 3.3.5 Fury';
+  draw();
+})();
+</script>
+</body>
+</html>

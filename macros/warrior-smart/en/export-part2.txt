@@ -1,0 +1,5 @@
+# Character export without an addon - part 2 of 2 (race + gear: color, level, icon).
+# Same way: NEW macro in game, paste the line below and press the MACRO button (not chat!).
+# WEXP0|... and WEXP2|... lines appear in chat - copy ALL of them to the Hero page.
+
+/run u="player"print("WEXP0|"..UnitRace(u))for i=1,19 do l=GetInventoryItemLink(u,i)if l then n,_,r,d,_,_,_,_,_,t=GetItemInfo(l)print("WEXP2|"..i.."|"..r.."|"..d.."|"..l:match("item:(%d+)").."|"..t.."|"..n)end end

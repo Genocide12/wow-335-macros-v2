@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WoW 3.3.5 · Fury Warrior — умные макросы</title>
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  .hero-grid { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+  .hero-main { display: flex; flex-direction: column; justify-content: center; gap: 16px;
+    max-width: 780px; width: 100%; margin: 0 auto; }
+  .hero-main h1 { font-size: clamp(28px, 4.6vw, 48px); line-height: 1.08; color: #fff; }
+  .hero-main h1 b { color: var(--gold2); }
+  .hero-main p { color: var(--dim); font-size: 15px; max-width: 56ch; line-height: 1.55; }
+  .cta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .krow { display: flex; gap: 8px; flex-wrap: wrap; }
+  .krow a { display: flex; align-items: center; gap: 8px; background: var(--panel2); border: 1px solid var(--line);
+    border-radius: 10px; padding: 7px 11px; color: var(--txt); text-decoration: none; font-size: 13px; font-weight: 600; }
+  .krow a:hover { border-color: var(--gold); }
+  .krow img { width: 26px; height: 26px; border-radius: 6px; }
+  .krow .key { display: inline-flex; width: 22px; height: 22px; border-radius: 6px; background: #0a0c12;
+    border: 1px solid var(--gold); color: var(--gold2); align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+</style>
+</head>
+<body>
+<div id="app">
+<main>
+  <div class="grid hero-grid">
+
+    <section class="card hero-main">
+      <h1 data-ru="Умные макросы для <b>воина-неистовства</b>" data-en="Smart macros for the <b>Fury Warrior</b>">Умные макросы для <b>воина-неистовства</b></h1>
+      <p data-ru="WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Три кнопки вместо пятнадцати: назначь макросы на Q, E, R — и иди в бой."
+         data-en="WotLK 3.3.5a · Fury Warrior · Russian client. Three buttons instead of fifteen: bind the macros to Q, E, R — and go fight.">WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Три кнопки вместо пятнадцати: назначь макросы на Q, E, R — и иди в бой.</p>
+      <div class="cta">
+        <a class="btn" href="macros.html" data-ru="Забрать макросы" data-en="Get the macros">Забрать макросы</a>
+        <a class="btn ghost" href="hero.html" data-ru="Импортировать героя" data-en="Import your hero">Импортировать героя</a>
+      </div>
+      <div class="krow">
+        <a href="macros.html"><span class="key">Q</span><span data-ru="Ротация" data-en="Rotation">Ротация</span><img src="https://wow.zamimg.com/images/wow/icons/large/inv_axe_66.jpg" alt=""></a>
+        <a href="macros.html"><span class="key">E</span><span data-ru="AoE" data-en="AoE">AoE</span><img src="https://wow.zamimg.com/images/wow/icons/large/ability_whirlwind.jpg" alt=""></a>
+        <a href="macros.html"><span class="key">R</span><span data-ru="Сбить каст" data-en="Interrupt">Сбить каст</span><img src="https://wow.zamimg.com/images/wow/icons/large/inv_gauntlets_04.jpg" alt=""></a>
+      </div>
+    </section>
+
+  </div>
+</main>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const lang = window.W.lang;
+  document.querySelectorAll('[data-ru]').forEach(el => {
+    const v = el.getAttribute('data-' + lang);
+    if (v != null) el.innerHTML = v;
+  });
+  document.title = lang === 'ru' ? 'WoW 3.3.5 · Fury Warrior — умные макросы' : 'WoW 3.3.5 · Fury Warrior — smart macros';
+});
+</script>
+</body>
+</html>

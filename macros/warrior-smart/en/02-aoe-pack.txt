@@ -1,0 +1,10 @@
+/targetenemy [noharm][dead]
+/startattack
+/cast [nomod,nostance:3]Berserker Stance
+/cast Intercept
+/cast [mod:alt]Death Wish
+/use [mod:alt]13
+/cast Whirlwind
+/cast Cleave
+/cast Bloodthirst
+/cast [mod:alt]Intimidating Shout

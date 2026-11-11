@@ -1,0 +1,10 @@
+/startattack
+/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка
+/cast Победный раж
+/cast Кровавая ярость
+/cast [mod:alt]Боевой крик
+/cast [mod:alt]Безрассудство
+/cast Инстинкт смерти
+/cast Кровожадность
+/cast Вихрь
+/cast [mod:alt]Удар героя;Казнь
