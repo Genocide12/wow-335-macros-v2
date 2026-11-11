@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to rebuild and attach installer assets reliably, for example v1.0.0
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -12,27 +18,37 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out tagged source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Resolve release tag
+        id: meta
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+        run: echo "tag=${INPUT_TAG:-$REF_NAME}" >> "$GITHUB_OUTPUT"
       - name: Build and validate installers
         run: |
           python scripts/build.py
           python scripts/validate.py
-      - name: Publish GitHub Release with localized installers
+      - name: Publish localized installers
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.meta.outputs.tag }}
         run: |
-          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            gh release upload "${GITHUB_REF_NAME}" \
-              install/macros-cache-ru.txt \
-              install/macros-cache-en.txt \
-              --clobber
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" install/macros-cache-ru.txt install/macros-cache-en.txt --clobber
           else
-            gh release create "${GITHUB_REF_NAME}" \
-              install/macros-cache-ru.txt \
-              install/macros-cache-en.txt \
-              --title "${GITHUB_REF_NAME}" \
-              --generate-notes
+            gh release create "$TAG" install/macros-cache-ru.txt install/macros-cache-en.txt --title "$TAG" --generate-notes
           fi
+
+          if [[ "$TAG" == "v1.0.0" ]]; then
+            gh release edit "$TAG" --notes "Первый релиз макросов Fury Warrior для WoW 3.3.5a. В архив приложены макросы и установщики RU/EN. Клавиши 1/2/3, без модификаторов. Макросы действуют только при нажатии; проверку аур не выполняют."
+          fi
+          gh release edit "$TAG" --title "$TAG"
+          gh release view "$TAG" --json assets --jq '.assets[].name' | grep -qx 'macros-cache-ru.txt'
+          gh release view "$TAG" --json assets --jq '.assets[].name' | grep -qx 'macros-cache-en.txt'
