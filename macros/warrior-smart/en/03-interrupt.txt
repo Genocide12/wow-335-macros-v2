@@ -1,8 +1,11 @@
 #showtooltip
-/cast [nomod,@mouseover,harm,nodead][nomod]Pummel
-/cast [nomod,nostance:3]Berserker Stance
-/cast [mod:alt]Every Man for Himself
-/cast [mod:alt]Defensive Stance
-/cast [mod:alt]Disarm
-/cast [mod:alt]Taunt
-/cast [mod:alt]Berserker Rage
+/cast [@mouseover,harm,nodead]Pummel
+/cast Pummel
+/cast [stance:1]Berserker Stance
+/cast [stance:2]Defensive Stance
+/cast Disarm
+/cast Taunt
+/cast Shield Wall
+/cast Enraged Regeneration
+/cast Execute
+/cast Whirlwind

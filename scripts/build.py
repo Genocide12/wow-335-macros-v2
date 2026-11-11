@@ -5,8 +5,8 @@ import json
 
 ROOT = Path(__file__).resolve().parents[1]
 SPECS = {
-    "ru": [("Ротация", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Сбить каст", "Ability_Kick", "03-interrupt.txt")],
-    "en": [("Rotation", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Interrupt", "Ability_Kick", "03-interrupt.txt")],
+    "ru": [("Одна цель", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Контроль", "Ability_Kick", "03-interrupt.txt")],
+    "en": [("Single", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Control", "Ability_Kick", "03-interrupt.txt")],
 }
 EXPORTS = ("export-part1.txt", "export-part2.txt")
 

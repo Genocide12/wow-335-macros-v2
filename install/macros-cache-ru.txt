@@ -1,33 +1,35 @@
-﻿MACRO 16777216 "Ротация" INV_Axe_67
+﻿MACRO 16777216 "Одна цель" INV_Axe_67
 /startattack
-/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка
+/cast [nocombat,stance:1]Рывок;[nocombat]Боевая стойка;Стойка берсерка
 /cast Победный раж
 /cast Кровожадность
 /cast Вихрь
 /cast Казнь
-/cast [mod:alt]Удар героя
-/cast [mod:alt]Жажда смерти
-/cast [mod:alt]Безрассудство
-/cast [mod:alt]Боевой крик
+/cast Удар героя
+/cast Жажда смерти
+/cast Безрассудство
+/cast Боевой крик
 END
 MACRO 16777217 "AoE" Ability_Whirlwind
 /targetenemy [noharm][dead]
 /startattack
-/cast [nomod,nostance:3]Стойка берсерка
+/cast [stance:1]Стойка берсерка
 /cast Перехват
 /cast Вихрь
 /cast Рассекающий удар
 /cast Кровожадность
-/cast [mod:alt]Жажда смерти
-/use [mod:alt]13
-/cast [mod:alt]Устрашающий крик
+/cast Жажда смерти
+/use 13
 END
-MACRO 16777218 "Сбить каст" Ability_Kick
-/cast [nomod,@mouseover,harm,nodead][nomod]Зуботычина
-/cast [nomod,nostance:3]Стойка берсерка
-/cast [mod:alt]Каждый за себя
-/cast [mod:alt]Оборонительная стойка
-/cast [mod:alt]Разоружение
-/cast [mod:alt]Провокация
-/cast [mod:alt]Ярость берсерка
+MACRO 16777218 "Контроль" Ability_Kick
+/cast [@mouseover,harm,nodead]Зуботычина
+/cast Зуботычина
+/cast [stance:1]Стойка берсерка
+/cast [stance:2]Оборонительная стойка
+/cast Разоружение
+/cast Провокация
+/cast Глухая оборона
+/cast Безудержное восстановление
+/cast Казнь
+/cast Вихрь
 END

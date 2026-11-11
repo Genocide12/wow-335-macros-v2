@@ -1,7 +1,10 @@
-/cast [nomod,@mouseover,harm,nodead][nomod]Зуботычина
-/cast [nomod,nostance:3]Стойка берсерка
-/cast [mod:alt]Каждый за себя
-/cast [mod:alt]Оборонительная стойка
-/cast [mod:alt]Разоружение
-/cast [mod:alt]Провокация
-/cast [mod:alt]Ярость берсерка
+/cast [@mouseover,harm,nodead]Зуботычина
+/cast Зуботычина
+/cast [stance:1]Стойка берсерка
+/cast [stance:2]Оборонительная стойка
+/cast Разоружение
+/cast Провокация
+/cast Глухая оборона
+/cast Безудержное восстановление
+/cast Казнь
+/cast Вихрь
