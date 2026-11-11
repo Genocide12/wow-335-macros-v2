@@ -14,4 +14,4 @@ jobs:
           python-version: '3.x'
       - run: python scripts/validate.py
       - run: python scripts/build.py
-      - run: git diff --exit-code -- install/macros-cache-ru.txt install/macros-cache-en.txt
+      - run: git diff --exit-code -- install/macros-cache-ru.txt install/macros-cache-en.txt docs/assets/js/macros-data.js

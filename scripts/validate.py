@@ -25,10 +25,23 @@ def main() -> int:
             if not commands:
                 errors.append(f"Macro is empty: {path.relative_to(ROOT)}")
             for number, line in enumerate(commands, start=1):
+                if re.search(r"\[mod:(?:ctrl|shift)\]", line, re.I):
+                    errors.append(f"{path.relative_to(ROOT)}:{number}: only Alt modifiers are allowed")
+                if language == "ru" and "Инстинкт смерти" in line:
+                    errors.append(f"{path.relative_to(ROOT)}:{number}: use the Russian spell name Жажда смерти")
                 if len(line) > LIMIT:
                     errors.append(f"{path.relative_to(ROOT)}:{number}: {len(line)} characters (limit {LIMIT})")
                 if not re.match(r"^(?:/(?:cast|use|startattack|target(?:enemy|friend|lasttarget)?|focus|cleartarget|stopmacro|run|script|showtooltip)\b|#showtooltip\b)", line, re.I):
                     errors.append(f"{path.relative_to(ROOT)}:{number}: unexpected command: {line}")
+    for generated in (ROOT / "install/macros-cache-ru.txt", ROOT / "install/macros-cache-en.txt"):
+        if not generated.is_file():
+            errors.append(f"Missing generated installer: {generated.relative_to(ROOT)}")
+            continue
+        content = generated.read_text(encoding="utf-8-sig")
+        if "Инстинкт смерти" in content:
+            errors.append(f"Wrong Russian Death Wish name in {generated.relative_to(ROOT)}")
+        if re.search(r"\[mod:(?:ctrl|shift)\]", content, re.I):
+            errors.append(f"Disallowed modifier in {generated.relative_to(ROOT)}")
     if errors:
         print("Validation failed:", file=sys.stderr)
         print("\n".join(f"- {error}" for error in errors), file=sys.stderr)

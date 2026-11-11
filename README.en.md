@@ -1,48 +1,39 @@
 # WoW 3.3.5a · Warrior Macro Toolkit
 
-A maintainable Fury Warrior macro toolkit for WotLK 3.3.5a, with Russian and English client versions, reproducible installer builds, and automatic checks for the 255-character macro limit.
+RU/EN Fury Warrior macro sources, built installation files, a 255-character validator, and CI checks. Bind the three macros to `1`, `2`, and `3`; the macros use **Alt only** as a modifier, never Shift or Ctrl.
 
-**Combat modifiers use Alt only. No macro needs Shift or Ctrl**, so the main macros can be bound directly to `1`, `2`, and `3`. Check that Alt does not conflict with your game or operating-system bindings.
+## What macros can and cannot do
 
-> Macros do not automate a rotation: protected actions still require a player press, and normally only one GCD action can fire per press. Test abilities, stances, and server-specific behavior in game; private servers may differ.
+WoW macros are not a programmable combat rotation. On each key press, the client evaluates macro lines and can perform an eligible action; a macro cannot automatically press several GCD abilities or continuously monitor combat. In 3.3.5a, the macro condition system cannot test whether your buff or a target debuff is present. Refresh shouts and other timed effects manually with Alt after checking that the aura has ended. Do not try to bypass this restriction with `/run` or auto-cast scripts.
 
 ## Install
 
-1. Choose `install/macros-cache-en.txt` or `install/macros-cache-ru.txt` to match the client language.
-2. Close the game and back up the existing `WTF/Account/<ACCOUNT>/macros-cache.txt`.
-3. Copy the selected file into the account's WTF folder and name it `macros-cache.txt`. Paths differ by client; check `WTF/Accounts` or `WTF/Аккаунт`.
-4. Start the game, inspect `/macro`, and bind the three macros to `1`, `2`, and `3`.
+1. Choose `install/macros-cache-en.txt` or `install/macros-cache-ru.txt` for the client language.
+2. Close the game and back up the existing `macros-cache.txt`.
+3. Copy the chosen file to your account folder under `WTF` and name it `macros-cache.txt` (the path varies by client).
+4. Start the game, inspect `/macro`, then bind the macros to `1`, `2`, and `3`.
 
-## Keys and behavior
+## Keys
 
-| Key | Purpose | Alt action |
+| Key | Action | Alt |
 |---|---|---|
-| `1` | Single-target attacks, auto-attack, stance/Charge | Battle Shout, Recklessness, Heroic Strike; Death Wish is tried on a normal press |
-| `2` | AoE, selecting a target if absent/dead, auto-attack and attacks | Death Wish and trinket slot 13, or Intimidating Shout |
-| `3` | Mouseover interrupt and emergency actions | Racial ability, Defensive Stance, Disarm, Taunt, Berserker Rage |
+| `1` | Single target: auto-attack, stance/Charge out of combat, Victory Rush, Bloodthirst, Whirlwind, Execute | Heroic Strike, Death Wish, Recklessness, Battle Shout (manual Alt; buffs are not inspected) |
+| `2` | AoE: choose a target if absent/dead, auto-attack, Intercept, Whirlwind, Cleave, Bloodthirst | Death Wish, trinket slot 13, Intimidating Shout |
+| `3` | Pummel mouseover target, Berserker Stance, emergency actions | racial ability, Defensive Stance, Disarm, Taunt, Berserker Rage |
 
-Macro `2` selects an enemy only when the current target is absent or dead, then starts auto-attacking. Macro `3` does not change your target for Pummel: point the mouse at the enemy caster. Each press can perform only the first available action, subject to GCD, stance, range, and ability conditions.
+Usually a press performs only one GCD action. Attacks are ahead of cooldowns on `1`, so normal presses follow the attack priority; holding Alt lets the client evaluate the Alt-conditional actions. Aura presence still cannot be detected by the macro, so activate timed buffs manually only when they have expired. An addon or WeakAura may provide a visual reminder, but the player must press the button.
 
 ## Build and validate
 
-Macro source files are in `macros/warrior-smart/{ru,en}/`. Edit these sources, then run:
+Sources: `macros/warrior-smart/{ru,en}/`.
 
 ```sh
 python scripts/build.py
 python scripts/validate.py
 ```
 
-The build script refreshes `install/macros-cache-{ru,en}.txt`. Validation checks both languages, permitted command syntax, line endings, and the 255-character limit. It cannot verify in-game conditions or server modifications; test those in game.
-
-## Before using
-
-- Match the macro language to the client language.
-- Check that the abilities are learned and required talents/equipment are available.
-- Test targeting and priorities on a training dummy before combat.
-- Bind bare `1`, `2`, `3`; optional actions are on Alt only.
-
-Project pages and guide: [docs/](docs/). Русская документация: [README.md](README.md).
+The builder refreshes `install/macros-cache-{ru,en}.txt`. The validator checks command syntax and the 255-character limit; GitHub Actions runs it on pushes and pull requests. It cannot test server-specific conditions, learned spells, talents, or client localization, so test in game on a training dummy.
 
 ## License
 
-MIT. Game names and assets belong to their respective owners; this project is not affiliated with Blizzard Entertainment.
+MIT. Not affiliated with Blizzard Entertainment.
