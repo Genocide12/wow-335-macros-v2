@@ -25,9 +25,10 @@
     border-radius: 9px; padding: 8px 10px; cursor: pointer; font-size: 12.5px; font-weight: 600; line-height: 1.35; }
   .preset button:hover { border-color: var(--gold); }
   .preset button small { display: block; color: var(--dim); font-weight: 400; }
-  /* tree grid */
+  /* tree grid keeps its specific tree art while sharing the site's game-like frame */
   .t-tree { position: relative; background: url('assets/icons/bg/164.jpg') center/cover; border-radius: var(--r);
-    border: 1px solid var(--line); overflow: auto; }
+    border: 1px solid rgba(232,201,106,.5); overflow: auto;
+    box-shadow: 0 10px 28px rgba(0,0,0,.35), inset 0 0 24px rgba(0,0,0,.25); }
   .t-inner { position: relative; width: 400px; min-width: 100%; margin: 0 auto; padding: 14px 10px;
     background: rgba(10, 12, 18, .82); min-height: 100%; }
   .t-row { display: grid; grid-template-columns: repeat(4, 74px); justify-content: center; gap: 16px; margin-bottom: 22px; position: relative; z-index: 2; }
