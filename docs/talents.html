@@ -1,236 +1,36 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Таланты — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css">
-<style>
-  .t-layout { grid-template-columns: 250px 1fr; grid-template-rows: auto 1fr; gap: 12px; }
-  .t-tabs { grid-column: 1 / span 2; display: flex; gap: 8px; }
-  .t-tab { flex: 1; display: flex; align-items: center; gap: 9px; background: var(--panel2); border: 1px solid var(--line);
-    border-radius: 11px; padding: 8px 12px; cursor: pointer; font-weight: 700; font-size: 14px; color: var(--txt); }
-  .t-tab img { width: 28px; height: 28px; border-radius: 7px; }
-  .t-tab.on { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
-  .t-tab .pts { margin-left: auto; font-size: 12px; color: var(--dim); font-weight: 800; }
-  /* build panel */
-  .b-panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-  .b-num { font-size: 34px; font-weight: 800; color: var(--gold2); text-align: center; line-height: 1; }
-  .b-sub { text-align: center; color: var(--dim); font-size: 12px; }
-  .b-link { text-align: center; }
-  .b-link textarea { width: 100%; background: #0a0c12; color: #9fb0d0; border: 1px solid var(--line); border-radius: 8px;
-    font-family: ui-monospace, monospace; font-size: 11px; padding: 6px; resize: none; height: 58px; }
-  .preset { display: flex; flex-direction: column; gap: 7px; }
-  .preset button { text-align: left; background: var(--panel2); border: 1px solid var(--line); color: var(--txt);
-    border-radius: 9px; padding: 8px 10px; cursor: pointer; font-size: 12.5px; font-weight: 600; line-height: 1.35; }
-  .preset button:hover { border-color: var(--gold); }
-  .preset button small { display: block; color: var(--dim); font-weight: 400; }
-  /* tree grid keeps its specific tree art while sharing the site's game-like frame */
-  .t-tree { position: relative; background: url('assets/icons/bg/164.jpg') center/cover; border-radius: var(--r);
-    border: 1px solid rgba(232,201,106,.5); overflow: auto;
-    box-shadow: 0 10px 28px rgba(0,0,0,.35), inset 0 0 24px rgba(0,0,0,.25); }
-  .t-inner { position: relative; width: 400px; min-width: 100%; margin: 0 auto; padding: 14px 10px;
-    background: rgba(10, 12, 18, .82); min-height: 100%; }
-  .t-row { display: grid; grid-template-columns: repeat(4, 74px); justify-content: center; gap: 16px; margin-bottom: 22px; position: relative; z-index: 2; }
-  .tal { position: relative; width: 74px; }
-  .tal .frame { width: 64px; height: 64px; margin: 0 auto; border: 1px solid #3a4258; border-radius: 10px; overflow: hidden;
-    background: #05070c; cursor: pointer; position: relative; }
-  .tal .frame img { width: 100%; height: 100%; display: block; opacity: .45; filter: grayscale(.8); }
-  .tal.ok .frame img { opacity: 1; filter: none; }
-  .tal.ok .frame { border-color: var(--green); }
-  .tal.max .frame { border-color: var(--gold); }
-  .tal .rank { position: absolute; right: 0; bottom: 0; background: #05070c; border: 1px solid #3a4258; border-radius: 7px;
-    font-size: 11.5px; font-weight: 800; padding: 1px 5px; color: #fff; z-index: 2; }
-  .tal .rank.max { color: var(--gold2); }
-  .arrow { position: absolute; z-index: 1; color: #4d5a78; }
-  /* tooltip card */
-  .t-info { position: sticky; top: 0; }
-  .tipcard { background: #0b0d14; border: 1px solid var(--gold); border-radius: 12px; padding: 12px 14px; }
-  .tipcard img { width: 44px; height: 44px; border-radius: 9px; float: left; margin-right: 10px; }
-  .tipcard b { color: var(--gold2); font-size: 15px; }
-  .tipcard .req { color: var(--red); font-size: 12px; margin-top: 4px; }
-  .tipcard .desc { font-size: 12.5px; line-height: 1.5; color: var(--txt); margin-top: 6px; max-height: 150px; overflow-y: auto; white-space: pre-line; }
-  .tipcard .rk { color: var(--dim); font-size: 11.5px; margin-top: 6px; }
-  @media (max-width: 900px) {
-    .t-layout { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
-    .t-tabs { grid-column: auto; }
-    .b-panel { flex-direction: row; flex-wrap: wrap; align-items: center; }
-    .b-num { font-size: 22px; }
-  }
-</style>
-</head>
-<body>
-<div id="app">
-<main>
-  <div class="grid t-layout">
-    <div class="t-tabs" id="tabs"></div>
-    <section class="card b-panel" id="bpanel"></section>
-    <section class="t-tree" id="tree"><div class="t-inner" id="inner"></div></section>
-  </div>
-</main>
-</div>
-<script src="assets/js/app.js"></script>
-<script src="assets/js/talents-data.js"></script>
-<script>
-(() => {
-  const lang = window.W.lang;
-  const I = window.W.icon; // icons come from the Wowhead CDN
-  const TREE_NAMES = { arms: ['Оружие', 'Arms'], fury: ['Неистовство', 'Fury'], prot: ['Защита', 'Protection'] };
-  const ICONS = { arms: 'ability_rogue_eviscerate', fury: 'ability_racial_avatar', prot: 'ability_warrior_defensivestance' };
-  // leveling build presets: talent id -> ranks (Fury DW leveling, from lvl 10)
-  const PRESETS = [
-    { ru: 'Старт прокачки (25 оч.)', en: 'Leveling start (25 pts)', pts: { 157: 5, 2250: 3, 158: 2, 159: 5, 1581: 5, 1542: 2, 155: 1, 165: 1 } },
-    { ru: 'Средний этап (35 оч.)', en: 'Mid leveling (35 pts)', pts: { 157: 5, 2250: 3, 158: 2, 159: 5, 1581: 5, 1542: 2, 155: 5, 165: 1, 1543: 2, 156: 5 } },
-    { ru: 'Мой билд 54 (45 оч.)', en: 'My lvl-54 build (45 pts)', pts: { 157: 5, 2250: 3, 158: 2, 159: 5, 1581: 5, 1542: 2, 155: 5, 165: 1, 1543: 2, 156: 5, 167: 1, 1658: 5, 1868: 1, 1655: 2, 1865: 1 } },
-  ];
-  const state = { tree: 'fury', pts: {}, tipTalent: null };
-  const TREES = TALENTS.trees;
-  const byId = {};
-  TREES.forEach(t => t.talents.forEach(x => byId[x.id] = { ...x, tree: t.key }));
-
-  const fmtDesc = (x, r) => {
-    // pick description of the current/next rank (desc text already plain)
-    return (lang === 'ru' ? x.rud : x.end);
-  };
-
-  function treePoints(treeKey) {
-    return TREES.find(t => t.key === treeKey).talents.reduce((s, x) => s + (state.pts[x.id] || 0), 0);
-  }
-  function totalPoints() { return Object.values(state.pts).reduce((a, b) => a + b, 0); }
-
-  function canLearn(x) {
-    const cur = state.pts[x.id] || 0;
-    if (cur >= x.rk) return false;
-    // tier requirement: 5 * row points in this tree
-    if (treePoints(x.tree) < x.r * 5) return false;
-    return x.req.every(([id, qty]) => (state.pts[id] || 0) >= qty);
-  }
-
-  function draw() {
-    // tabs (game order: Arms, Fury, Protection)
-    const ordered = ['arms', 'fury', 'prot'];
-    document.getElementById('tabs').innerHTML = ordered.map(key => {
-      const t = TREES.find(x => x.key === key);
-      const nm = TREE_NAMES[key][lang === 'ru' ? 0 : 1];
-      return `<div class="t-tab ${key === state.tree ? 'on' : ''}" data-tree="${key}">
-        <img src="${I(ICONS[key])}" alt="">${nm}
-        <span class="pts">${treePoints(key)}</span></div>`;
-    }).join('');
-    document.querySelectorAll('.t-tab').forEach(el => el.onclick = () => { state.tree = el.dataset.tree; draw(); });
-
-    // tree grid
-    const t = TREES.find(t => t.key === state.tree);
-    document.getElementById('tree').style.backgroundImage = `url(assets/icons/bg/${t.bg}.jpg)`;
-    const rows = [];
-    for (let r = 0; r < 11; r++) {
-      const cells = [0, 1, 2, 3].map(c => {
-        const x = t.talents.find(v => v.r === r && v.c === c);
-        if (!x) return '<div class="tal"></div>';
-        const cur = state.pts[x.id] || 0;
-        const cls = cur > 0 ? (cur === x.rk ? 'ok max' : 'ok') : '';
-        return `<div class="tal ${cls}" data-id="${x.id}">
-          <div class="frame"><img src="${I(x.ic)}" alt=""></div>
-          <span class="rank ${cur === x.rk ? 'max' : ''}">${cur}/${x.rk}</span></div>`;
-      }).join('');
-      rows.push(`<div class="t-row" data-r="${r}">${cells}</div>`);
-    }
-    // arrows between rows
-    let arrows = '';
-    t.talents.forEach(x => {
-      x.req.forEach(([id]) => {
-        const p = byId[id];
-        if (p.tree !== t.key) return;
-        arrows += arrowSvg(p, x);
-      });
-    });
-    document.getElementById('inner').innerHTML = rows.join('') + arrows;
-    document.querySelectorAll('.tal[data-id]').forEach(el => {
-      const x = byId[el.dataset.id];
-      el.onclick = (e) => {
-        if (canLearn(x)) { state.pts[x.id] = (state.pts[x.id] || 0) + 1; draw(); showTip(x); }
-        else if (e.shiftKey && (state.pts[x.id] || 0) > 0) { state.pts[x.id]--; draw(); showTip(x); }
-        else showTip(x);
-      };
-      el.onmouseenter = () => showTip(x, true);
-    });
-
-    // side panel
-    const b = document.getElementById('bpanel');
-    const pts = totalPoints();
-    const L = { ru: ['очков', 'Сброс', 'Код билда (вставь в /run-макрос экспорта не нужно — это просто ссылка)', 'Пресеты прокачки', 'Клик — вложить очко · Shift+клик — убрать · Наведи — описание'],
-                en: ['points', 'Reset', 'Build code', 'Leveling presets', 'Click — add a point · Shift+click — remove · Hover — description'] }[lang];
-    b.innerHTML = `
-      <div>
-        <div class="b-num">${pts}</div>
-        <div class="b-sub">${L[0]}</div>
-      </div>
-      <div class="b-link"><textarea readonly id="bcode">${buildCode()}</textarea></div>
-      <div class="preset">
-        <b style="font-size:13px;color:var(--gold2)">${L[3]}</b>
-        ${PRESETS.map((p, i) => `<button data-p="${i}">${lang === 'ru' ? p.ru : p.en}<small>${Object.values(p.pts).reduce((a, b) => a + b, 0)} ${L[0]}</small></button>`).join('')}
-      </div>
-      <button class="btn ghost" id="reset">${L[1]}</button>
-      <div class="small muted">${L[4]}</div>`;
-    document.getElementById('reset').onclick = () => { state.pts = {}; draw(); };
-    b.querySelectorAll('[data-p]').forEach(btn => btn.onclick = () => {
-      state.pts = { ...PRESETS[btn.dataset.p].pts }; draw();
-    });
-    if (state.tipTalent) showTip(byId[state.tipTalent]);
-  }
-
-  function arrowSvg(from, to) {
-    // vertical arrow from row of `from` to row of `to` (col centered)
-    const colX = c => 37 + c * 90; // 74px cell + 16 gap
-    const x1 = colX(from.c), y1 = from.r * 86 + 32;
-    const x2 = colX(to.c), y2 = to.r * 86 + 32;
-    const len = y2 - y1 - 24;
-    return `<svg class="arrow" style="left:${Math.min(x1, x2) - 6}px; top:${y1 + 12}px; width:${Math.abs(x2 - x1) + 20}px; height:${len + 14}px" viewBox="0 0 ${Math.abs(x2 - x1) + 20} ${len + 14}">
-      <line x1="10" y1="0" x2="10" x2="10" y2="${len}" stroke="#4d5a78" stroke-width="2"/>
-      <path d="M5 ${len} L15 ${len} L10 ${len + 9} Z" fill="#4d5a78"/></svg>`;
-  }
-
-  function showTip(x, hover) {
-    state.tipTalent = hover ? state.tipTalent : x.id;
-    const el = document.getElementById('inner');
-    let tip = el.querySelector('.tipcard');
-    if (!tip) { tip = document.createElement('div'); tip.className = 'tipcard'; el.appendChild(tip); tip.style.position = 'absolute'; tip.style.zIndex = 10; }
-    const cur = state.pts[x.id] || 0;
-    const name = lang === 'ru' ? x.ru : x.en;
-    const reqs = x.req.map(([id, q]) => {
-      const p = byId[id];
-      const have = (state.pts[id] || 0);
-      return `<div class="${have >= q ? '' : 'req'}">${lang === 'ru' ? 'Требует' : 'Requires'} ${lang === 'ru' ? p.ru : p.en} ${have}/${q}</div>`;
-    }).join('');
-    const tier = treePoints(x.tree) < x.r * 5
-      ? `<div class="req">${lang === 'ru' ? `Требует ${x.r * 5} оч. в ветке` : `Requires ${x.r * 5} pts in tree`} (${treePoints(x.tree)})</div>` : '';
-    tip.innerHTML = `<img src="${I(x.ic)}" alt=""><b>${name}</b>
-      <div class="rk">${lang === 'ru' ? 'Ранг' : 'Rank'} ${cur}/${x.rk}</div>
-      ${reqs}${tier}<div class="desc">${fmtDesc(x, cur)}</div>`;
-    const slot = el.querySelector(`.tal[data-id="${x.id}"]`);
-    if (slot) {
-      const tr = el.getBoundingClientRect(), sr = slot.getBoundingClientRect();
-      let left = sr.left - tr.left + 78;
-      if (left + 290 > tr.width) left = Math.max(4, sr.left - tr.left - 290);
-      tip.style.left = left + 'px';
-      tip.style.top = Math.max(4, sr.top - tr.top) + 'px';
-    }
-  }
-
-  function buildCode() {
-    // wowhead-style: 3 trees strings of digits by row-major order (rank per talent, no separators beyond padding)
-    return TREES.map(t => {
-      let s = '';
-      for (let r = 0; r < 11; r++) for (let c = 0; c < 4; c++) {
-        const x = t.talents.find(v => v.r === r && v.c === c);
-        s += x ? (state.pts[x.id] || 0) : '';
-      }
-      return s;
-    }).join('-');
-  }
-
-  document.title = (lang === 'ru' ? 'Таланты' : 'Talents') + ' — WoW 3.3.5 Fury';
-  draw();
-})();
-</script>
-</body>
-</html>
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Таланты — WoW 3.3.5a</title><link rel="stylesheet" href="assets/css/app.css"><style>
+.t-layout{display:grid;grid-template-columns:minmax(250px,305px) minmax(0,1fr);grid-template-rows:auto minmax(400px,1fr);gap:13px}.t-tabs{grid-column:1/-1;display:flex;gap:8px}.t-tab{flex:1;display:flex;align-items:center;gap:9px;background:linear-gradient(#232631,#12151d);border:1px solid rgba(205,174,91,.32);border-radius:11px;padding:8px 12px;cursor:pointer;font-weight:700;font-size:14px;color:var(--txt)}.t-tab img{width:28px;height:28px;border-radius:7px}.t-tab.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}.t-tab .pts{margin-left:auto;font-size:12px;color:var(--dim);font-weight:800}.b-panel{display:flex;flex-direction:column;gap:10px;overflow:auto}.b-num{font-size:34px;font-weight:800;color:var(--gold2);text-align:center;line-height:1}.b-sub{text-align:center;color:var(--dim);font-size:12px}.build-link textarea{width:100%;background:#0a0c12;color:#9fb0d0;border:1px solid var(--line);border-radius:8px;font-family:ui-monospace,monospace;font-size:11px;padding:6px;resize:none;height:58px}.preset{display:flex;flex-direction:column;gap:7px}.preset-group{border:1px solid var(--line);border-radius:9px;background:rgba(6,8,13,.38);overflow:hidden}.preset-group summary{display:flex;align-items:center;gap:9px;padding:8px;cursor:pointer;list-style:none;background:rgba(255,255,255,.025)}.preset-group summary .branch-copy{display:flex;flex-direction:column;min-width:0;gap:2px}.preset-group summary .branch-note{font-size:11px;color:var(--dim);font-weight:400;line-height:1.35}.preset-group summary .branch-count{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#e7cd81;background:rgba(190,151,55,.12);border:1px solid rgba(190,151,55,.28);border-radius:999px;padding:3px 7px;margin-left:auto;white-space:nowrap}.preset-group[open]{border-color:rgba(218,183,91,.48);box-shadow:0 6px 18px rgba(0,0,0,.22)}.preset-group summary::after{content:'⌄';font-size:18px}.preset button{display:flex;align-items:center;justify-content:space-between;gap:8px}.preset button .preset-level{flex:0 0 auto;font-size:10px;color:#e7cd81;border:1px solid rgba(190,151,55,.24);background:rgba(190,151,55,.09);padding:3px 6px;border-radius:999px}.build-status{display:flex;gap:9px;align-items:center;border:1px solid rgba(201,174,98,.26);background:rgba(9,11,16,.62);border-radius:9px;padding:8px 10px;color:var(--dim);font-size:12px}.build-status strong{color:var(--gold2);font-weight:800}.tree-stage-label{position:sticky;top:0;z-index:4;text-align:center;color:#f1d77c;background:rgba(8,10,15,.82);padding:6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid rgba(205,174,91,.24);backdrop-filter:blur(4px)}.tal:hover .frame{transform:translateY(-2px);box-shadow:0 0 14px rgba(232,201,106,.24)}.tal .frame{transition:transform .14s ease,box-shadow .14s ease}.preset-group summary::-webkit-details-marker{display:none}.preset-group summary::after{content:'▾';margin-left:auto;color:var(--gold2)}.preset-group:not([open]) summary::after{transform:rotate(-90deg)}.preset-group summary img{width:28px;height:28px;border-radius:6px}.preset-group summary b,.preset-group summary small{display:block}.preset-group summary small{color:var(--dim);font-weight:400;margin-top:2px;line-height:1.3}.preset-list{display:flex;flex-direction:column;gap:6px;padding:7px}.preset button{width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:8px 10px;cursor:pointer;font-size:12.5px;font-weight:600;line-height:1.35}.preset button:hover{border-color:var(--gold)}.preset button small{display:block;color:var(--dim);font-weight:400}.talent-tip{position:fixed;right:18px;bottom:18px;z-index:80;width:min(340px,calc(100vw - 36px));padding:14px;background:rgba(11,13,20,.97);border:1px solid var(--gold);border-radius:12px;box-shadow:0 12px 36px #000a;line-height:1.5}.talent-tip img{width:40px;height:40px;float:left;margin:0 10px 6px 0;border-radius:7px}.talent-tip b{color:var(--gold2);display:block}.talent-tip small{color:var(--dim)}.talent-tip p{clear:both;padding-top:8px;color:var(--txt)}.t-tree{position:relative;background:url('assets/icons/bg/164.jpg') center/cover;border-radius:var(--r);border:1px solid rgba(232,201,106,.5);overflow:auto;box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 0 24px rgba(0,0,0,.25)}.t-inner{position:relative;width:400px;min-width:100%;margin:0 auto;padding:14px 10px;background:rgba(10,12,18,.82);min-height:100%}.t-row{display:grid;grid-template-columns:repeat(4,74px);justify-content:center;gap:16px;margin-bottom:22px;position:relative;z-index:2}.tal{position:relative;width:74px;border:0;background:transparent;color:inherit;cursor:pointer}.tal .frame{display:block;width:64px;height:64px;margin:0 auto;border:1px solid #3a4258;border-radius:10px;overflow:hidden;background:#05070c;position:relative}.tal .frame img{width:100%;height:100%;display:block;opacity:.45;filter:grayscale(.8)}.tal.ok .frame img{opacity:1;filter:none}.tal.ok .frame{border-color:var(--green)}.tal.max .frame{border-color:var(--gold)}.tal .rank{position:absolute;right:0;bottom:0;background:#05070c;border:1px solid #3a4258;border-radius:7px;font-size:11.5px;font-weight:800;padding:1px 5px;color:#fff}.tal.max .rank{color:var(--gold2)}
+@media(max-width:900px){.t-layout{grid-template-columns:1fr;grid-template-rows:auto auto minmax(420px,1fr)}.t-tabs{grid-column:auto}.b-panel{max-height:none}.t-tree{min-height:65vh}}@media(max-width:560px){.t-tabs{flex-wrap:wrap}.t-tab{min-width:30%;font-size:12px;padding:7px}.t-row{grid-template-columns:repeat(4,64px);gap:8px}.tal{width:64px}.tal .frame{width:56px;height:56px}.t-inner{width:320px}.talent-tip{left:10px;right:10px;bottom:10px;width:auto}}
+</style></head><body><div id="app"><main><div class="grid t-layout"><div class="t-tabs" id="tabs"></div><section class="card b-panel" id="bpanel"></section><section class="t-tree" id="tree"><div class="t-inner" id="inner"></div></section></div><aside id="talent-tip" class="talent-tip" hidden></aside></main></div><script src="assets/js/app.js"></script><script id="talent-data" type="application/json"></script><script>
+fetch('assets/data/talents.json').then(r=>{if(!r.ok)throw new Error('talent data');return r.json()}).then(data=>{window.TALENTS=data;launchTalents()}).catch(()=>{document.getElementById('inner').textContent='Talent data failed to load.'});
+function launchTalents(){
+const lang=window.W.lang,TALENTS=window.TALENTS,TREE_NAMES={arms:['Оружие','Arms'],fury:['Неистовство','Fury'],prot:['Защита','Protection']},TREE_ICONS={arms:'ability_rogue_eviscerate',fury:'ability_racial_avatar',prot:'ability_warrior_defensivestance'},PRESETS=[
+{tree:'fury',lvl:24,src:'guide',ru:'Fury: старт — крит и ярость',en:'Fury: crit and rage start',pts:{157:5,2250:3,158:2,159:5}},
+{tree:'fury',lvl:39,src:'guide',ru:'Fury: Шквал',en:'Fury: Flurry',pts:{157:5,2250:3,158:2,159:5,154:5,1581:5,156:5}},
+{tree:'fury',lvl:40,src:'guide',ru:'Fury: Жажда смерти',en:'Fury: Death Wish',pts:{157:5,2250:3,158:2,159:5,154:5,1581:5,156:5,165:1}},
+{tree:'fury',lvl:42,src:'guide',ru:'Fury: Кровожадность',en:'Fury: Bloodthirst',pts:{157:5,2250:3,158:2,159:5,154:5,1581:5,156:5,165:1,167:1,1657:1}},
+{tree:'fury',lvl:49,src:'guide',ru:'Fury: точность и бурст',en:'Fury: precision and burst',pts:{157:5,2250:3,158:2,159:5,154:5,1581:5,156:5,165:1,167:1,1657:3,1542:2,166:3}},
+{tree:'fury',lvl:59,src:'guide',ru:'Fury: путь к Хватке титана',en:'Fury: road to Titan’s Grip',pts:{157:5,2250:3,158:2,159:5,154:5,1581:5,156:5,165:1,167:1,1657:3,1542:2,166:3,1866:3,1541:2,155:5}},
+{tree:'fury',lvl:60,src:'guide',ru:'Fury: Хватка титана (60+)',en:'Fury: Titan’s Grip (60+)',pts:{157:5,2250:3,158:2,159:5,154:5,1581:5,156:5,165:1,167:1,1657:3,1542:2,166:3,1866:3,1541:2,155:5,1867:1}},
+{tree:'fury',lvl:80,src:'raid',ru:'PvE рейд: 18/53/0 · Titan’s Grip',en:'PvE raid: 18/53/0 · Titan’s Grip',pts:{124:3,127:2,641:3,126:2,136:3,662:2,121:3,157:5,2250:3,159:5,154:5,1581:5,1657:3,165:1,156:5,167:1,1866:3,1659:1,1658:5,1655:2,2234:5,1867:1,1542:2,1541:1}},
+{tree:'fury',lvl:80,src:'mine',ru:'Fury solo: ДПС + выживание',en:'Fury solo: DPS + survival',pts:{124:3,157:5,2250:3,158:2,159:5,154:5,1581:5,156:5,165:1,167:1,1657:3,1542:2,166:3,1866:3,1541:2,155:5,1659:1,1658:5,1655:2,2234:5,1864:3,161:2}},
+{tree:'arms',lvl:24,src:'guide',ru:'Arms: дешёвый Удар героя',en:'Arms: cheaper Heroic Strike',pts:{124:3,127:2,126:2,641:3,662:2,121:3}},
+{tree:'arms',lvl:39,src:'guide',ru:'Arms: специализация на топорах',en:'Arms: Poleaxe Specialization',pts:{124:3,127:2,126:2,641:3,662:2,121:3,130:5,132:5,133:1,128:3,1859:1}},
+{tree:'arms',lvl:40,src:'guide',ru:'Arms: Смертельный удар',en:'Arms: Mortal Strike',pts:{124:3,127:2,126:2,641:3,662:2,121:3,130:5,132:5,133:1,128:3,1859:1,135:1}},
+{tree:'arms',lvl:59,src:'guide',ru:'Arms: Погром и Внезапная смерть',en:'Arms: Wrecking Crew and Sudden Death',pts:{124:3,127:2,126:2,641:3,662:2,121:3,130:5,132:5,133:1,128:3,1859:2,135:1,136:3,134:2,1824:2,2233:2,1663:2,1862:2,1662:3,2283:1,137:1}},
+{tree:'arms',lvl:60,src:'guide',ru:'Arms: Вихрь клинков',en:'Arms: Bladestorm',pts:{124:3,127:2,126:2,641:3,662:2,121:3,130:5,132:5,133:1,128:3,1859:2,135:1,136:3,134:2,1824:2,2233:2,1663:2,1862:2,1662:3,2283:1,137:1,1863:1}},
+{tree:'arms',lvl:80,src:'raid',ru:'Arms PvE рейд: 54/17/0',en:'Arms PvE raid: 54/17/0',pts:{124:3,127:2,126:2,641:3,662:2,121:3,130:5,132:5,133:1,128:3,1859:2,135:1,136:3,134:2,1824:2,2233:2,1663:2,1862:2,1662:3,2283:1,137:1,1863:1,1661:1,1860:2,157:5,2250:3,158:2,159:5,166:2}},
+{tree:'prot',lvl:24,src:'guide',ru:'Protection: блок и Реванш',en:'Protection: blocks and Revenge',pts:{1601:5,138:5,147:2,1654:2,141:1}},
+{tree:'prot',lvl:39,src:'guide',ru:'Protection: Ни шагу назад',en:'Protection: Last Stand',pts:{1601:5,138:5,147:2,1654:2,141:2,153:1,144:3,149:2,142:2,140:5,146:1}},
+{tree:'prot',lvl:59,src:'guide',ru:'Protection: урон и угроза',en:'Protection: damage and threat',pts:{1601:5,138:5,147:2,1654:2,141:2,153:1,144:3,149:2,142:2,140:5,146:3,702:5,152:1,2247:2,150:2,151:2,1660:3,1653:2,148:1}},
+{tree:'prot',lvl:60,src:'guide',ru:'Protection: Ударная волна',en:'Protection: Shockwave',pts:{1601:5,138:5,147:2,1654:2,141:2,153:1,144:3,149:2,142:2,140:5,146:3,702:5,152:1,2247:2,150:2,151:2,1660:3,1653:2,148:1,1872:1}},
+{tree:'prot',lvl:80,src:'raid',ru:'Protection: танк данжей/рейдов',en:'Protection: dungeon/raid tank',pts:{1601:5,138:5,147:2,1654:2,141:2,153:1,144:3,149:2,142:2,140:5,146:3,702:5,152:1,2247:2,150:2,151:2,1660:3,1653:2,148:1,1872:1,1666:1,1871:3,1893:3,2236:1,2246:2,1652:2,157:5,2250:3}}
+];
+const state={tree:'fury',pts:{},tipTalent:null},TREES=TALENTS.trees,byId={};TREES.forEach(t=>t.talents.forEach(x=>byId[x.id]={...x,tree:t.key}));const savedBuild=new URLSearchParams(location.search).get('build');if(savedBuild){const parts=savedBuild.split('-');if(parts.length===3&&parts.every(x=>/^\d{44}$/.test(x)))TREES.forEach((tree,ti)=>{let i=0;for(let r=0;r<11;r++)for(let c=0;c<4;c++){const t=tree.talents.find(x=>x.row===r&&x.col===c),rank=+parts[ti][i++];if(t&&rank>0)state.pts[t.id]=Math.min(rank,t.ranks)}})}
+function treePoints(key){return TREES.find(t=>t.key===key).talents.reduce((s,x)=>s+(state.pts[x.id]||0),0)}function totalPoints(){return Object.values(state.pts).reduce((a,b)=>a+b,0)}function canLearn(x){if((state.pts[x.id]||0)>=x.ranks||treePoints(x.tree)<x.row*5)return false;return(x.requires||[]).every(req=>(state.pts[req.id]||0)>=req.qty)}function buildCode(p=state.pts){return TREES.map(t=>{let s='';for(let r=0;r<11;r++)for(let c=0;c<4;c++){const x=t.talents.find(v=>v.row===r&&v.col===c);s+=x?(p[x.id]||0):0}return s}).join('-')}
+function render(){const order=['arms','fury','prot'],names={arms:['Оружие','Arms'],fury:['Неистовство','Fury'],prot:['Защита','Protection']},icons={arms:'ability_rogue_eviscerate',fury:'ability_racial_avatar',prot:'ability_warrior_defensivestance'};document.getElementById('tabs').innerHTML=order.map(key=>`<button type="button" class="t-tab ${key===state.tree?'on':''}" data-tree="${key}"><img src="${window.W.icon(icons[key])}" alt=""><span>${names[key][lang==='ru'?0:1]}</span><span class="pts">${treePoints(key)}</span></button>`).join('');document.querySelectorAll('.t-tab').forEach(b=>b.onclick=()=>{state.tree=b.dataset.tree;render()});const tree=TREES.find(t=>t.key===state.tree);document.getElementById('tree').style.backgroundImage=`url(assets/icons/bg/${tree.bg}.jpg)`;let rows='';for(let r=0;r<11;r++){rows+='<div class="t-row">';for(let c=0;c<4;c++){const t=tree.talents.find(x=>x.row===r&&x.col===c);if(!t){rows+='<div class="tal empty"></div>';continue}const rank=state.pts[t.id]||0;rows+=`<button type="button" class="tal ${rank?'ok':''} ${rank===t.ranks?'max':''}" data-id="${t.id}" aria-label="${lang==='ru'?t.ru.name:t.en.name} ${rank}/${t.ranks}"><span class="frame"><img src="${window.W.icon(t.icon)}" alt=""></span><span class="rank">${rank}/${t.ranks}</span></button>`}rows+='</div>'}document.getElementById('inner').innerHTML='<div class="tree-stage-label">'+names[state.tree][lang==='ru'?0:1]+' · '+(lang==='ru'?'Древо талантов':'Talent tree')+'</div>'+rows;document.querySelectorAll('.tal[data-id]').forEach(b=>{const t=byId[b.dataset.id];b.onclick=()=>{if(canLearn(t)){state.pts[t.id]=(state.pts[t.id]||0)+1;render()}else showTip(t)};b.oncontextmenu=e=>{e.preventDefault();if(state.pts[t.id]){state.pts[t.id]--;render()}else showTip(t)};b.onmouseenter=()=>showTip(t)});renderPanel(names,icons)}
+function renderPanel(names,icons){const b=document.getElementById('bpanel'),sum=p=>Object.values(p.pts).reduce((a,x)=>a+x,0),groups=['fury','arms','prot'].map(key=>({key,items:PRESETS.map((p,i)=>({p,i})).filter(x=>x.p.tree===key)})),source={guide:lang==='ru'?'прокачка':'leveling',raid:lang==='ru'?'PvE рейд':'PvE raid',mine:lang==='ru'?'соло':'solo'};b.innerHTML=`<div class="build-summary"><div class="b-num">${totalPoints()}</div><div class="b-sub">${lang==='ru'?'очков талантов':'talent points'}</div></div><div class="build-link"><textarea readonly id="bcode">${buildCode()}</textarea><button type="button" class="btn ghost" id="copyBuild">${lang==='ru'?'Скопировать ссылку':'Copy share link'}</button></div><div class="preset"><h2>${lang==='ru'?'Билды до 80-го':'Builds to level 80'}</h2>${groups.map(g=>`<details class="preset-group" ${g.key===state.tree?'open':''}><summary><img src="${window.W.icon(icons[g.key])}" alt=""><span><b>${names[g.key][lang==='ru'?0:1]}</b><small class="branch-note">${g.key==='fury'?(lang==='ru'?'Прокачка + рейдовый и соло билд 80':'Leveling + raid and solo level-80 builds'):g.key==='arms'?(lang==='ru'?'Путь прокачки и рейдовый пресет':'Leveling path and raid preset'):(lang==='ru'?'Путь прокачки и билд танка':'Leveling path and tank build')}</small></span><span class="branch-count">${g.items.length} ${lang==='ru'?'этапов':'builds'}</span></summary><div class="preset-list">${g.items.map(({p,i})=>`<button type="button" data-p="${i}">${lang==='ru'?p.ru:p.en}<small>${lang==='ru'?'Уровень':'Level'} ${p.lvl} · ${sum(p.pts)} ${lang==='ru'?'очков':'pts'} · ${source[p.src]}</small></button>`).join('')}</div></details>`).join('')}</div><button class="btn ghost" id="reset">${lang==='ru'?'Сбросить очки':'Reset points'}</button><p class="small muted">${lang==='ru'?'ЛКМ — добавить · ПКМ — убрать · наведи для описания':'Click to add · right-click to remove · hover for details'}</p>`;document.getElementById('reset').onclick=()=>{state.pts={};render()};document.getElementById('copyBuild').onclick=async e=>{const url=new URL(location.href);url.searchParams.set('build',buildCode());url.searchParams.set('lang',lang);try{await navigator.clipboard.writeText(url.toString())}catch{const a=document.getElementById('bcode');a.value=url.toString();a.select();document.execCommand('copy');a.value=buildCode()}e.currentTarget.textContent=lang==='ru'?'Ссылка скопирована':'Link copied';setTimeout(()=>{if(document.getElementById('copyBuild'))document.getElementById('copyBuild').textContent=lang==='ru'?'Скопировать ссылку':'Copy share link'},1200)};b.querySelectorAll('[data-p]').forEach(btn=>btn.onclick=()=>{const p=PRESETS[+btn.dataset.p];state.tree=p.tree;state.pts={...p.pts};render()})}
+function showTip(t){const tip=document.getElementById('talent-tip');tip.hidden=false;tip.innerHTML=`<img src="${window.W.icon(t.icon)}" alt=""><b>${lang==='ru'?t.ru.name:t.en.name}</b><small>${state.pts[t.id]||0}/${t.ranks}</small><p>${lang==='ru'?t.ru.desc:t.en.desc}</p>`}
+document.title=(lang==='ru'?'Таланты':'Talents')+' — WoW 3.3.5a';render()
+}
+</script></body></html>

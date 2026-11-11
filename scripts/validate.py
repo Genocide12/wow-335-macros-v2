@@ -1,82 +1,104 @@
 #!/usr/bin/env python3
-"""Validate source macro layout and the WoW 3.3.5 macro text limit."""
+"""Validate WoW 3.3.5a macro sources and generated installers/catalog."""
+from __future__ import annotations
 from pathlib import Path
 import json
 import re
 import sys
+from build import SPECS
 
-ROOT = Path(__file__).resolve().parents[1]
-LANGUAGES = ("ru", "en")
-FILES = ("01-attack-rotation.txt", "02-aoe-pack.txt", "03-interrupt.txt")
-LIMIT = 255
+ROOT=Path(__file__).resolve().parents[1]
+LANGUAGES=("ru","en")
+COMBAT_FILES=("01-attack-rotation.txt","02-aoe-pack.txt","03-interrupt.txt")
+FILES=COMBAT_FILES+("04-buff-check.txt",)
+LIMIT=255
+COMMAND=re.compile(r"^(?:/(?:cast|use|startattack|target(?:enemy|friend|lasttarget)?|focus|cleartarget|stopmacro|run|script|showtooltip)\b|#showtooltip\b)",re.I)
+MODIFIER=re.compile(r"\[mod:(?:ctrl|shift|alt)\]",re.I)
 
 
-def main() -> int:
-    errors: list[str] = []
-    for language in LANGUAGES:
+def main()->int:
+    errors=[]
+    sources={}
+    for lang in LANGUAGES:
+        sources[lang]={}
         for filename in FILES:
-            path = ROOT / "macros" / "warrior-smart" / language / filename
+            path=ROOT/"macros"/"warrior-smart"/lang/filename
             if not path.is_file():
-                errors.append(f"Missing macro: {path.relative_to(ROOT)}")
+                errors.append(f"Missing source {path.relative_to(ROOT)}")
                 continue
-            text = path.read_text(encoding="utf-8-sig")
-            if "\r" in text:
-                errors.append(f"Use LF line endings: {path.relative_to(ROOT)}")
-            commands = [line.strip() for line in text.splitlines() if line.strip()]
-            if not commands:
-                errors.append(f"Macro is empty: {path.relative_to(ROOT)}")
-            for number, line in enumerate(commands, start=1):
-                if re.search(r"\[mod:(?:ctrl|shift|alt)\]", line, re.I):
-                    errors.append(f"{path.relative_to(ROOT)}:{number}: combat macros must not require modifiers")
-                if language == "ru" and "Инстинкт смерти" in line:
-                    errors.append(f"{path.relative_to(ROOT)}:{number}: use the Russian spell name Жажда смерти")
-                if len(line) > LIMIT:
-                    errors.append(f"{path.relative_to(ROOT)}:{number}: {len(line)} characters (limit {LIMIT})")
-                if not re.match(r"^(?:/(?:cast|use|startattack|target(?:enemy|friend|lasttarget)?|focus|cleartarget|stopmacro|run|script|showtooltip)\b|#showtooltip\b)", line, re.I):
-                    errors.append(f"{path.relative_to(ROOT)}:{number}: unexpected command: {line}")
-    for language in LANGUAGES:
-        macro_source = "\n".join((ROOT / "macros" / "warrior-smart" / language / filename).read_text(encoding="utf-8-sig") for filename in FILES)
-        website_text = (ROOT / "docs/assets/js/macros-data.js").read_text(encoding="utf-8-sig").removeprefix("window.MACRO_TXT = ").strip()
-        website_data = json.loads(website_text[:-1] if website_text.endswith(";") else website_text)
-        if language == "ru" and "Жажда смерти" not in macro_source:
-            errors.append("Russian macro set must use the localized spell name Жажда смерти")
-        if language == "en" and "Death Wish" not in macro_source:
-            errors.append("English macro set must use Death Wish")
-        for filename in FILES:
-            text = (ROOT / "macros" / "warrior-smart" / language / filename).read_text(encoding="utf-8-sig").rstrip("\r\n")
-            if website_data.get(language, {}).get(Path(filename).stem) != text:
-                errors.append(f"Website macro catalogue is out of sync: {language}/{filename}")
-    for generated in (ROOT / "install/macros-cache-ru.txt", ROOT / "install/macros-cache-en.txt"):
-        if generated.is_file():
-            installer = generated.read_text(encoding="utf-8-sig")
-            for language, specs in (("ru", ("Одна цель", "AoE", "Контроль")), ("en", ("Single", "AoE", "Control"))):
-                if generated.name.endswith(f"-{language}.txt"):
-                    for filename in FILES:
-                        text = (ROOT / "macros" / "warrior-smart" / language / filename).read_text(encoding="utf-8-sig").strip()
-                        if text not in installer:
-                            errors.append(f"Installer is out of sync: {language}/{filename}")
-                    break
-    for generated in (ROOT / "install/macros-cache-ru.txt", ROOT / "install/macros-cache-en.txt"):
-        if not generated.is_file():
-            errors.append(f"Missing generated installer: {generated.relative_to(ROOT)}")
+            raw=path.read_text(encoding="utf-8-sig")
+            if "\r" in raw: errors.append(f"Use LF line endings: {path.relative_to(ROOT)}")
+            body=raw.strip()
+            sources[lang][Path(filename).stem]=body
+            commands=[x.strip() for x in body.splitlines() if x.strip()]
+            for no,line in enumerate(commands,1):
+                if len(line)>LIMIT: errors.append(f"{path.relative_to(ROOT)}:{no}: {len(line)} chars exceeds {LIMIT}")
+                if not COMMAND.match(line): errors.append(f"{path.relative_to(ROOT)}:{no}: unsupported macro command {line}")
+                if MODIFIER.search(line):
+                    allowed=(filename=="03-interrupt.txt" and "[mod:alt]" in line.lower()) or (filename=="04-buff-check.txt" and "[mod:ctrl]" in line.lower())
+                    if not allowed: errors.append(f"{path.relative_to(ROOT)}:{no}: unexpected modifier condition")
+                if filename=="04-buff-check.txt" and re.search(r"\[mod:(?:alt|shift)\]",line,re.I): errors.append(f"{path.relative_to(ROOT)}:{no}: buff checker may use Ctrl only as an explicit combat fallback")
+                if lang=="ru" and "Инстинкт смерти" in line: errors.append(f"{path.relative_to(ROOT)}:{no}: use localized name Жажда смерти")
+                if filename!="04-buff-check.txt":
+                    if lang=="ru" and "Жажда смерти" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Death Wish should be combat-only")
+                    if lang=="en" and "Death Wish" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Death Wish should be combat-only")
+                    if lang=="ru" and "Кровавая ярость" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Bloodrage should be combat-only")
+                    if lang=="en" and "Bloodrage" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Bloodrage should be combat-only")
+                if "/run" in line:
+                    if filename!="04-buff-check.txt":
+                        errors.append(f"{path.relative_to(ROOT)}:{no}: Lua aura checks belong only in the dedicated buff macro")
+                    if "UnitDebuff" in line and ("/stopmacro [combat]" not in body or filename!="04-buff-check.txt"):
+                        errors.append(f"{path.relative_to(ROOT)}:{no}: target debuff checker must be a pre-pull macro that stops in combat")
+        joined="\n".join(sources[lang].values())
+        spell="Жажда смерти" if lang=="ru" else "Death Wish"
+        if spell not in joined: errors.append(f"Missing required translated spell: {lang}/{spell}")
+        buff=sources[lang].get("04-buff-check","")
+        if "/stopmacro [combat]" not in buff: errors.append(f"Buff checker must stop in combat: {lang}")
+        if "UnitBuff" not in buff: errors.append(f"Buff checker must inspect own buff: {lang}")
+
+    webraw=(ROOT/"docs/assets/js/macros-data.js").read_text(encoding="utf-8-sig").removeprefix("window.MACRO_TXT = ").strip()
+    web=json.loads(webraw[:-1] if webraw.endswith(";") else webraw)
+    for lang,items in sources.items():
+        for key,body in items.items():
+            if web.get(lang,{}).get(key)!=body: errors.append(f"Web catalog mismatch: {lang}/{key}")
+        for extra in ("export-part1","export-part2"):
+            expected=(ROOT/"macros"/"warrior-smart"/lang/(extra+".txt")).read_text(encoding="utf-8-sig").strip()
+            if web.get(lang,{}).get(extra)!=expected: errors.append(f"Web export macro mismatch: {lang}/{extra}")
+
+    installer_specs={lang:[item[2] for item in SPECS[lang]] for lang in LANGUAGES}
+    for lang in LANGUAGES:
+        path=ROOT/"install"/f"macros-cache-{lang}.txt"
+        if not path.is_file():
+            errors.append(f"Missing generated installer {path.relative_to(ROOT)}")
             continue
-        content = generated.read_text(encoding="utf-8-sig")
-        if "Инстинкт смерти" in content:
-            errors.append(f"Wrong Russian Death Wish name in {generated.relative_to(ROOT)}")
-        bodies = re.split(r"^MACRO .*?$", content, flags=re.M)[1:]
-        for body in bodies:
-            macro_text = body.split("\nEND", 1)[0]
-            if len(macro_text.strip()) > LIMIT:
-                errors.append(f"{generated.relative_to(ROOT)}: macro body exceeds {LIMIT} characters")
-        if re.search(r"\[mod:(?:ctrl|shift|alt)\]", content, re.I):
-            errors.append(f"Combat macro requires a modifier in {generated.relative_to(ROOT)}")
+        content=path.read_text(encoding="utf-8-sig")
+        combat_content="\n".join(sources[lang][Path(f).stem] for f in COMBAT_FILES if Path(f).stem in sources[lang])
+        for filename in COMBAT_FILES:
+            body=sources[lang].get(Path(filename).stem,"")
+            for line in body.splitlines():
+                if MODIFIER.search(line) and (filename!="03-interrupt.txt" or "[mod:alt]" not in line.lower()):
+                    errors.append(f"Combat source {lang}/{filename} contains unsupported modifier condition")
+        installer_macros=re.split(r"^MACRO .*?$",content,flags=re.M)[1:]
+        for i,macro in enumerate(installer_macros):
+            body=macro.split("\nEND",1)[0]
+            if i < len(COMBAT_FILES) and MODIFIER.search(body) and not (i==2 and "[mod:alt]" in body.lower()): errors.append(f"Installer {path.name} combat macro {i+1} has unsupported modifier")
+            if i >= len(COMBAT_FILES) and MODIFIER.search(body) and "[mod:ctrl]" not in body.lower(): errors.append(f"Installer {path.name} buff macro contains unexpected modifier")
+        if sources[lang].get("04-buff-check","") not in content:
+            errors.append(f"Installer {path.name} missing the optional buff checker")
+        if "Инстинкт смерти" in content: errors.append(f"Installer {path.name} has incorrect localized Death Wish")
+        for i,filename in enumerate(installer_specs[lang]):
+            macro_id=Path(filename).stem
+            body=sources[lang].get(macro_id,"")
+            if body not in content: errors.append(f"Installer {path.name} out of sync: {macro_id}")
+        buff=sources[lang].get("04-buff-check","")
+        if buff not in content: errors.append(f"Installer {path.name} missing buff-check macro")
+        for i,body in enumerate(re.split(r"^MACRO .*?$",content,flags=re.M)[1:],1):
+            text=body.split("\nEND",1)[0].strip()
+            if len(text)>LIMIT: errors.append(f"Installer {path.name} macro {i} exceeds {LIMIT} chars ({len(text)})")
     if errors:
-        print("Validation failed:", file=sys.stderr)
-        print("\n".join(f"- {error}" for error in errors), file=sys.stderr)
+        print("Validation failed:\n- "+"\n- ".join(errors),file=sys.stderr)
         return 1
-    print(f"Validated {len(LANGUAGES) * len(FILES)} source macros; every line is within {LIMIT} characters.")
+    print(f"Validated {len(LANGUAGES)} RU/EN sets: combat macro syntax, 255-char limit, modifier policy, localized ability names, out-of-combat buff checker, and installer/site synchronization.")
     return 0
 
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__=="__main__": raise SystemExit(main())

@@ -1,0 +1,5 @@
+#showtooltip
+/cast [mod:ctrl]Demoralizing Shout
+/stopmacro [combat]
+/run s="Battle Shout"if not UnitBuff("player",s)then CastSpellByName(s)end
+/run d="Demoralizing Shout"if UnitExists("target")and not UnitDebuff("target",d)then CastSpellByName(d)end

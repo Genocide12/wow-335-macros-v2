@@ -1,4 +1,4 @@
-name: Validate macros
+name: Validate macros and talent presets
 
 on:
   push:
@@ -12,18 +12,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - run: python scripts/build.py
-      - run: python scripts/validate.py
-      - run: git diff --exit-code -- install/macros-cache-ru.txt install/macros-cache-en.txt docs/assets/js/macros-data.js
-      - name: Check README page content and screenshots
+      - name: Build localized installers and site data
+        run: python scripts/build.py
+      - name: Validate macros
+        run: python scripts/validate.py
+      - name: Rebuild and confirm generated outputs
+        run: |
+          python scripts/build.py
+          python scripts/validate.py
+          git diff --exit-code -- install/macros-cache-ru.txt install/macros-cache-en.txt docs/assets/js/macros-data.js
+      - name: Validate talent presets
+        run: python scripts/check_talents.py
+      - name: Check essential Pages files
         run: |
           test -f docs/index.html
-          test -f docs/assets/shots/home.png
-          test -f docs/assets/shots/macros.png
-          test -f docs/assets/shots/talents.png
-          test -f docs/assets/shots/guide.png
-          test -f docs/assets/shots/hero.png
-          grep -q 'releases/latest' README.md
-          grep -q '## About' README.md
-          grep -q '## About' README.en.md
-          grep -q 'wow-335-macros-v2/releases' docs/assets/js/app.js
+          test -f docs/macros.html
+          test -f docs/hero.html
+          test -f docs/talents.html
+          test -f docs/assets/icons/bg/164.jpg
+          grep -q 'Боевые кнопки' docs/index.html
+          grep -q 'UnitBuff' docs/macros.html

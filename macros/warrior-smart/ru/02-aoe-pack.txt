@@ -1,9 +1,7 @@
 /targetenemy [noharm][dead]
 /startattack
-/cast [stance:1]Стойка берсерка
+/cast [combat,nostance:3]Стойка берсерка
 /cast Перехват
 /cast Вихрь
-/cast Рассекающий удар
 /cast Кровожадность
-/cast Жажда смерти
-/use 13
+/cast Рассекающий удар

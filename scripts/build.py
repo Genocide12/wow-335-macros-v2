@@ -5,8 +5,8 @@ import json
 
 ROOT = Path(__file__).resolve().parents[1]
 SPECS = {
-    "ru": [("Одна цель", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Контроль", "Ability_Kick", "03-interrupt.txt")],
-    "en": [("Single", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Control", "Ability_Kick", "03-interrupt.txt")],
+    "ru": [("Одна цель", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE + бафф", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Контроль", "Ability_Kick", "03-interrupt.txt")],
+    "en": [("Single", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE + buff", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Control", "Ability_Kick", "03-interrupt.txt")],
 }
 EXPORTS = ("export-part1.txt", "export-part2.txt")
 
@@ -22,6 +22,10 @@ def build(language: str) -> str:
         output.append(f'MACRO {16777216 + index} "{name}" {icon}')
         output.extend(source_text(language, filename).splitlines())
         output.append("END")
+    buff_name="Проверка баффов" if language=="ru" else "Buff check"
+    output.append(f'MACRO {16777216 + len(SPECS[language])} "{buff_name}" Ability_Warrior_BattleShout')
+    output.extend(source_text(language,"04-buff-check.txt").splitlines())
+    output.append("END")
     return "﻿" + "\n".join(output) + "\n"
 
 
@@ -30,7 +34,7 @@ def build_web_catalog() -> str:
     for language in SPECS:
         catalogue[language] = {
             Path(filename).stem: source_text(language, filename).rstrip("\n")
-            for filename in [item[2] for item in SPECS[language]] + list(EXPORTS)
+            for filename in [item[2] for item in SPECS[language]] + ["04-buff-check.txt", *EXPORTS]
         }
     return "window.MACRO_TXT = " + json.dumps(catalogue, ensure_ascii=False, indent=2) + ";\n"
 

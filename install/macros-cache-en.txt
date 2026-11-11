@@ -1,37 +1,38 @@
 ﻿MACRO 16777216 "Single" INV_Axe_67
 /startattack
-/cast [nocombat,stance:1]Charge;[nocombat]Battle Stance;Berserker Stance
+/cast [stance:1,nocombat]Charge;[nocombat]Battle Stance;Berserker Stance
 /cast Victory Rush
+/cast [combat]Bloodrage
+/cast [combat]Recklessness
+/cast [combat]Death Wish
 /cast Bloodthirst
 /cast Whirlwind
 /cast Execute
-/cast Heroic Strike
-/cast Death Wish
-/cast Recklessness
-/cast Battle Shout
 END
-MACRO 16777217 "AoE" Ability_Whirlwind
+MACRO 16777217 "AoE + buff" Ability_Whirlwind
 /targetenemy [noharm][dead]
 /startattack
-/cast [stance:1]Berserker Stance
+/cast [combat,nostance:3]Berserker Stance
 /cast Intercept
 /cast Whirlwind
-/cast Cleave
 /cast Bloodthirst
-/cast Death Wish
-/use 13
-/cast Intimidating Shout
+/cast Cleave
 END
 MACRO 16777218 "Control" Ability_Kick
 #showtooltip
-/cast [@mouseover,harm,nodead]Pummel
-/cast Pummel
-/cast [stance:1]Berserker Stance
-/cast [stance:2]Defensive Stance
-/cast Disarm
-/cast Taunt
-/cast Shield Wall
-/cast Enraged Regeneration
-/cast Execute
-/cast Whirlwind
+/cast [@mouseover,harm,nodead][]Pummel
+/cast [nostance:3]Berserker Stance
+/cast Berserker Rage
+/cast [mod:alt]Every Man for Himself
+/cast [mod:alt]Intimidating Shout
+/cast [mod:alt]Defensive Stance
+/cast [mod:alt]Disarm
+/cast [mod:alt]Taunt
+END
+MACRO 16777219 "Buff check" Ability_Warrior_BattleShout
+#showtooltip
+/cast [mod:ctrl]Demoralizing Shout
+/stopmacro [combat]
+/run s="Battle Shout"if not UnitBuff("player",s)then CastSpellByName(s)end
+/run d="Demoralizing Shout"if UnitExists("target")and not UnitDebuff("target",d)then CastSpellByName(d)end
 END

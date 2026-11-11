@@ -1,35 +1,37 @@
 ﻿MACRO 16777216 "Одна цель" INV_Axe_67
 /startattack
-/cast [nocombat,stance:1]Рывок;[nocombat]Боевая стойка;Стойка берсерка
+/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка
 /cast Победный раж
+/cast [combat]Кровавая ярость
+/cast [combat]Безрассудство
+/cast [combat]Жажда смерти
 /cast Кровожадность
 /cast Вихрь
 /cast Казнь
-/cast Удар героя
-/cast Жажда смерти
-/cast Безрассудство
-/cast Боевой крик
 END
-MACRO 16777217 "AoE" Ability_Whirlwind
+MACRO 16777217 "AoE + бафф" Ability_Whirlwind
 /targetenemy [noharm][dead]
 /startattack
-/cast [stance:1]Стойка берсерка
+/cast [combat,nostance:3]Стойка берсерка
 /cast Перехват
 /cast Вихрь
-/cast Рассекающий удар
 /cast Кровожадность
-/cast Жажда смерти
-/use 13
+/cast Рассекающий удар
 END
 MACRO 16777218 "Контроль" Ability_Kick
-/cast [@mouseover,harm,nodead]Зуботычина
-/cast Зуботычина
-/cast [stance:1]Стойка берсерка
-/cast [stance:2]Оборонительная стойка
-/cast Разоружение
-/cast Провокация
-/cast Глухая оборона
-/cast Безудержное восстановление
-/cast Казнь
-/cast Вихрь
+/cast [@mouseover,harm,nodead][]Зуботычина
+/cast [nostance:3]Стойка берсерка
+/cast Ярость берсерка
+/cast [mod:alt]Каждый за себя
+/cast [mod:alt]Устрашающий крик
+/cast [mod:alt]Оборонительная стойка
+/cast [mod:alt]Разоружение
+/cast [mod:alt]Провокация
+END
+MACRO 16777219 "Проверка баффов" Ability_Warrior_BattleShout
+#showtooltip
+/cast [mod:ctrl]Деморализующий крик
+/stopmacro [combat]
+/run s="Боевой крик"if not UnitBuff("player",s)then CastSpellByName(s)end
+/run d="Деморализующий крик"if UnitExists("target")and not UnitDebuff("target",d)then CastSpellByName(d)end
 END

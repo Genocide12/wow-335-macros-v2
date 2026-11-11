@@ -1,0 +1,5 @@
+#showtooltip
+/cast [mod:ctrl]Деморализующий крик
+/stopmacro [combat]
+/run s="Боевой крик"if not UnitBuff("player",s)then CastSpellByName(s)end
+/run d="Деморализующий крик"if UnitExists("target")and not UnitDebuff("target",d)then CastSpellByName(d)end
