@@ -1,25 +1,13 @@
 <!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Макросы Fury Warrior — WoW 3.3.5a</title>
-  <link rel="stylesheet" href="assets/css/app.css">
-  <style>
-    main{max-width:1000px;margin:32px auto;padding:0 18px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}.card{background:#171b24;border:1px solid #303744;border-radius:14px;padding:18px}.card h2{margin:0 0 8px}.card p,.notice{line-height:1.55;color:#c8cfdb}.card pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0e1117;padding:12px;border-radius:8px;font-size:12px}.copy{padding:9px 14px;border:0;border-radius:8px;cursor:pointer}.notice{margin:24px 0;padding:16px;border-left:4px solid #e7b75c;background:#1c2029}
-  </style>
-</head>
-<body>
-<header class="top"><a href="index.html">WoW 3.3.5a</a> · Макросы</header>
-<main>
-<h1>Три боевых макроса Fury-воина</h1>
-<div class="notice"><b>Ограничение клиента:</b> макрос проверяет строки только при нажатии кнопки и не может сам следить за аурами, здоровьем цели или ходом боя. Каждое нажатие — одно действие; нажимай снова, чтобы игра перешла к следующей доступной строке. Модификаторы не нужны. Для разных серверов проверь названия умений и условия на манекене.</div>
-<div id="cards" class="cards"></div>
-</main>
-<script src="assets/js/macros-data.js"></script>
-<script>
-const macros=[['ru','01-attack-rotation','1 · Одна цель'],['ru','02-aoe-pack','2 · AoE'],['ru','03-interrupt','3 · Прерывание и защита']];
-const root=document.getElementById('cards');
-for(const [lang,key,title] of macros){const body=window.MACRO_TXT[lang][key];const card=document.createElement('section');card.className='card';const h=document.createElement('h2');h.textContent=title;const p=document.createElement('p');p.textContent='Назначь на клавишу '+title[0]+'; все команды активируются обычным нажатием.';const pre=document.createElement('pre');pre.textContent=body;const button=document.createElement('button');button.className='copy';button.textContent='Копировать';button.onclick=async()=>{await navigator.clipboard.writeText(body);button.textContent='Скопировано';setTimeout(()=>button.textContent='Копировать',1200)};card.append(h,p,pre,button);root.append(card)}
-</script>
-</body>
-</html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Боевые макросы — WoW 3.3.5a</title><link rel="stylesheet" href="assets/css/app.css"><style>
+main{max-width:1080px;margin:28px auto;padding:0 16px}.intro,.notice{line-height:1.6;color:#c8cfdb}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:16px}.card{min-width:0;background:#171b24;border:1px solid #303744;border-radius:14px;padding:18px}.card h2{margin:0 0 8px}.card p{line-height:1.5;color:#c8cfdb}.card pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0e1117;padding:12px;border-radius:8px;font-size:12px;max-height:260px;overflow:auto}.actions{display:flex;gap:8px;flex-wrap:wrap}.copy{padding:9px 12px;border:1px solid #3b4452;border-radius:8px;cursor:pointer;color:inherit;background:#202631}.notice{margin:20px 0;padding:14px 16px;border-left:4px solid #e7b75c;background:#1c2029}.downloads{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+</style></head><body><div id="app"><main>
+<h1 data-ru="Боевые макросы Fury-воина" data-en="Fury Warrior combat macros">Боевые макросы Fury-воина</h1>
+<p class="intro" data-ru="Назначь макросы на клавиши 1, 2 и 3. Alt, Shift и Ctrl не используются. Тексты на странице автоматически собираются из исходников — это те же команды, что находятся в установщиках." data-en="Bind the macros to keys 1, 2 and 3. No Alt, Shift or Ctrl modifiers. This page is generated from source files and shows the exact commands in the installers.">Назначь макросы на клавиши 1, 2 и 3. Alt, Shift и Ctrl не используются. Тексты на странице автоматически собираются из исходников — это те же команды, что находятся в установщиках.</p>
+<div class="notice"><b data-ru="Ограничения WoW 3.3.5a:" data-en="WoW 3.3.5a limitations:">Ограничения WoW 3.3.5a:</b> <span data-ru="макрос обрабатывает строки только при нажатии. Обычно за нажатие выполняется одно действие с GCD. Макрос не может автономно следить за боем, баффами/дебаффами или здоровьем цели. Умения зависят от изученных способностей, талантов, стойки, оружия и серверных правил." data-en="macros evaluate lines only when pressed. Usually one GCD action is performed per press. A macro cannot monitor combat, buffs/debuffs, or target health on its own. Abilities depend on learned spells, talents, stance, weapon, and server rules.">макрос обрабатывает строки только при нажатии. Обычно за нажатие выполняется одно действие с GCD. Макрос не может автономно следить за боем, баффами/дебаффами или здоровьем цели. Умения зависят от изученных способностей, талантов, стойки, оружия и серверных правил.</span></div>
+<div class="downloads"><a class="btn" href="https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-ru.txt" data-ru="Скачать установщик RU" data-en="Download RU installer">Скачать установщик RU</a><a class="btn" href="https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-en.txt" data-ru="Скачать установщик EN" data-en="Download EN installer">Скачать установщик EN</a></div>
+<div id="cards" class="cards"></div></main></div><script src="assets/js/app.js"></script><script src="assets/js/macros-data.js"></script><script>
+const specs=[['01-attack-rotation','1'],['02-aoe-pack','2'],['03-interrupt','3']];const names={ru:{'01-attack-rotation':'Одна цель','02-aoe-pack':'AoE','03-interrupt':'Прерывание и защита'},en:{'01-attack-rotation':'Single target','02-aoe-pack':'AoE','03-interrupt':'Interrupt and defense'}};const text={ru:{key:'Клавиша',copy:'Копировать',copied:'Скопировано',fail:'Не удалось скопировать'},en:{key:'Key',copy:'Copy',copied:'Copied',fail:'Copy failed'}};
+function fallbackCopy(value){const el=document.createElement('textarea');el.value=value;el.style.position='fixed';el.style.opacity='0';document.body.append(el);el.select();let ok=false;try{ok=document.execCommand('copy')}catch{}el.remove();return ok}
+function renderCards(){const lang=window.W.lang,dict=window.MACRO_TXT[lang]||window.MACRO_TXT.ru,root=document.getElementById('cards');for(const [id,key] of specs){const value=dict[id]||'',card=document.createElement('section');card.className='card';const h=document.createElement('h2');h.textContent=names[lang][id];const p=document.createElement('p');p.textContent=text[lang].key+': '+key+' · '+(lang==='ru'?'без модификаторов':'no modifiers');const pre=document.createElement('pre');pre.textContent=value;const actions=document.createElement('div');actions.className='actions';const button=document.createElement('button');button.className='copy';button.type='button';button.textContent=text[lang].copy;button.addEventListener('click',async()=>{let ok=false;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);ok=true}}catch{}if(!ok)ok=fallbackCopy(value);button.textContent=ok?text[lang].copied:text[lang].fail;setTimeout(()=>button.textContent=text[lang].copy,1400)});actions.append(button);card.append(h,p,pre,actions);root.append(card)}}document.addEventListener('DOMContentLoaded',renderCards);
+</script></body></html>

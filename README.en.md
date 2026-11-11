@@ -19,7 +19,7 @@ Russian and English clients · install files · guide and talent viewer.
 
 ## Quick start
 
-1. Download the installer for your client language: **[English](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-en.txt)** · **[Русский](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-ru.txt)**.
+1. Download the installer for your client language: **[English](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-en.txt)** · **[Русский](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-ru.txt)**. Direct downloads are also attached to [release v1.0.0](https://github.com/Genocide12/wow-335-macros-v2/releases/tag/v1.0.0).
 2. Close the game and back up your existing `macros-cache.txt`.
 3. Save the selected file in the account folder under `WTF` as `macros-cache.txt`.
 4. Launch the game, open `/macro`, and bind the three combat macros to `1`, `2`, and `3`.
@@ -47,6 +47,16 @@ WoW 3.3.5a evaluates a macro only when its key is pressed. It cannot monitor com
 ## Website and screenshots
 
 [Project home](https://genocide12.github.io/wow-335-macros-v2/?lang=en) · [Macros](https://genocide12.github.io/wow-335-macros-v2/macros.html?lang=en) · [Talents](https://genocide12.github.io/wow-335-macros-v2/talents.html?lang=en) · [Guide](https://genocide12.github.io/wow-335-macros-v2/guide.html?lang=en) · [Character import](https://genocide12.github.io/wow-335-macros-v2/hero.html?lang=en)
+
+![Project home](docs/assets/shots/home.png)
+
+![Macro catalog](docs/assets/shots/macros.png)
+
+![Talent viewer](docs/assets/shots/talents.png)
+
+![Guide](docs/assets/shots/guide.png)
+
+![Character import](docs/assets/shots/hero.png)
 
 ![Project home](docs/assets/shots/home.png)
 

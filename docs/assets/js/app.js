@@ -11,10 +11,12 @@
 
   function getLang() {
     const u = new URLSearchParams(location.search);
-    return (u.get('lang') || localStorage.getItem('wlang') || 'ru').slice(0, 2);
+    let saved = 'ru';
+    try { saved = localStorage.getItem('wlang') || 'ru'; } catch (_) {}
+    return (u.get('lang') || saved).slice(0, 2);
   }
   function setLang(l) {
-    localStorage.setItem('wlang', l);
+    try { localStorage.setItem('wlang', l); } catch (_) {}
     const u = new URL(location);
     u.searchParams.set('lang', l);
     location.href = u;

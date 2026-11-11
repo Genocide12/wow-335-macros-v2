@@ -19,7 +19,7 @@
 
 ## Быстрый старт
 
-1. Скачай установочный файл для локализации клиента: **[русский](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-ru.txt)** · **[English](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-en.txt)**.
+1. Скачай установочный файл для локализации клиента: **[русский](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-ru.txt)** · **[English](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-en.txt)**. Прямые загрузки также доступны в [релизе v1.0.0](https://github.com/Genocide12/wow-335-macros-v2/releases/tag/v1.0.0).
 2. Закрой игру. Сделай копию старого `macros-cache.txt`.
 3. Сохрани выбранный файл в папке аккаунта внутри `WTF` под именем `macros-cache.txt`.
 4. Запусти игру, открой `/macro`, назначь три боевых макроса на `1`, `2`, `3`.
