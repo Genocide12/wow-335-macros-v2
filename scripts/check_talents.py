@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TALENTS = json.loads((ROOT / "docs/assets/data/talents.json").read_text(encoding="utf-8"))
 SOURCE = (ROOT / "docs/talents.html").read_text(encoding="utf-8")
-BODY = SOURCE.split("WOTLK_PRESETS=[", 1)[1].split("\n];", 1)[0]
+BODY = SOURCE.split("const PRESETS=[", 1)[1].split("\n];", 1)[0]
 TREE_ORDER = ("arms", "fury", "prot")
 ALL = {talent["id"]: {**talent, "tree": tree["key"]}
        for tree in TALENTS["trees"] for talent in tree["talents"]}
