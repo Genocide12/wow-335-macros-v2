@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TALENTS = json.loads((ROOT / "docs/assets/data/talents.json").read_text(encoding="utf-8"))
 SOURCE = (ROOT / "docs/talents.html").read_text(encoding="utf-8")
-BODY = SOURCE.split("PRESETS=[", 1)[1].split("\n];", 1)[0]
+BODY = SOURCE.split("WOTLK_PRESETS=[", 1)[1].split("\n];", 1)[0]
 TREE_ORDER = ("arms", "fury", "prot")
 ALL = {talent["id"]: {**talent, "tree": tree["key"]}
        for tree in TALENTS["trees"] for talent in tree["talents"]}
@@ -17,7 +17,7 @@ ALL = {talent["id"]: {**talent, "tree": tree["key"]}
 def main() -> int:
     errors: list[str] = []
     rows = re.findall(
-        r"\{\s*tree:\s*'(fury|arms|prot)'\s*,\s*lvl:\s*(\d+)\s*,\s*src:\s*'([^']+)'\s*,\s*ru:\s*'([^']+)'\s*,\s*en:\s*'([^']+)'\s*,\s*pts:\s*\{([^}]*)\}\s*\}", BODY)
+        r"\{tree:'(fury|arms|prot)',level:(\d+),source:'([^']+)',ru:'([^']+)',en:'([^']+)',points:\{([^}]*)\}\}", BODY)
     if not rows:
         print("No talent presets parsed from docs/talents.html")
         return 1
@@ -46,7 +46,7 @@ def main() -> int:
         spread = "/".join(str(per_tree[t]) for t in TREE_ORDER)
         print(f"{label}: {total}/{expected} total; Arms/Fury/Protection {spread}")
     for tree_key in ('fury','arms','prot'):
-        final=[m.groups() for m in re.finditer(r"\{\s*tree:\s*'(fury|arms|prot)'\s*,\s*lvl:\s*(\d+)\s*,\s*src:\s*'([^']+)'\s*,\s*ru:\s*'([^']+)'\s*,\s*en:\s*'([^']+)'\s*,\s*pts:\s*\{([^}]*)\}\s*\}",BODY)]
+        final=rows
         target=[r for r in final if r[0]==tree_key and int(r[1])==80]
         if not target: errors.append(f"Missing level-80 {tree_key} preset")
         if tree_key=='fury' and len(target)<2: errors.append("Fury must have separate level-80 raid and solo presets")

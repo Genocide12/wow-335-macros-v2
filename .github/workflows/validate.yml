@@ -23,6 +23,15 @@ jobs:
           git diff --exit-code -- install/macros-cache-ru.txt install/macros-cache-en.txt docs/assets/js/macros-data.js
       - name: Validate talent presets
         run: python scripts/check_talents.py
+      - name: Check shared talent-data wiring
+        run: |
+          grep -q "assets/js/talents-data.js" docs/talents.html
+          grep -q "assets/js/talents-data.js" docs/hero.html
+          grep -q "TALENTS_READY.then" docs/talents.html
+          grep -q "TALENTS_READY.then" docs/hero.html
+          grep -q "Talent data failed to load" docs/talents.html
+          grep -q "demo is unavailable" docs/hero.html
+          test -s docs/assets/data/talents.json
       - name: Check essential Pages files
         run: |
           test -f docs/index.html

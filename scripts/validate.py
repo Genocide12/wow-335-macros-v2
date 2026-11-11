@@ -5,12 +5,12 @@ from pathlib import Path
 import json
 import re
 import sys
-from build import SPECS
+from build import BUFF_CHECK, SPECS
 
 ROOT=Path(__file__).resolve().parents[1]
 LANGUAGES=("ru","en")
 COMBAT_FILES=("01-attack-rotation.txt","02-aoe-pack.txt","03-interrupt.txt")
-FILES=COMBAT_FILES+("04-buff-check.txt",)
+FILES=COMBAT_FILES+(BUFF_CHECK,)
 LIMIT=255
 COMMAND=re.compile(r"^(?:/(?:cast|use|startattack|target(?:enemy|friend|lasttarget)?|focus|cleartarget|stopmacro|run|script|showtooltip)\b|#showtooltip\b)",re.I)
 MODIFIER=re.compile(r"\[mod:(?:ctrl|shift|alt)\]",re.I)
@@ -35,24 +35,24 @@ def main()->int:
                 if len(line)>LIMIT: errors.append(f"{path.relative_to(ROOT)}:{no}: {len(line)} chars exceeds {LIMIT}")
                 if not COMMAND.match(line): errors.append(f"{path.relative_to(ROOT)}:{no}: unsupported macro command {line}")
                 if MODIFIER.search(line):
-                    allowed=(filename=="03-interrupt.txt" and "[mod:alt]" in line.lower()) or (filename=="04-buff-check.txt" and "[mod:ctrl]" in line.lower())
+                    allowed=(filename=="03-interrupt.txt" and "[mod:alt]" in line.lower()) or (filename==BUFF_CHECK and "[mod:ctrl]" in line.lower())
                     if not allowed: errors.append(f"{path.relative_to(ROOT)}:{no}: unexpected modifier condition")
-                if filename=="04-buff-check.txt" and re.search(r"\[mod:(?:alt|shift)\]",line,re.I): errors.append(f"{path.relative_to(ROOT)}:{no}: buff checker may use Ctrl only as an explicit combat fallback")
+                if filename==BUFF_CHECK and re.search(r"\[mod:(?:alt|shift)\]",line,re.I): errors.append(f"{path.relative_to(ROOT)}:{no}: buff checker may use Ctrl only as an explicit combat fallback")
                 if lang=="ru" and "Инстинкт смерти" in line: errors.append(f"{path.relative_to(ROOT)}:{no}: use localized name Жажда смерти")
-                if filename!="04-buff-check.txt":
+                if filename!=BUFF_CHECK:
                     if lang=="ru" and "Жажда смерти" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Death Wish should be combat-only")
                     if lang=="en" and "Death Wish" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Death Wish should be combat-only")
                     if lang=="ru" and "Кровавая ярость" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Bloodrage should be combat-only")
                     if lang=="en" and "Bloodrage" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Bloodrage should be combat-only")
                 if "/run" in line:
-                    if filename!="04-buff-check.txt":
+                    if filename!=BUFF_CHECK:
                         errors.append(f"{path.relative_to(ROOT)}:{no}: Lua aura checks belong only in the dedicated buff macro")
-                    if "UnitDebuff" in line and ("/stopmacro [combat]" not in body or filename!="04-buff-check.txt"):
+                    if "UnitDebuff" in line and ("/stopmacro [combat]" not in body or filename!=BUFF_CHECK):
                         errors.append(f"{path.relative_to(ROOT)}:{no}: target debuff checker must be a pre-pull macro that stops in combat")
         joined="\n".join(sources[lang].values())
         spell="Жажда смерти" if lang=="ru" else "Death Wish"
         if spell not in joined: errors.append(f"Missing required translated spell: {lang}/{spell}")
-        buff=sources[lang].get("04-buff-check","")
+        buff=sources[lang].get(Path(BUFF_CHECK).stem,"")
         if "/stopmacro [combat]" not in buff: errors.append(f"Buff checker must stop in combat: {lang}")
         if "UnitBuff" not in buff: errors.append(f"Buff checker must inspect own buff: {lang}")
 
@@ -61,7 +61,7 @@ def main()->int:
     for lang,items in sources.items():
         for key,body in items.items():
             if web.get(lang,{}).get(key)!=body: errors.append(f"Web catalog mismatch: {lang}/{key}")
-        for extra in ("export-part1","export-part2"):
+        for extra in ("04-buff-check","export-part1","export-part2"):
             expected=(ROOT/"macros"/"warrior-smart"/lang/(extra+".txt")).read_text(encoding="utf-8-sig").strip()
             if web.get(lang,{}).get(extra)!=expected: errors.append(f"Web export macro mismatch: {lang}/{extra}")
 
@@ -83,14 +83,14 @@ def main()->int:
             body=macro.split("\nEND",1)[0]
             if i < len(COMBAT_FILES) and MODIFIER.search(body) and not (i==2 and "[mod:alt]" in body.lower()): errors.append(f"Installer {path.name} combat macro {i+1} has unsupported modifier")
             if i >= len(COMBAT_FILES) and MODIFIER.search(body) and "[mod:ctrl]" not in body.lower(): errors.append(f"Installer {path.name} buff macro contains unexpected modifier")
-        if sources[lang].get("04-buff-check","") not in content:
+        if sources[lang].get(Path(BUFF_CHECK).stem,"") not in content:
             errors.append(f"Installer {path.name} missing the optional buff checker")
         if "Инстинкт смерти" in content: errors.append(f"Installer {path.name} has incorrect localized Death Wish")
         for i,filename in enumerate(installer_specs[lang]):
             macro_id=Path(filename).stem
             body=sources[lang].get(macro_id,"")
             if body not in content: errors.append(f"Installer {path.name} out of sync: {macro_id}")
-        buff=sources[lang].get("04-buff-check","")
+        buff=sources[lang].get(Path(BUFF_CHECK).stem,"")
         if buff not in content: errors.append(f"Installer {path.name} missing buff-check macro")
         for i,body in enumerate(re.split(r"^MACRO .*?$",content,flags=re.M)[1:],1):
             text=body.split("\nEND",1)[0].strip()
