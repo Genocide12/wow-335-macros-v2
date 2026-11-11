@@ -49,7 +49,7 @@
     app.append(h(`
       <footer class="bot">
         <span>WotLK 3.3.5a · ${lang === 'ru' ? 'Воин — Неистовство' : 'Fury Warrior'}</span>
-        <a href="https://github.com/Genocide12/wow-335-macros" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/Genocide12/wow-335-macros-v2" target="_blank" rel="noopener">GitHub</a> <a href="https://github.com/Genocide12/wow-335-macros-v2/releases" target="_blank" rel="noopener">${lang === 'ru' ? 'Релизы' : 'Releases'}</a> <a href="https://github.com/Genocide12/wow-335-macros-v2/issues" target="_blank" rel="noopener">${lang === 'ru' ? 'Ошибки' : 'Issues'}</a>
         <span style="margin-left:auto" class="muted">${lang === 'ru' ? 'Иконки: Wowhead / zamimg' : 'Icons: Wowhead / zamimg'}</span>
       </footer>`));
 

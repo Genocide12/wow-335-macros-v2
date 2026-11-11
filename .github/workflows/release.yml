@@ -1,0 +1,31 @@
+name: Build release assets
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build and validate installers
+        run: |
+          python scripts/build.py
+          python scripts/validate.py
+      - name: Publish GitHub Release with localized installers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            install/macros-cache-ru.txt \
+            install/macros-cache-en.txt \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes

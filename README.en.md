@@ -1,39 +1,78 @@
-# WoW 3.3.5a · Fury Warrior Macro Toolkit
+<div align="center">
 
-Three macros for Russian and English clients. Every active ability is attempted by a **plain press of one of the three macro keys**; there are no Alt, Shift, or Ctrl modifiers. The macros can be used while leveling and at level 80: abilities the character has not learned are simply unavailable to cast.
+# WoW 3.3.5a · Fury Warrior
 
-## The honest 3.3.5a limitation
+**Three practical macros on plain keys: single target, AoE, interrupt and defense.**
 
-A macro cannot continuously observe combat or execute an ability queue by itself. It checks lines from top to bottom only when a key is pressed, and the client normally performs one GCD action per press. The standard macro system cannot test whether a buff/debuff exists, count nearby targets, read a target's health percentage, or decide when a burst is appropriate. These are priority buttons, not a bot: press the relevant key repeatedly and choose defensive cooldowns manually. Do not use Lua auto-casts; protected actions must remain tied to a player press.
+Russian and English clients · install files · guide and talent viewer.
 
-## Keys
+[🌐 Open the site](https://genocide12.github.io/wow-335-macros-v2/?lang=en) · [⬇️ Latest release](https://github.com/Genocide12/wow-335-macros-v2/releases/latest) · [📦 All releases](https://github.com/Genocide12/wow-335-macros-v2/releases) · [🐛 Report an issue](https://github.com/Genocide12/wow-335-macros-v2/issues)
 
-| Key | Role |
-|---|---|
-| `1` | Single-target Fury priority: Charge out of combat, Victory Rush, Bloodthirst, Whirlwind, Execute, and available press-triggered cooldowns |
-| `2` | AoE: acquire a target if absent/dead, start auto-attack, attempt Berserker Stance, then Intercept, Whirlwind, Cleave and other available abilities |
-| `3` | Mouseover/current-target interrupt, stance changes, available defensive and control abilities |
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-3b82f6?style=flat-square&logo=github)](https://genocide12.github.io/wow-335-macros-v2/)
+[![WoW](https://img.shields.io/badge/WoW-3.3.5a-c93a46?style=flat-square)](https://github.com/Genocide12/wow-335-macros-v2/releases)
+[![RU%20%2F%20EN](https://img.shields.io/badge/languages-RU%20%2F%20EN-3ac96e?style=flat-square)](README.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-4a86e8?style=flat-square)](LICENSE)
 
-Line order matters. Some abilities need a stance, talent, target, weapon, or ready cooldown; the client skips actions that cannot currently be used. Racial abilities are excluded because the macro cannot know which race your character has.
+</div>
 
-## Install
+---
 
-1. Choose `install/macros-cache-en.txt` for an English client or `install/macros-cache-ru.txt` for Russian.
+## Quick start
+
+1. Download the installer for your client language: **[English](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-en.txt)** · **[Русский](https://github.com/Genocide12/wow-335-macros-v2/releases/latest/download/macros-cache-ru.txt)**.
 2. Close the game and back up your existing `macros-cache.txt`.
-3. Place the selected file in the account folder under `WTF`, named `macros-cache.txt` (the exact path varies by client).
-4. Launch the game, inspect `/macro`, and bind the three macros to `1`, `2`, and `3`.
+3. Save the selected file in the account folder under `WTF` as `macros-cache.txt`.
+4. Launch the game, open `/macro`, and bind the three combat macros to `1`, `2`, and `3`.
+
+No release yet? Check [all releases](https://github.com/Genocide12/wow-335-macros-v2/releases) or the [online macro catalog](https://genocide12.github.io/wow-335-macros-v2/macros.html?lang=en).
+
+## What is included
+
+| Key | Purpose |
+|---|---|
+| `1` | Single target and the main Fury priority |
+| `2` | AoE: target acquisition, auto-attack and pack attacks |
+| `3` | Mouseover interrupt and available defensive/control actions |
+
+The same macros are provided in Russian and English. Level- or talent-gated abilities only work once the character has learned them and the in-game conditions are met.
+
+## Important macro limitations
+
+WoW 3.3.5a evaluates a macro only when its key is pressed. It cannot monitor combat by itself and normally performs only one GCD action per press. The built-in conditions cannot check for buffs/debuffs, a target's health percentage, or determine when a burst cooldown should be used. These are priority buttons, not a bot. Activate long buffs and defensive cooldowns manually when appropriate. Do not use Lua auto-casts for protected actions.
+
+## About
+
+**WoW 3.3.5a Fury Warrior macros in Russian and English, with installers, a guide, and GitHub Pages.**
+
+## Website and screenshots
+
+[Project home](https://genocide12.github.io/wow-335-macros-v2/?lang=en) · [Macros](https://genocide12.github.io/wow-335-macros-v2/macros.html?lang=en) · [Talents](https://genocide12.github.io/wow-335-macros-v2/talents.html?lang=en) · [Guide](https://genocide12.github.io/wow-335-macros-v2/guide.html?lang=en) · [Character import](https://genocide12.github.io/wow-335-macros-v2/hero.html?lang=en)
+
+![Project home](docs/assets/shots/home.png)
+
+![Macro catalog](docs/assets/shots/macros.png)
+
+![Talent viewer](docs/assets/shots/talents.png)
+
+![Guide](docs/assets/shots/guide.png)
+
+![Character page](docs/assets/shots/hero.png)
 
 ## Build and validate
 
-Sources: `macros/warrior-smart/{ru,en}/`. Installer files and website macro text are built from those sources.
+Macro sources are in `macros/warrior-smart/{ru,en}/`. Installer files and the website macro catalog are generated from those sources:
 
 ```sh
 python scripts/build.py
 python scripts/validate.py
 ```
 
-Validation checks allowed commands and conditions, no Alt/Shift/Ctrl in combat macros, correct Russian “Жажда смерти” naming, synchronized website/install output, and the 255-character per-macro limit. GitHub Actions runs the checks on changes. Test actual rotation on a training dummy for your client/server; private servers can alter abilities, translations, and rules.
+GitHub Actions checks command syntax, synchronization of installers and website content, the Russian “Жажда смерти” localization, absence of modifier keys in combat macros, and the 255-character limit. Test the actual rotation on a training dummy; private servers may change abilities and conditions.
+
+## Releases
+
+Releases are published manually when ready. Each release includes `macros-cache-ru.txt` and `macros-cache-en.txt`. GitHub Pages updates after changes are published to `main`.
 
 ## License
 
-MIT. Not affiliated with Blizzard Entertainment.
+MIT. Not affiliated with Blizzard Entertainment; game names and assets belong to their respective owners.
