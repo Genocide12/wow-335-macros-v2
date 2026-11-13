@@ -31,7 +31,7 @@
     border: 1px solid #8a7140; overflow: hidden;box-shadow:inset 0 0 42px #0009,0 8px 25px #0005 }
   .t-tree::before { content:"";position:absolute;inset:-80% -20%;z-index:0;pointer-events:none;background:linear-gradient(115deg,transparent 42%,#f2d47b08 49%,#f2d47b20 50%,#f2d47b08 51%,transparent 58%);transform:translateX(-35%);animation:tree-glint 9s ease-in-out infinite alternate }
   @keyframes tree-glint { to { transform:translateX(35%); } }
-  .t-inner { position: relative;z-index:1; display:flex; flex-direction:column; width: min(100%,780px); min-width: 0; height:100%; margin: 0 auto; padding: clamp(5px,.8vw,12px);
+  .t-inner { position: relative;z-index:1; display:flex; flex-direction:column; width: 100%; min-width: 0; height:100%; margin: 0 auto; padding: clamp(8px,1.2vw,18px);
     background: rgba(10, 12, 18, .68); }
   .t-row { flex:1; min-height:0; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); justify-content:stretch; gap: clamp(3px,.7vw,12px); margin: 0; position: relative; z-index: 2; }
   .tal { position: relative; width: 100%; height: 100%; display:grid; place-items:center; }
@@ -93,7 +93,7 @@
 <script>
 (() => {
   const lang = window.W.lang;
-  const I = window.W.icon; // icons come from the Wowhead CDN
+  const I = name => `assets/icons/talents/${name}.jpg`; // cached game icons keep the talent tree available offline
   const TREE_NAMES = { arms: ['Оружие', 'Arms'], fury: ['Неистовство', 'Fury'], prot: ['Защита', 'Protection'] };
   const ICONS = { arms: 'ability_rogue_eviscerate', fury: 'ability_racial_avatar', prot: 'ability_warrior_defensivestance' };
   /* Leveling presets 1-80, talent id -> ranks.

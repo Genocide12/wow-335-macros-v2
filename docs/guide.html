@@ -13,16 +13,16 @@
   .g-select{margin-left:auto;max-width:270px;background:#11141d;color:var(--gold2);border:1px solid var(--gold);border-radius:9px;padding:9px;font-weight:700}
   .g-items{position:relative;isolation:isolate;flex:1;min-height:0;overflow:hidden;border:1px solid #5b4a2b;border-radius:14px;background:radial-gradient(circle at center,#252331 0,#141720 34%,#0c0f17 75%);box-shadow:inset 0 0 42px #000a,0 8px 25px #0006}
   .g-orbit{position:absolute;z-index:-1;left:50%;top:50%;width:min(72%,min(58vh,520px));aspect-ratio:1;transform:translate(-50%,-50%);border:1px solid #c8a95145;border-radius:50%;box-shadow:0 0 28px #c8a95112,inset 0 0 22px #c8a9510c}
-  .g-center{position:absolute;left:50%;top:50%;width:clamp(74px,11vw,120px);aspect-ratio:1;transform:translate(-50%,-50%);display:grid;place-items:center;border:2px solid #9b7d40;border-radius:50%;background:radial-gradient(circle at 40% 30%,#403b31,#11141d 70%);box-shadow:0 0 24px #c8a95135,inset 0 0 16px #000b;color:#e8c96a;font:900 10px/1.2 Georgia,serif;text-align:center;letter-spacing:.1em;text-transform:uppercase}
+  .g-center{position:absolute;left:50%;top:50%;width:clamp(74px,11vw,120px);aspect-ratio:1;transform:translate(-50%,-50%);display:grid;place-items:center;border:2px solid #9b7d40;border-radius:50%;background:radial-gradient(circle at 40% 30%,#403b31,#11141d 70%);box-shadow:0 0 24px #c8a95135,inset 0 0 16px #000b;color:#e8c96a;font:900 10px/1.2 Georgia,serif;text-align:center;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:8px}
   .g-center img{width:48%;height:48%;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 9px #e8c96a66)}
-  .g-item{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:clamp(70px,8vw,92px);aspect-ratio:1;transform:translate(-50%,-50%);padding:5px;background:linear-gradient(145deg,#292b35,#10131b);color:var(--txt);border:1px solid #817044;border-radius:50%;cursor:pointer;overflow:hidden;box-shadow:0 5px 18px #0009,inset 0 0 0 2px #ffffff07;transition:transform .18s,border-color .18s,box-shadow .18s}
+  .g-item{position:absolute;display:flex;align-items:center;justify-content:center;width:clamp(82px,8.4vw,112px);aspect-ratio:1;transform:translate(-50%,-50%);padding:10px;background:linear-gradient(145deg,#292b35,#10131b);color:var(--txt);border:1px solid #817044;border-radius:50%;cursor:pointer;overflow:hidden;box-shadow:0 5px 18px #0009,inset 0 0 0 2px #ffffff07;transition:transform .18s,border-color .18s,box-shadow .18s}
   .g-item:hover,.g-item:focus-visible{transform:translate(-50%,-50%) scale(1.09);border-color:var(--gold2);box-shadow:0 0 23px #d6b86166,inset 0 0 0 2px #ffffff12;outline:none}
-  .g-item img{width:42%;aspect-ratio:1;border:1px solid #c8a951;border-radius:9px;flex:0 0 auto;box-shadow:0 0 10px #000b}
-  .g-item b{display:block;width:100%;color:#fff;font-size:clamp(8px,.9vw,11px);line-height:1.1;text-align:center}
+  .g-item img{width:100%;aspect-ratio:1;border:1px solid #c8a951;border-radius:50%;flex:0 0 auto;box-shadow:0 0 10px #000b}
   .g-tooltip{display:none;position:fixed;z-index:110;width:min(330px,calc(100vw - 20px));max-height:min(60dvh,390px);overflow:auto;padding:12px;background:#10131beF;border:1px solid var(--gold);border-radius:11px;box-shadow:0 14px 45px #000d;color:#ddd8cc;font-size:12px;line-height:1.45;pointer-events:none}
   .g-tooltip.on{display:block;animation:tip-in .12s ease-out}@keyframes tip-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
   .g-tooltip strong{display:block;color:var(--gold2);font-size:13px;margin-bottom:6px}.g-tooltip p{margin:0}.g-tooltip .g-spells{margin:6px 0}
   .g-bottom{display:flex;justify-content:flex-end}
+  #guideSources{width:34px;height:34px;padding:0;border-radius:50%;font-size:17px}
   .g-dialog{width:min(720px,92vw);max-height:82dvh;margin:auto;padding:0;background:#141720;color:var(--txt);border:1px solid var(--gold);border-radius:14px;box-shadow:0 20px 70px #000d}
   .g-dialog::backdrop{background:#05060bbd;backdrop-filter:blur(4px)}
   .g-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--gold2);font-weight:800}
@@ -30,8 +30,8 @@
   .g-dialog-body{padding:14px 16px;overflow:auto;max-height:calc(82dvh - 52px);font-size:13px;line-height:1.55}
   .g-dialog-body p{margin:8px 0}.g-dialog-body b{color:var(--gold2)}
   .g-spells{display:flex;gap:6px;flex-wrap:wrap}.g-spells img{width:42px;height:42px;border:1px solid #5c4b2b;border-radius:8px}
-  @media(max-width:860px){.g-shell{gap:6px}.g-head h2{font-size:15px}.g-select{max-width:48%;padding:7px;font-size:11px}.g-orbit{width:min(78%,min(54vh,460px))}.g-item{width:clamp(64px,12vw,82px)}}
-  @media(max-width:420px){.g-select{max-width:50%}.g-orbit{width:min(82%,min(48vh,380px))}.g-item{width:68px}.g-center{width:70px}}
+  @media(max-width:860px){.g-shell{gap:6px}.g-head h2{font-size:15px}.g-select{max-width:48%;padding:7px;font-size:11px}.g-orbit{width:min(78%,min(54vh,460px))}.g-item{width:clamp(70px,12vw,94px)}}
+  @media(max-width:420px){.g-select{max-width:50%}.g-orbit{width:min(82%,min(48vh,380px))}.g-item{width:72px}.g-center{width:70px}}
 </style>
 </head>
 <body>
@@ -58,22 +58,22 @@
     fight: [
       { icon: 'ability_warrior_charge', name: 'Открывай Рывком',
         spells: ['ability_warrior_charge', 'ability_warrior_battleshout', 'ability_racial_bloodrage'],
-        text: 'Каждый бой начинай с <b>Рывка</b> — макрос ротации вне боя сам встанет в боевую стойку и рванёт к цели, а пока летишь, ярость уже копится. Перед пулом нажми <b>макрос боя с группой</b> — вне боя макрос сам проверит <b>Боевой крик</b> и повесит его, только если его нет. В бою игра запрещает макросам кастовать из Lua-кода — поэтому в бою крик макрос не трогает: висящий бафф живёт 2 минуты и спокойно доживает до конца боя.' },
+        text: 'Вне боя сблизься <b>Рывком</b>: если ты не в боевой стойке, макрос сначала меняет стойку, после чего может потребоваться ещё одно нажатие. Проверка <b>Боевого крика</b> находится в отдельном макросе установки; она не входит в AoE-макрос. В бою обычный макрос не может проверять ауру через Lua и тут же менять её.' },
       { icon: 'inv_axe_66', name: 'Ротация — спамь макрос ротации',
         spells: ['ability_warrior_devastate', 'spell_nature_bloodlust', 'ability_whirlwind'],
-        text: 'Приоритеты зашиты в порядок строк макроса: <b>Победный раж</b> (бесплатный, доступен лишь 20 сек после убийства — жми сразу, окно сгорает) → <b>Кровожадность</b> (ядро ротации, КД 4 сек) → <b>Вихрь</b> → <b>Казнь</b>. За одно нажатие срабатывает первый доступный удар.' },
+        text: 'Макрос проверяет команды по списку, но не видит кулдауны, здоровье цели или подходящее окно бурста. Нажимай повторно и отслеживай приоритеты вручную: <b>Победный раж</b> после убийства → <b>Кровожадность</b> → <b>Вихрь</b> → <b>Казнь</b>. Бурстовые умения лучше вынести в отдельные кнопки.' },
       { icon: 'ability_racial_bloodrage', name: 'Ярость — не копи',
         spells: ['ability_rogue_ambush'],
-        text: 'Ярость капает с ударов и полученного урона, на максимуме сгорает зря. Избыток сбрасывай <b>Ударом героя</b> — он единственный живёт на отдельной кнопке: не занимает общий КД, жми при ярости 50+. <b>Кровавая ярость</b> вшита в макрос ротации и выходит с кулдауна сама в бою — она не в общем КД.' },
+        text: 'Ярость приходит от ударов и получаемого урона, на максимуме ресурс пропадает зря. Избыток сбрасывай <b>Ударом героя</b> — жми отдельно при высоком запасе ярости. Макрос только пытается применить <b>Кровавую ярость</b>, когда ты нажимаешь его; сам по кулдауну он не запускается.' },
       { icon: 'ability_parry', name: 'Стой за спиной',
         spells: ['ability_parry', 'ability_backstab'],
         text: 'Спереди моб может <b>парировать и уклоняться</b> от твоих ударов — обходи цель со спины, урон будет ровнее. И не убегай от мобов спиной: удары в спину <b>оглушают</b> и не дают оторваться.' },
       { icon: 'ability_whirlwind', name: 'Пак — жми макрос боя с группой',
         spells: ['ability_whirlwind', 'ability_warrior_cleave', 'ability_warrior_warcry'],
-        text: 'Два и больше мобов — макрос боя с группой вместо макроса ротации: <b>Вихрь</b> бьёт всех вокруг обоими оружиями, <b>Рассекающий удар</b> превращает каждый свинг в удар по всем, а <b>Перехват</b> сам догоняет разбежавшихся. Против пары целей чередуй макрос ротации и макрос боя с группой.' },
+        text: 'Два и больше мобов — используй AoE-приоритет: <b>Вихрь</b>, Кровожадность и Рассекающий удар. <b>Перехват</b> — отдельная попытка в списке, он сработает лишь при нажатии, подходящей стойке и доступности способности. Против пары целей переключайся на угрозу и кулдауны вручную.' },
       { icon: 'spell_shadow_deathpact', name: 'Бурст на боссах',
         spells: ['spell_shadow_deathpact', 'ability_criticalstrike', 'inv_sword_48'],
-        text: '<b>Жажда смерти</b> (+20% физического урона на 30 сек) и <b>Безрассудство</b> (три удара критуют) срабатывают <b>сами</b>, по кулдауну, прямо из макроса ротации — отдельные клавиши не нужны. Фаза <b>Казни</b> (цель ниже 20% HP) превращается в волну критов.' },
+        text: '<b>Жажда смерти</b> (+20% физического урона на 30 сек) и <b>Безрассудство</b> доступны как отдельные бурст-кнопки. Используй их в нужное окно: макрос не знает механику босса и может потратить готовый кулдаун в неподходящий момент. Следи за порогом <b>Казни</b> и меняй приоритет вручную.' },
       { icon: 'ability_warrior_bloodsurge', name: 'Мощный удар по Волне крови',
         spells: ['ability_warrior_bloodsurge', 'ability_warrior_decisivestrike', 'spell_nature_bloodlust', 'ability_whirlwind'],
         text: 'Талант <b>Прилив крови</b> даёт мгновенный Мощный удар после успешных Кровожадности, Вихря или Удара героя. Нажимай его отдельно, когда прок появился: он не заменяет Кровожадность и Вихрь по готовности и не должен задерживать их.' },
@@ -90,7 +90,7 @@
       { icon: 'ability_golemthunderclap', name: 'Контроль и побег',
         text: 'Устрашающий крик распугает мобов вокруг. Талант <b>Пронзительный вой</b> замедлит погоню. Сначала распугай или замедли — потом беги к дружественным NPC или из зоны мобов.' },
       { icon: 'spell_shadow_charm', name: 'Аварийные умения',
-        text: 'Каждый за себя (у людей) снимает эффекты потери контроля. Защитный макрос сохраняет команды для Устрашающего крика, Оборонительной стойки, Разоружения и Провокации без сочетаний клавиш. Он пробует строки по очереди; для точного контроля кулдаунов используй нужные способности отдельно. Выбрался — жми макрос ротации: макрос сам вернёт стойку берсерка.' },
+        text: 'Каждый за себя у людей снимает эффекты потери контроля. Защитный макрос содержит несколько ситуационных команд, но не выбирает за тебя нужную: для точного контроля применяй способность отдельно. После смены стойки или защитного умения проверь стойку перед возвращением к урону.' },
       { icon: 'spell_misc_food', name: 'Между боями',
         text: 'Еда восстанавливает здоровье и даёт бонус к стату, <b>Первая помощь</b> — быстрые бинты из ткани. Не лезь в следующий бой с пустой полосой: смерть стоит дороже короткого перекура.' },
       { icon: 'spell_nature_ancestralguardian', name: 'Сними страх Яростью берсерка',
@@ -121,9 +121,9 @@
     ],
     auto: [
       { icon: 'ability_warrior_battleshout', name: 'Боевой крик (макрос боя с группой, вне боя)', why: 'проверит бафф и повесит только недостающее' },
-      { icon: 'spell_shadow_deathpact', name: 'Жажда смерти и Безрассудство', why: 'макрос срабатывает сам; рейдовый бурст лучше планировать под бой вручную' },
+      { icon: 'spell_shadow_deathpact', name: 'Жажда смерти и Безрассудство', why: 'вынеси в отдельные кнопки и жми в нужное окно; макрос не выбирает тайминг' },
       { icon: 'ability_racial_avatar', name: 'Стойки сами', why: 'боевая для Рывка, берсерка для ротации' },
-      { icon: 'ability_racial_bloodrage', name: 'Кровавая ярость', why: 'сама выходит с кулдауна из макроса ротации' },
+      { icon: 'ability_racial_bloodrage', name: 'Кровавая ярость', why: 'макрос только пробует её при нажатии; автоматического запуска по кулдауну нет' },
       { icon: 'spell_nature_ancestralguardian', name: 'Ярость берсерка', why: 'сама с кнопки защитный макрос: ярость и иммунитет к страху' },
       { icon: 'ability_racial_avatar', name: 'Хватка титана (60+)', why: 'макросы те же: надел два двуручных — и продолжай жать макрос ротации и макрос для групы' },
     ],
@@ -150,22 +150,22 @@
     fight: [
       { icon: 'ability_warrior_charge', name: 'Open with Charge',
         spells: ['ability_warrior_charge', 'ability_warrior_battleshout', 'ability_racial_bloodrage'],
-        text: 'Start every fight with <b>Charge</b> — out of combat rotation macro swaps you to Battle Stance and charges in, and rage builds while you fly. Before the pull use the <b>AoE macro</b> — out of combat the macro checks <b>Battle Shout</b> and applies it only if missing. In combat the game forbids macros from casting via Lua code — so in combat the macro leaves the shout alone: the 2-minute buff comfortably outlasts the fight.' },
+        text: 'Use <b>Charge</b> to engage out of combat. If you are not in Battle Stance, the macro changes stance first and may need another press before Charge. The <b>Battle Shout</b> check is a separate optional installer macro, not part of the AoE macro. Combat macros cannot use Lua to check an aura and cast in combat.' },
       { icon: 'inv_axe_66', name: 'Rotation — repeat the macro',
         spells: ['ability_warrior_devastate', 'spell_nature_bloodlust', 'ability_whirlwind'],
-        text: 'Priorities are baked into the order of rotation macro lines: <b>Victory Rush</b> (free, available for only 20 sec after a kill — fire it before the window closes) → <b>Bloodthirst</b> (the core, 4s CD) → <b>Whirlwind</b> → <b>Execute</b>. One press fires the first available strike.' },
+        text: 'The macro checks its commands in order, but cannot inspect cooldowns, target health, or encounter timing. Repeat presses and track the priority yourself: <b>Victory Rush</b> after a kill → <b>Bloodthirst</b> → <b>Whirlwind</b> → <b>Execute</b>. Keep burst abilities on separate buttons.' },
       { icon: 'ability_racial_bloodrage', name: 'Don\u2019t cap rage',
         spells: ['ability_rogue_ambush'],
-        text: 'Rage builds from your swings and from damage taken, and burns pointlessly at the cap. Dump the surplus into <b>Heroic Strike</b> — the one ability on its own button: it sits off the global cooldown, press it above 50 rage. <b>Bloodrage</b> is built into rotation macro and fires itself off cooldown in combat — also off the GCD.' },
+        text: 'Rage builds from swings and damage taken; excess rage is wasted at the cap. Dump surplus into <b>Heroic Strike</b> when you can afford it. The macro only attempts <b>Bloodrage</b> when you press it; it does not activate by itself when its cooldown ends.' },
       { icon: 'ability_parry', name: 'Fight from behind',
         spells: ['ability_parry', 'ability_backstab'],
         text: 'From the front the mob can <b>parry and dodge</b> your attacks — circle behind the target for smoother damage. And don\u2019t run with your back to mobs: blows to the back <b>daze</b> you and let them keep up.' },
       { icon: 'ability_whirlwind', name: 'Packs — используй макрос для группы',
         spells: ['ability_whirlwind', 'ability_warrior_cleave', 'ability_warrior_warcry'],
-        text: 'Two or more mobs — макрос боя с группой instead of макрос ротации: <b>Whirlwind</b> hits everything around with both weapons, <b>Cleave</b> turns every white swing into a hit on all of them, and <b>Intercept</b> chases down runners on its own. On exactly two targets alternate макрос ротации and макрос боя с группой.' },
+        text: 'For two or more mobs, use the AoE priority: <b>Whirlwind</b>, Bloodthirst, and Cleave. <b>Intercept</b> is only attempted when you press the macro and meet its stance and availability requirements. Track threat and cooldowns manually.' },
       { icon: 'spell_shadow_deathpact', name: 'Burst on bosses',
         spells: ['spell_shadow_deathpact', 'ability_criticalstrike', 'inv_sword_48'],
-        text: '<b>Death Wish</b> (+20% physical damage for 30 sec) and <b>Recklessness</b> (your next three strikes crit) fire <b>themselves</b>, off cooldown, straight from rotation macro — no extra keys needed. The <b>Execute</b> phase (target under 20% HP) turns into a wave of crits.' },
+        text: '<b>Death Wish</b> (+20% physical damage for 30 sec) and <b>Recklessness</b> are burst abilities to use in the right encounter window. A macro cannot understand boss mechanics and may spend a ready cooldown too early. Watch the <b>Execute</b> threshold and adjust your priority manually.' },
       { icon: 'ability_warrior_bloodsurge', name: 'Slam on Bloodsurge',
         spells: ['ability_warrior_bloodsurge', 'ability_warrior_decisivestrike', 'spell_nature_bloodlust', 'ability_whirlwind'],
         text: 'The <b>Bloodsurge</b> talent makes Slam instant after a successful Bloodthirst, Whirlwind, or Heroic Strike. Use Slam separately when the proc appears; do not delay Bloodthirst or Whirlwind for it.' },
@@ -212,10 +212,10 @@
       { icon: 'ability_rogue_ambush', name: 'Heroic Strike (own button)', why: 'rage dump above 50 rage, off GCD' },
     ],
     auto: [
-      { icon: 'ability_warrior_battleshout', name: 'Battle Shout (макрос боя с группой, out of combat)', why: 'checks the buff and applies only what is missing' },
-      { icon: 'spell_shadow_deathpact', name: 'Death Wish & Recklessness', why: 'the macro fires them automatically; plan raid burst manually for best timing' },
+      { icon: 'ability_warrior_battleshout', name: 'Battle Shout (separate macro, out of combat)', why: 'the buff-check is separate from the AoE macro' },
+      { icon: 'spell_shadow_deathpact', name: 'Death Wish & Recklessness', why: 'use separate buttons and choose the encounter timing; macros do not plan burst' },
       { icon: 'ability_racial_avatar', name: 'Stances', why: 'Battle for Charge, Berserker for the rotation' },
-      { icon: 'ability_racial_bloodrage', name: 'Bloodrage', why: 'fires itself off cooldown from the макрос ротации button' },
+      { icon: 'ability_racial_bloodrage', name: 'Bloodrage', why: 'the macro only attempts it when pressed; it does not trigger automatically on cooldown' },
       { icon: 'spell_nature_ancestralguardian', name: 'Berserker Rage', why: 'fires itself from defense macro: rage plus fear immunity' },
       { icon: 'ability_racial_avatar', name: "Titan's Grip (60+)", why: 'macros stay the same: equip two 2H — and keep pressing макрос ротации и макрос для групы' },
     ],
@@ -285,7 +285,8 @@
   };
   const showTooltip=(p,btn)=>{
     const spells=p.spells?`<div class="g-spells">${p.spells.map(s=>`<img src="${I(s)}" alt="">`).join('')}</div>`:'';
-    guideTooltip.innerHTML=`<strong>${p.name}</strong>${spells}<p>${p.text||p.why||''}</p>`;
+    const source=clean(p.text||p.why||'');const brief=p.hint||((source.length>128)?source.slice(0,125).trimEnd()+'…':source);
+    guideTooltip.innerHTML=`<strong>${p.name}</strong>${spells}<p>${brief}</p>`;
     guideTooltip.classList.add('on');
     const r=btn.getBoundingClientRect(),w=guideTooltip.offsetWidth,h=guideTooltip.offsetHeight;
     let left=r.right+12;if(left+w>innerWidth-8)left=r.left-w-12;
@@ -300,7 +301,8 @@
   };
   const showCategory=()=>{
     const group=categories.find(x=>x[0]===select.value);
-    items.innerHTML=`<div class="g-orbit"></div><div class="g-center"><img src="${I('ability_racial_avatar')}" alt=""></div>`+group[2].map((p,i)=>`<button class="g-item" data-entry="${i}" aria-label="${p.name}"><img src="${I(p.icon)}" alt=""><b>${p.name}</b></button>`).join('');
+    items.innerHTML=`<div class="g-orbit"></div><button class="g-center" type="button" aria-label="${lang==='ru'?'Следующий раздел гайда':'Next guide section'}" title="${lang==='ru'?'Перейти к следующему разделу':'Go to next section'}"><img src="${I('ability_racial_avatar')}" alt=""></button>`+group[2].map((p,i)=>`<button class="g-item" data-entry="${i}" aria-label="${p.name}"><img src="${I(p.icon)}" alt=""></button>`).join('');
+    items.querySelector('.g-center').onclick=()=>{select.selectedIndex=(select.selectedIndex+1)%select.options.length;showCategory();};
     layoutWheel();
     items.querySelectorAll('[data-entry]').forEach(btn=>{
       const entry=group[2][+btn.dataset.entry];
@@ -314,7 +316,8 @@
   select.onchange=showCategory;
   showCategory();
   const ru=lang==='ru';
-  document.getElementById('guideSources').textContent=ru?'Источники':'Sources';
+  document.getElementById('guideSources').textContent='?';
+  document.getElementById('guideSources').title=ru?'Источники гайда':'Guide sources';
   document.getElementById('guideSources').onclick=()=>{
     document.getElementById('guideDialogTitle').textContent=ru?'Источники и примечания':'Sources and notes';
     document.getElementById('guideDialogBody').innerHTML=`<p>${ru?'Гайд сверялся с несколькими руководствами по Fury PvE, Arms PvP и Protection PvE. Для конкретного сервера 3.3.5a проверь названия рангов, локализацию и доступные способности.':'Cross-checked against multiple Fury PvE, Arms PvP, and Protection PvE guides. Check spell ranks, localization, and available abilities on your specific 3.3.5a realm.'}</p>

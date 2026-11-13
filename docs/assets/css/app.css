@@ -17,11 +17,11 @@
 html, body { height: 100%; overflow: hidden; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: radial-gradient(1200px 700px at 70% -10%, #1a2030 0%, var(--bg) 55%);
+  background: linear-gradient(120deg, rgba(7,9,14,.9), rgba(8,10,15,.68)), url('../icons/bg/164.jpg') center 42% / cover fixed;
   color: var(--txt);
   -webkit-font-smoothing: antialiased;
-  animation: world-enter .38s ease-out both;
 }
+html, body, #app, main { cursor: auto; }
 @keyframes world-enter { from { opacity:0; filter:brightness(.72); } to { opacity:1; filter:brightness(1); } }
 /* ===== app shell ===== */
 #app {
@@ -65,10 +65,9 @@ footer.bot a:hover { color: var(--gold2); }
 .grid { display: grid; gap: 12px; min-height: 0; flex: 1; }
 .grid, .card { overflow: hidden; }
 .card {
-  background: linear-gradient(160deg, var(--panel2), var(--panel));
+  background: linear-gradient(160deg, rgba(27,31,46,.88), rgba(21,24,35,.9));
   border: 1px solid var(--line); border-radius: var(--r);
   padding: 14px 16px; min-height: 0; overflow: hidden;
-  animation: panel-in .32s cubic-bezier(.2,.7,.25,1) both;
 }
 @keyframes panel-in { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 .card h2 { font-size: 15px; color: var(--gold2); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
@@ -144,10 +143,12 @@ h2 img.ic { object-fit: cover; }
   body { font-size:16px; }
   header.top nav a { font-size:15px; padding:9px 15px; }
   .card h2 { font-size:17px; }
-  .small { font-size:14px; }
+  .small { font-size:15px; }
   .btn { font-size:15px; }
   footer.bot { font-size:13px; }
   .tipcard,.g-tooltip,.g-dialog-body { font-size:14px; }
+  body { font-size:17px; }
+  .card h2 { font-size:18px; }
 }
 ::-webkit-scrollbar { width: 0; height: 0; }
 /* Mobile app behavior: prevent accidental selection while keeping code and form fields usable. */

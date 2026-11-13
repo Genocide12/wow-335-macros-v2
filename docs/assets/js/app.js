@@ -7,7 +7,6 @@
     ['talents.html', { ru: 'Таланты', en: 'Talents' }],
     ['hero.html', { ru: 'Герой', en: 'Hero' }],
     ['guide.html', { ru: 'Гайд', en: 'Guide' }],
-    ['gear.html', { ru: 'Экипировка', en: 'Gear' }],
   ];
 
   function getLang() {
@@ -23,15 +22,17 @@
   const lang = LANGS.includes(getLang()) ? getLang() : 'ru';
   let soundOn = localStorage.getItem('wfxSound') === 'on';
   const UI_SOUND = 'https://wow.zamimg.com/wowsounds/sound/interface/uchatscrollbutton.ogg';
-  const uiAudio = new Map();
+  let uiAudio;
+  let queuedUiSound = null;
   function playUiSound(kind = 'click') {
     if (!soundOn) return;
     try {
       const profiles={click:[.16,1],open:[.14,.92],select:[.15,1.08],copy:[.2,.84],success:[.2,.76]};
       const [volume,rate]=profiles[kind]||profiles.click;
-      let audio=uiAudio.get(kind);
-      if(!audio){audio=new Audio(UI_SOUND);audio.preload='auto';uiAudio.set(kind,audio);}
-      audio.volume=volume;audio.playbackRate=rate;audio.currentTime=0;audio.play().catch(()=>{});
+      if(!uiAudio){uiAudio=new Audio(UI_SOUND);uiAudio.preload='auto';uiAudio.addEventListener('ended',()=>{const next=queuedUiSound;queuedUiSound=null;if(next)playUiSound(next);});}
+      if(!uiAudio.paused){queuedUiSound=kind;return;}
+      uiAudio.volume=volume;uiAudio.playbackRate=rate;uiAudio.currentTime=0;
+      const playback=uiAudio.play();if(playback?.catch)playback.catch(()=>{});
     } catch (_) {}
   }
 
@@ -51,11 +52,15 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Release a stale WebGL pointer lock if a model viewer/browser plugin left one behind.
+    if (document.pointerLockElement) document.exitPointerLock?.();
     const app = document.getElementById('app');
     // header
     const cur = location.pathname.split('/').pop() || 'index.html';
-    const nav = PAGES.filter(([f]) => f !== 'gear.html' || cur !== 'index.html').map(([f, n]) =>
-      `<a href="${f}?lang=${lang}" class="${f === cur ? 'on' : ''}">${n[lang]}</a>`
+    const requestedSpec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
+    const activeSpec=['arms','fury','prot'].includes(requestedSpec)?requestedSpec:'fury';
+    const nav = PAGES.map(([f, n]) =>
+      `<a href="${f}?lang=${lang}&spec=${activeSpec}" class="${f === cur ? 'on' : ''}">${n[lang]}</a>`
     ).join('');
     app.prepend(h(`
       <header class="top">
@@ -67,7 +72,6 @@
         <button class="sound-btn" id="soundBtn" type="button" aria-pressed="${soundOn}" title="${lang === 'ru' ? 'Звуки интерфейса' : 'Interface sounds'}">${soundOn ? '♫' : '♪'}</button>
         <button class="lang-btn" id="langBtn">${lang === 'ru' ? 'EN' : 'RU'}</button>
       </header>`));
-    const activeSpec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
     const labels={arms:lang==='ru'?'Воин — Оружие · PvP':'Arms Warrior · PvP',fury:lang==='ru'?'Воин — Неистовство · PvE ДД':'Fury Warrior · PvE DPS',prot:lang==='ru'?'Воин — Защита · PvE танк':'Protection Warrior · PvE tank'};
     document.getElementById('langBtn').onclick = () => setLang(lang === 'ru' ? 'en' : 'ru');
     document.getElementById('soundBtn').onclick = event => {
@@ -102,7 +106,7 @@
     const btn = event.target.closest('[data-copy]');
     const interactive = target.closest('button, a, .tal[data-id], .slot, .t-tab, .g-item');
     if (interactive) {
-      if(!interactive.matches('[data-copy]'))playUiSound(interactive.matches('.krow a, .detail-btn, #guideSources') ? 'open' : (interactive.matches('.tal[data-id], .t-tab, .g-item') ? 'select' : 'click'));
+      if(!interactive.matches('[data-copy]')&&!interactive.matches('a[href]'))playUiSound(interactive.matches('.krow a, #guideSources') ? 'open' : (interactive.matches('.tal[data-id], .t-tab, .g-item') ? 'select' : 'click'));
       interactive.classList.remove('ui-hit');
       void interactive.offsetWidth;
       interactive.classList.add('ui-hit');
@@ -124,7 +128,7 @@
       ta.remove();
     }
     const old = btn.textContent;
-    btn.textContent = copied ? '✓' : (lang === 'ru' ? 'Выделено' : 'Selected');
+    btn.textContent = copied ? (btn.dataset.copySuccess || '✓') : (lang === 'ru' ? 'Выделено' : 'Selected');
     if(copied)playUiSound('copy');
     btn.classList.add('ok');
     if (!copied) { const pre=btn.parentElement.querySelector('pre'); if(pre){const r=document.createRange();r.selectNodeContents(pre);getSelection().removeAllRanges();getSelection().addRange(r);} }

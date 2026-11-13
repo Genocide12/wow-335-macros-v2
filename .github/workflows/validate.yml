@@ -38,7 +38,6 @@ jobs:
           test -f docs/hero.html
           test -f docs/talents.html
           test -f docs/guide.html
-          test -f docs/gear.html
           test -f docs/assets/icons/bg/164.jpg
           grep -q 'macroDropdown' docs/index.html
           grep -q 'id="cards"' docs/macros.html

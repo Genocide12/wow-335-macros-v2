@@ -1,7 +1,8 @@
 /* wow-model-viewer 1.5.3; ISC license; https://github.com/Miorey/wow-model-viewer */
 (function(){
 if(!window.CONTENT_PATH){
-    window.CONTENT_PATH =`http://localhost:3001/modelviewer/live/`
+    // Keep the deployment-provided CDN/proxy endpoint; localhost is development-only.
+    window.CONTENT_PATH ||= `http://localhost:3001/modelviewer/live/`
 }
 if(!window.WOTLK_TO_RETAIL_DISPLAY_ID_API){
     window.WOTLK_TO_RETAIL_DISPLAY_ID_API=`https://wotlk.murlocvillage.com/api/items`
