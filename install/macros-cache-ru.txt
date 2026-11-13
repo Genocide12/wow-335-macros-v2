@@ -22,16 +22,16 @@ MACRO 16777218 "Контроль" Ability_Kick
 /cast [@mouseover,harm,nodead][]Зуботычина
 /cast [nostance:3]Стойка берсерка
 /cast Ярость берсерка
-/cast [mod:alt]Каждый за себя
-/cast [mod:alt]Устрашающий крик
-/cast [mod:alt]Оборонительная стойка
-/cast [mod:alt]Разоружение
-/cast [mod:alt]Провокация
+/cast Каждый за себя
+/cast Устрашающий крик
+/cast Оборонительная стойка
+/cast Разоружение
+/cast Провокация
 END
 MACRO 16777219 "Проверка баффов" Ability_Warrior_BattleShout
 #showtooltip
-/cast [mod:ctrl]Деморализующий крик
 /stopmacro [combat]
+/cast Деморализующий крик
 /run s="Боевой крик"if not UnitBuff("player",s)then CastSpellByName(s)end
 /run d="Деморализующий крик"if UnitExists("target")and not UnitDebuff("target",d)then CastSpellByName(d)end
 END

@@ -1,0 +1,482 @@
+/* wow-model-viewer 1.5.3; ISC license; https://github.com/Miorey/wow-model-viewer */
+(function(){
+if(!window.CONTENT_PATH){
+    window.CONTENT_PATH =`http://localhost:3001/modelviewer/live/`
+}
+if(!window.WOTLK_TO_RETAIL_DISPLAY_ID_API){
+    window.WOTLK_TO_RETAIL_DISPLAY_ID_API=`https://wotlk.murlocvillage.com/api/items`
+}
+
+class WebP {
+    getImageExtension() {
+        return `.webp`
+    }
+
+}
+
+if (!window.WH) {
+    window.WH = {}
+    window.WH.debug = function (...args) { console.log(args) }
+    window.WH.defaultAnimation = `Stand`
+    window.WH.WebP = new WebP()
+    window.WH.Wow = {
+        Item: {
+            INVENTORY_TYPE_HEAD: 1,
+            INVENTORY_TYPE_NECK: 2,
+            INVENTORY_TYPE_SHOULDERS: 3,
+            INVENTORY_TYPE_SHIRT: 4,
+            INVENTORY_TYPE_CHEST: 5,
+            INVENTORY_TYPE_WAIST: 6,
+            INVENTORY_TYPE_LEGS: 7,
+            INVENTORY_TYPE_FEET: 8,
+            INVENTORY_TYPE_WRISTS: 9,
+            INVENTORY_TYPE_HANDS: 10,
+            INVENTORY_TYPE_FINGER: 11,
+            INVENTORY_TYPE_TRINKET: 12,
+            INVENTORY_TYPE_ONE_HAND: 13,
+            INVENTORY_TYPE_SHIELD: 14,
+            INVENTORY_TYPE_RANGED: 15,
+            INVENTORY_TYPE_BACK: 16,
+            INVENTORY_TYPE_TWO_HAND: 17,
+            INVENTORY_TYPE_BAG: 18,
+            INVENTORY_TYPE_TABARD: 19,
+            INVENTORY_TYPE_ROBE: 20,
+            INVENTORY_TYPE_MAIN_HAND: 21,
+            INVENTORY_TYPE_OFF_HAND: 22,
+            INVENTORY_TYPE_HELD_IN_OFF_HAND: 23,
+            INVENTORY_TYPE_PROJECTILE: 24,
+            INVENTORY_TYPE_THROWN: 25,
+            INVENTORY_TYPE_RANGED_RIGHT: 26,
+            INVENTORY_TYPE_QUIVER: 27,
+            INVENTORY_TYPE_RELIC: 28,
+            INVENTORY_TYPE_PROFESSION_TOOL: 29,
+            INVENTORY_TYPE_PROFESSION_ACCESSORY: 30
+        }
+
+    }
+    // eslint-disable-next-line no-undef
+}
+const WH = window.WH
+
+
+
+
+const NOT_DISPLAYED_SLOTS = [
+    2, // neck
+    11, // finger1
+    12, // finger1
+    13, // trinket1
+    14, // trinket2
+]
+
+const modelingType = {
+    ARMOR: 128,
+    CHARACTER: 16,
+    COLLECTION: 1024,
+    HELM: 2,
+    HUMANOIDNPC: 32,
+    ITEM: 1,
+    ITEMVISUAL: 512,
+    NPC: 8,
+    OBJECT: 64,
+    PATH: 256,
+    SHOULDER: 4
+}
+
+const characterPart = () => {
+    const ret = {
+        Face: `face`,
+        "Skin Color": `skin`,
+        "Hair Style": `hairStyle`,
+        "Hair Color": `hairColor`,
+        "Facial Hair": `facialStyle`,
+        Mustache: `facialStyle`,
+        Beard: `facialStyle`,
+        Sideburns: `facialStyle`,
+        "Face Shape": `facialStyle`,
+        Eyebrow: `facialStyle`,
+        "Jaw Features": undefined,
+        "Face Features": undefined,
+        "Skin Type": undefined,
+        Ears: (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `ears`,
+        "Fur Color": (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `furColor`,
+        Snout: `snout`,
+        Blindfold: undefined,
+        Tattoo: undefined,
+        "Eye Color": undefined,
+        "Tattoo Color": undefined,
+        Armbands: undefined,
+        "Jewelry Color": undefined,
+        Bracelets: undefined,
+        Necklace: undefined,
+        Earring: undefined,
+        "Primary Color": (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `primaryColor`,
+        "Secondary Color Strength": (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `secondaryColorStrength`,
+        "Secondary Color": (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `secondaryColor`,
+        "Horn Color": (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `hornColor`,
+        Horns: (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `horns`,
+        "Body Size": (window.WOTLK_TO_RETAIL_DISPLAY_ID_API) ? undefined : `bodySize`
+    }
+    console.log(ret)
+    return ret
+}
+
+
+
+function optionalChaining(choice) {
+    //todo replace by `part.Choices[character[CHARACTER_PART[prop]]]?.Id` when it works on almost all frameworks
+    return choice ? choice.Id : undefined
+}
+
+
+
+/**
+ *
+ * @param {Object} character - The character object.
+ * @param {number} character.face - Description for face.
+ * @param {number} character.facialStyle - Description for facialStyle.
+ * @param {number} character.gender - Description for gender.
+ * @param {number} character.hairColor - Description for hairColor.
+ * @param {number} character.hairStyle - Description for hairStyle.
+ * @param {Array<Array<number>>} character.items - Description for items. (Optional)
+ * @param {number} character.race - Description for race.
+ * @param {number} character.skin - Description for skin.
+ * @param {Object} fullOptions - Zaming API character options payload.
+ * @return {[]}
+ */
+function getCharacterOptions(character, fullOptions) {
+    const options = fullOptions.Options
+    const missingChoice = []
+    const ret = []
+    for (const prop in characterPart()) {
+        const part = options.find(e => e.Name === prop)
+
+        if (!part) {
+            continue
+        }
+
+        const newOption = {
+            optionId: part.Id,
+            choiceId: (characterPart()[prop]) ? optionalChaining(part.Choices[character[characterPart()[prop]]]) : part.Choices[0].Id
+        }
+        if(newOption.choiceId === undefined) {
+            missingChoice.push(characterPart()[prop])
+        }
+        ret.push(newOption)
+    }
+    console.warn(`In character: `, character, `the following options are missing`, missingChoice)
+
+    return ret
+}
+
+/**
+ * This function return the design choices for a character this does not work for NPC / Creature / Items
+ * @param {Object} model - The model object to generate options from.
+ * @param {{}} fullOptions - The type of the model.
+ * @returns {{models: {id: string, type: number}, charCustomization: {options: []}, items: (*|*[])}|{models: {id, type}}
+ */
+function optionsFromModel(model, fullOptions) {
+    const {race, gender} = model
+
+
+    // slot ids on model viewer
+    const characterItems = (model.items) ? model.items.filter(e => !NOT_DISPLAYED_SLOTS.includes(e[0])) : []
+    const options = getCharacterOptions(model, fullOptions)
+    let charCustomization = {
+        options: options
+    }
+    const ret = {
+        items: characterItems,
+        models: {
+            id: race*2-1+gender,
+            type: modelingType.CHARACTER
+        },
+    }
+    if(!model.noCharCustomization) {
+        ret.charCustomization = charCustomization
+    }
+    return ret
+}
+
+
+
+/**
+ *
+ * @param item{number}: Item id
+ * @param slot{number}: Item slot number
+ * @param displayId{number}: DisplayId of the item
+ * @param env {('classic'|'live')}: select game env
+ * @return {Promise<boolean|*>}
+ */
+async function getDisplaySlot(item, slot, displayId, env=`live`) {
+    if (typeof item !== `number`) {
+        throw new Error(`item must be a number`)
+    }
+
+    if (typeof slot !== `number`) {
+        throw new Error(`slot must be a number`)
+    }
+
+    if (typeof displayId !== `number`) {
+        throw new Error(`displayId must be a number`)
+    }
+
+    try {
+        const jsonPath = (env === `classic` && [21, 22].includes(slot)) ?
+            `${window.CONTENT_PATH}meta/item/${displayId}.json` :
+            `${window.CONTENT_PATH}meta/armor/${slot}/${displayId}.json`
+        await fetch(jsonPath)
+            .then(response => response.json())
+
+        return {
+            displaySlot: slot,
+            displayId: displayId
+        }
+    } catch (e) {
+        if(!window.WOTLK_TO_RETAIL_DISPLAY_ID_API){
+            throw Error(`Item not found and window.WOTLK_TO_RETAIL_DISPLAY_ID_API not set`)
+        }
+        const resp = await fetch(`${window.WOTLK_TO_RETAIL_DISPLAY_ID_API}/${item}/${displayId}`)
+            .then((response) => response.json())
+        const res = resp.data || resp
+        if (res.newDisplayId !== displayId) {
+            return {
+                displaySlot: slot,
+                displayId: res.newDisplayId
+            }
+        }
+    }
+
+    // old slots to new slots
+    const retSlot = {
+        5: 20, // chest
+        16: 21, // main hand
+        18: 22 // off hand
+    }[slot]
+
+    if (!retSlot) {
+        console.warn(`Item: ${item} display: ${displayId} or slot: ${slot} not found for `)
+
+        return {
+            displaySlot: slot,
+            displayId: displayId
+        }
+    }
+
+    return {
+        displaySlot: retSlot,
+        displayId: displayId
+    }
+}
+
+
+
+/**
+ * Returns a 2-dimensional list the inner list contains on first position the item slot, the second the item
+ * display-id ex: [[1,1170],[3,4925]]
+ * @param {*[{item: {entry: number, displayid: number}, transmog: {entry: number, displayid: number}, slot: number}]} equipments
+ * @param env {('classic'|'live')}: select game enve
+ * @returns {Promise<number[]>}
+ */
+async function findItemsInEquipments(equipments, env=`live`) {
+    for (const equipment of equipments) {
+        if (NOT_DISPLAYED_SLOTS.includes(equipment.slot)) {
+            continue
+        }
+
+        const displayedItem = (Object.keys(equipment.transmog).length !== 0) ? equipment.transmog : equipment.item
+        const displaySlot = await getDisplaySlot(
+            displayedItem.entry,
+            equipment.slot,
+            displayedItem.displayid,
+            env
+        )
+        equipment.displaySlot = displaySlot.displaySlot
+        equipment.displayId = displaySlot.displayId
+        Object.assign(displaySlot, equipment)
+    }
+    return equipments
+        .filter(e => e.displaySlot)
+        .map(e => [
+            e.displaySlot,
+            e.displayId
+        ]
+        )
+}
+
+
+/**
+ *
+ * @param {number} race
+ * @param {number} gender
+ * @returns {Promise<Object>}
+ */
+async function findRaceGenderOptions(race, gender) {
+    const raceGender = race * 2 - 1 + gender
+    const options = await fetch(`${window.CONTENT_PATH}meta/charactercustomization/${raceGender}.json`)
+        .then(
+            (response) => response.json()
+        )
+    if (options.data) {
+        return options.data
+    }
+
+    return options
+}
+
+
+
+
+// eslint-disable-next-line no-undef
+class WowModelViewer extends ZamModelViewer {
+    /**
+     * Returns the list of animation names
+     * @returns {Array.<string>}
+     */
+    getListAnimations() {
+        return [...new Set(this.renderer.actors[0].h.P.Q.map(e => e.l))]
+    }
+
+    /**
+     * Change character distance
+     * @param {number} val
+     */
+    setDistance(val) {
+        this.renderer.distance = val
+    }
+
+    /**
+     * Change the animation
+     * @param {string} val
+     */
+    setAnimation(val) {
+        this.renderer.actors[0].setAnimation(val)
+    }
+
+    /**
+     * Play / Pause the animation
+     * @param {boolean} val
+     */
+    setAnimPaused(val) {
+        this.renderer.actors[0].setAnimPaused(val)
+    }
+
+    /**
+     * Set azimuth value this value is the angle to the azimuth based on PI
+     * @param {number} val
+     */
+    setAzimuth(val) {
+        this.renderer.azimuth = val
+    }
+
+    /**
+     * Set zenith value this value is the angle to the azimuth based on PI
+     * @param {number} val
+     */
+    setZenith(val) {
+        this.renderer.zenith = val
+    }
+
+    /**
+     * Returns azimuth value this value is the angle to the azimuth based on PI
+     * @return {number}
+     */
+    getAzimuth() {
+        return this.renderer.azimuth
+    }
+
+    /**
+     * Returns zenith value this value is the angle to the azimuth based on PI
+     * @return {number}
+     */
+    getZenith() {
+        return this.renderer.zenith
+    }
+
+    /**
+     * This methode is based on `updateViewer` from Paperdoll.js (https://wow.zamimg.com/js/Paperdoll.js?3ee7ec5121)
+     *
+     * @param slot {number}: Item slot number
+     * @param displayId {number}: Item display id
+     * @param enchant {number}: Enchant (experimental not tested)
+     */
+    updateItemViewer(slot, displayId, enchant) {
+        const s = window.WH.Wow.Item
+        if (slot === s.INVENTORY_TYPE_SHOULDERS) {
+            // this.method(`setShouldersOverride`, [this.getShouldersOverrideData()]);
+        }
+        const a = (slot === s.INVENTORY_TYPE_ROBE) ? s.INVENTORY_TYPE_CHEST : slot
+
+        window.WH.debug(`Clearing model viewer slot:`, a.toString())
+        this.method(`clearSlots`, slot.toString())
+        if (displayId) {
+            window.WH.debug(`Attaching to model viewer slot:`, slot.toString(), `Display ID:`, displayId, `Enchant Visual:`, enchant)
+            this.method(`setItems`, [[{
+                slot: slot,
+                display: displayId,
+                visual: enchant || 0
+            }]])
+        }
+    }
+
+    setNewAppearance(options) {
+        if(!this.currentCharacterOptions) {
+            throw Error(`Character options are not set`)
+        }
+        const characterOptions = getCharacterOptions(options, this.currentCharacterOptions)
+        const race = this.characterRace
+        const gender = this.characterGender
+        this.method(`setAppearance`, {race: race, gender: gender, options: characterOptions})
+    }
+}
+
+// Instance variables
+WowModelViewer.prototype._currentCharacterOptions = 0
+WowModelViewer.prototype._characterGender = null
+WowModelViewer.prototype._characterRace = null
+
+// Getter and Setter for currentCharacterOptions
+Object.defineProperty(WowModelViewer.prototype, `currentCharacterOptions`, {
+    get: function() {
+        return this._currentCharacterOptions
+    },
+    set: function(value) {
+        this._currentCharacterOptions = value
+    }
+})
+
+// Getter and Setter for characterGender
+Object.defineProperty(WowModelViewer.prototype, `characterGender`, {
+    get: function() {
+        return this._characterGender
+    },
+    set: function(value) {
+        this._characterGender = value
+    }
+})
+
+// Getter and Setter for characterRace
+Object.defineProperty(WowModelViewer.prototype, `characterRace`, {
+    get: function() {
+        return this._characterRace
+    },
+    set: function(value) {
+        this._characterRace = value
+    }
+})
+
+
+
+async function generateModels(aspect, containerSelector, model, env='classic') {
+  let modelOptions, fullOptions;
+  if (model.id && model.type) { const {id,type}=model; modelOptions={models:{id,type}}; }
+  else { const {race,gender}=model; fullOptions=await findRaceGenderOptions(race,gender); modelOptions=optionsFromModel(model,fullOptions); }
+  modelOptions={dataEnv:'classic',env:'classic',gameDataEnv:'classic',hd:false,...modelOptions};
+  const models={type:2,contentPath:window.CONTENT_PATH,container:jQuery(containerSelector),aspect,...modelOptions};
+  const instance=await new WowModelViewer(models);
+  if(fullOptions){instance.currentCharacterOptions=fullOptions;instance.characterGender=model.gender;instance.characterRace=model.race;}
+  return instance;
+}
+window.WowModelViewerBundle={generateModels,findRaceGenderOptions,optionsFromModel,modelingType};
+})();
+

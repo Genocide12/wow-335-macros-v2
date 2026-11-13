@@ -27,10 +27,9 @@ jobs:
         run: |
           grep -q "assets/js/talents-data.js" docs/talents.html
           grep -q "assets/js/talents-data.js" docs/hero.html
-          grep -q "TALENTS_READY.then" docs/talents.html
-          grep -q "TALENTS_READY.then" docs/hero.html
-          grep -q "Talent data failed to load" docs/talents.html
-          grep -q "demo is unavailable" docs/hero.html
+          grep -q "const PRESETS" docs/talents.html
+          grep -q "const DEMO" docs/hero.html
+          grep -q "window.renderWowCharacter" docs/hero.html
           test -s docs/assets/data/talents.json
       - name: Check essential Pages files
         run: |
@@ -39,5 +38,8 @@ jobs:
           test -f docs/hero.html
           test -f docs/talents.html
           test -f docs/assets/icons/bg/164.jpg
-          grep -q 'Боевые кнопки' docs/index.html
-          grep -q 'UnitBuff' docs/macros.html
+          grep -q 'macroDropdown' docs/index.html
+          grep -q 'id="cards"' docs/macros.html
+          grep -q 'macroDetails' docs/macros.html
+          grep -q 'UnitBuff' docs/assets/js/macros-data.js
+          test -f docs/warrior-modes.html

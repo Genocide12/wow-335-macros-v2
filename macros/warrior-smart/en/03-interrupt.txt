@@ -2,8 +2,8 @@
 /cast [@mouseover,harm,nodead][]Pummel
 /cast [nostance:3]Berserker Stance
 /cast Berserker Rage
-/cast [mod:alt]Every Man for Himself
-/cast [mod:alt]Intimidating Shout
-/cast [mod:alt]Defensive Stance
-/cast [mod:alt]Disarm
-/cast [mod:alt]Taunt
+/cast Every Man for Himself
+/cast Intimidating Shout
+/cast Defensive Stance
+/cast Disarm
+/cast Taunt

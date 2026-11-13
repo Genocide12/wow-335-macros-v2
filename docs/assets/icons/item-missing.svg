@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Предмет">
+  <defs>
+    <linearGradient id="f" x2="0" y2="1"><stop stop-color="#4a4e5b"/><stop offset="1" stop-color="#141720"/></linearGradient>
+    <linearGradient id="g" x2="0" y2="1"><stop stop-color="#e8c96a"/><stop offset="1" stop-color="#72572b"/></linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="9" fill="#07090e" stroke="#71603a" stroke-width="2"/>
+  <path d="M19 16h26l5 8-5 4v20H19V28l-5-4z" fill="url(#f)" stroke="url(#g)" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M24 18v11m16-11v11M19 29h26M25 37h14m-14 6h14" fill="none" stroke="#c8a951" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+</svg>

@@ -35,9 +35,7 @@ def main()->int:
                 if len(line)>LIMIT: errors.append(f"{path.relative_to(ROOT)}:{no}: {len(line)} chars exceeds {LIMIT}")
                 if not COMMAND.match(line): errors.append(f"{path.relative_to(ROOT)}:{no}: unsupported macro command {line}")
                 if MODIFIER.search(line):
-                    allowed=(filename=="03-interrupt.txt" and "[mod:alt]" in line.lower()) or (filename==BUFF_CHECK and "[mod:ctrl]" in line.lower())
-                    if not allowed: errors.append(f"{path.relative_to(ROOT)}:{no}: unexpected modifier condition")
-                if filename==BUFF_CHECK and re.search(r"\[mod:(?:alt|shift)\]",line,re.I): errors.append(f"{path.relative_to(ROOT)}:{no}: buff checker may use Ctrl only as an explicit combat fallback")
+                    errors.append(f"{path.relative_to(ROOT)}:{no}: modifier conditions are not used by this site")
                 if lang=="ru" and "Инстинкт смерти" in line: errors.append(f"{path.relative_to(ROOT)}:{no}: use localized name Жажда смерти")
                 if filename!=BUFF_CHECK:
                     if lang=="ru" and "Жажда смерти" in line and "[combat]" not in line: errors.append(f"{path.relative_to(ROOT)}:{no}: Death Wish should be combat-only")
@@ -76,13 +74,11 @@ def main()->int:
         for filename in COMBAT_FILES:
             body=sources[lang].get(Path(filename).stem,"")
             for line in body.splitlines():
-                if MODIFIER.search(line) and (filename!="03-interrupt.txt" or "[mod:alt]" not in line.lower()):
-                    errors.append(f"Combat source {lang}/{filename} contains unsupported modifier condition")
+                if MODIFIER.search(line): errors.append(f"Combat source {lang}/{filename} contains unsupported modifier condition")
         installer_macros=re.split(r"^MACRO .*?$",content,flags=re.M)[1:]
         for i,macro in enumerate(installer_macros):
             body=macro.split("\nEND",1)[0]
-            if i < len(COMBAT_FILES) and MODIFIER.search(body) and not (i==2 and "[mod:alt]" in body.lower()): errors.append(f"Installer {path.name} combat macro {i+1} has unsupported modifier")
-            if i >= len(COMBAT_FILES) and MODIFIER.search(body) and "[mod:ctrl]" not in body.lower(): errors.append(f"Installer {path.name} buff macro contains unexpected modifier")
+            if MODIFIER.search(body): errors.append(f"Installer {path.name} macro {i+1} contains unsupported modifier")
         if sources[lang].get(Path(BUFF_CHECK).stem,"") not in content:
             errors.append(f"Installer {path.name} missing the optional buff checker")
         if "Инстинкт смерти" in content: errors.append(f"Installer {path.name} has incorrect localized Death Wish")

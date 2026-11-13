@@ -23,16 +23,16 @@ MACRO 16777218 "Control" Ability_Kick
 /cast [@mouseover,harm,nodead][]Pummel
 /cast [nostance:3]Berserker Stance
 /cast Berserker Rage
-/cast [mod:alt]Every Man for Himself
-/cast [mod:alt]Intimidating Shout
-/cast [mod:alt]Defensive Stance
-/cast [mod:alt]Disarm
-/cast [mod:alt]Taunt
+/cast Every Man for Himself
+/cast Intimidating Shout
+/cast Defensive Stance
+/cast Disarm
+/cast Taunt
 END
 MACRO 16777219 "Buff check" Ability_Warrior_BattleShout
 #showtooltip
-/cast [mod:ctrl]Demoralizing Shout
 /stopmacro [combat]
+/cast Demoralizing Shout
 /run s="Battle Shout"if not UnitBuff("player",s)then CastSpellByName(s)end
 /run d="Demoralizing Shout"if UnitExists("target")and not UnitDebuff("target",d)then CastSpellByName(d)end
 END

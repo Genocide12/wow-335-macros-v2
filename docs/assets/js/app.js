@@ -7,22 +7,40 @@
     ['talents.html', { ru: 'Таланты', en: 'Talents' }],
     ['hero.html', { ru: 'Герой', en: 'Hero' }],
     ['guide.html', { ru: 'Гайд', en: 'Guide' }],
-    ['warrior-modes.html', { ru: 'Направления', en: 'Warrior paths' }],
+    ['warrior-modes.html', { ru: 'Пути воина', en: 'Warrior paths' }],
   ];
 
   function getLang() {
     const u = new URLSearchParams(location.search);
-    let saved = 'ru';
-    try { saved = localStorage.getItem('wlang') || 'ru'; } catch (_) {}
-    return (u.get('lang') || saved).slice(0, 2);
+    return (u.get('lang') || localStorage.getItem('wlang') || 'ru').slice(0, 2);
   }
   function setLang(l) {
-    try { localStorage.setItem('wlang', l); } catch (_) {}
+    localStorage.setItem('wlang', l);
     const u = new URL(location);
     u.searchParams.set('lang', l);
     location.href = u;
   }
   const lang = LANGS.includes(getLang()) ? getLang() : 'ru';
+  let soundOn = localStorage.getItem('wfxSound') === 'on';
+  const UI_SOUND = 'https://wow.zamimg.com/wowsounds/sound/interface/uchatscrollbutton.ogg';
+  let uiAudio;
+  function playUiSound(kind = 'click') {
+    if (!soundOn) return;
+    try {
+      uiAudio ||= new Audio(UI_SOUND);
+      uiAudio.currentTime = 0;
+      uiAudio.play().catch(() => {});
+    } catch (_) {}
+  }
+
+  // Keep the UI intact when an upstream game icon is missing or its CDN is unavailable.
+  document.addEventListener('error', event => {
+    const img=event.target;
+    if (img instanceof HTMLImageElement && img.src.includes('wow.zamimg.com')) {
+      if(img.dataset.fallbackSrc&&!img.dataset.iconFallback){img.dataset.iconFallback='1';img.src=img.dataset.fallbackSrc;}
+      else img.src='assets/icons/item-missing.svg';
+    }
+  }, true);
 
   function h(html) {
     const t = document.createElement('template');
@@ -44,40 +62,80 @@
           <span class="t">WoW 3.3.5 · Warrior</span>
         </a>
         <nav>${nav}</nav>
+        <button class="sound-btn" id="soundBtn" type="button" aria-pressed="${soundOn}" title="${lang === 'ru' ? 'Звуки интерфейса' : 'Interface sounds'}">${soundOn ? '♫' : '♪'}</button>
         <button class="lang-btn" id="langBtn">${lang === 'ru' ? 'EN' : 'RU'}</button>
       </header>`));
     document.getElementById('langBtn').onclick = () => setLang(lang === 'ru' ? 'en' : 'ru');
+    document.getElementById('soundBtn').onclick = event => {
+      soundOn = !soundOn;
+      localStorage.setItem('wfxSound', soundOn ? 'on' : 'off');
+      event.currentTarget.textContent = soundOn ? '♫' : '♪';
+      event.currentTarget.setAttribute('aria-pressed', String(soundOn));
+      if (soundOn) playUiSound('open');
+    };
 
     // footer
     app.append(h(`
       <footer class="bot">
-        <span>WotLK 3.3.5a · ${lang === 'ru' ? 'Пути воина' : 'Warrior paths'}</span>
-        <a href="https://github.com/Genocide12/wow-335-macros-v2" target="_blank" rel="noopener">GitHub</a> <a href="https://github.com/Genocide12/wow-335-macros-v2/releases" target="_blank" rel="noopener">${lang === 'ru' ? 'Релизы' : 'Releases'}</a> <a href="https://github.com/Genocide12/wow-335-macros-v2/issues" target="_blank" rel="noopener">${lang === 'ru' ? 'Ошибки' : 'Issues'}</a>
+        <span>WotLK 3.3.5a · ${lang === 'ru' ? 'Воин — Неистовство' : 'Fury Warrior'}</span>
+        <a href="https://github.com/Genocide12/wow-335-macros-v2" target="_blank" rel="noopener">GitHub</a>
         <span style="margin-left:auto" class="muted">${lang === 'ru' ? 'Иконки: Wowhead / zamimg' : 'Icons: Wowhead / zamimg'}</span>
       </footer>`));
 
-    // copy buttons
-    document.querySelectorAll('[data-copy]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const txt = btn.getAttribute('data-copy');
-        (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject())
-          .catch(() => {
-            const ta = document.createElement('textarea');
-            ta.value = txt; document.body.appendChild(ta); ta.select();
-            document.execCommand('copy'); ta.remove();
-          })
-          .finally(() => {
-            const old = btn.textContent;
-            btn.textContent = '✓'; btn.classList.add('ok');
-            setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1200);
-          });
-      });
-    });
+  });
+
+  // Delegation supports buttons rendered after DOMContentLoaded; decode old encoded payloads.
+  document.addEventListener('click', async event => {
+    const target = event.target;
+    const dialogBackdrop = target instanceof Element ? target.closest('dialog[open]') : null;
+    if (dialogBackdrop && target === dialogBackdrop) dialogBackdrop.close();
+    const dropdown = document.querySelector('.macro-dropdown.open');
+    if (dropdown && !dropdown.contains(target) && !target.closest('.krow a')) dropdown.classList.remove('open');
+    if (!target.closest('.tal[data-id], .tipcard, .slot')) {
+      document.querySelectorAll('.tipcard').forEach(tip => { tip.style.display = 'none'; });
+    }
+    const btn = event.target.closest('[data-copy]');
+    const interactive = target.closest('button, a, .tal[data-id], .slot, .t-tab, .g-item');
+    if (interactive) {
+      playUiSound(interactive.matches('.krow a, .detail-btn, #guideSources') ? 'open' : (interactive.matches('.tal[data-id], .t-tab, .g-item') ? 'select' : 'click'));
+      interactive.classList.remove('ui-hit');
+      void interactive.offsetWidth;
+      interactive.classList.add('ui-hit');
+      setTimeout(() => interactive.classList.remove('ui-hit'), 420);
+    }
+    if (!btn) return;
+    let txt = btn.getAttribute('data-copy') || '';
+    try { txt = decodeURIComponent(txt); } catch (_) {}
+    let copied = false;
+    try {
+      if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(txt);
+      else throw new Error('clipboard unavailable');
+      copied = true;
+    } catch (_) {
+      const ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { copied = document.execCommand('copy'); } catch (_) {}
+      ta.remove();
+    }
+    const old = btn.textContent;
+    btn.textContent = copied ? '✓' : (lang === 'ru' ? 'Выделено' : 'Selected');
+    btn.classList.add('ok');
+    if (!copied) { const pre=btn.parentElement.querySelector('pre'); if(pre){const r=document.createRange();r.selectNodeContents(pre);getSelection().removeAllRanges();getSelection().addRange(r);} }
+    setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1400);
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+    document.querySelectorAll('.macro-dropdown.open').forEach(dropdown => dropdown.classList.remove('open'));
+    document.querySelectorAll('.tipcard').forEach(tip => { tip.style.display = 'none'; });
   });
 
   // export helpers
   window.W = {
     lang,
+    sound: playUiSound,
     // Wowhead CDN serves every WotLK icon — nothing is stored in the repo
     icon(name, size) {
       return `https://wow.zamimg.com/images/wow/icons/${size || 'large'}/${name}.jpg`;

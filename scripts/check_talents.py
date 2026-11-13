@@ -8,7 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TALENTS = json.loads((ROOT / "docs/assets/data/talents.json").read_text(encoding="utf-8"))
 SOURCE = (ROOT / "docs/talents.html").read_text(encoding="utf-8")
-BODY = SOURCE.split("const PRESETS=[", 1)[1].split("\n];", 1)[0]
+match = re.search(r"const\s+PRESETS\s*=\s*\[(.*?)\n\s*\];", SOURCE, re.S)
+BODY = match.group(1) if match else ""
 TREE_ORDER = ("arms", "fury", "prot")
 ALL = {talent["id"]: {**talent, "tree": tree["key"]}
        for tree in TALENTS["trees"] for talent in tree["talents"]}
@@ -17,7 +18,7 @@ ALL = {talent["id"]: {**talent, "tree": tree["key"]}
 def main() -> int:
     errors: list[str] = []
     rows = re.findall(
-        r"\{tree:'(fury|arms|prot)',level:(\d+),source:'([^']+)',ru:'([^']+)',en:'([^']+)',points:\{([^}]*)\}\}", BODY)
+        r"\{\s*tree:\s*'(fury|arms|prot)'\s*,\s*lvl:\s*(\d+)\s*,\s*src:\s*'([^']+)'\s*,\s*ru:\s*'([^']*)'\s*,\s*en:\s*'([^']*)'\s*,\s*pts:\s*\{([^}]*)\}", BODY)
     if not rows:
         print("No talent presets parsed from docs/talents.html")
         return 1

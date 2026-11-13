@@ -1,7 +1,255 @@
-<!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Гайд Fury-воина — WoW 3.3.5a</title><link rel="stylesheet" href="assets/css/app.css"><style>main{max-width:900px;margin:28px auto;padding:0 18px}.guide-card{padding:18px;margin:16px 0;line-height:1.65}.guide-card h2{margin-top:0}.guide-card table{border-collapse:collapse;width:100%}.guide-card td,.guide-card th{border-bottom:1px solid #39404b;padding:8px;text-align:left}</style></head><body><div id="app"><main>
-<h1 data-ru="Краткий гайд Fury-воина" data-en="Fury Warrior quick guide">Краткий гайд Fury-воина</h1>
-<section class="card guide-card"><h2 data-ru="Три клавиши" data-en="Three keys">Три клавиши</h2><table><thead><tr><th data-ru="Клавиша" data-en="Key">Клавиша</th><th data-ru="Назначение" data-en="Purpose">Назначение</th></tr></thead><tbody><tr><td><b>1</b></td><td data-ru="Одна цель: основной приоритет Fury; вне боя макрос пробует Рывок и выбор стойки." data-en="Single target: main Fury priority; out of combat the macro attempts Charge and stance selection.">Одна цель: основной приоритет Fury; вне боя макрос пробует Рывок и выбор стойки.</td></tr><tr><td><b>2</b></td><td data-ru="AoE: смена отсутствующей или мёртвой цели, автоатака, стойка берсерка, Перехват и атаки по группе." data-en="AoE: acquire a target if absent or dead, auto-attack, Berserker Stance, Intercept, and pack attacks.">AoE: смена отсутствующей или мёртвой цели, автоатака, стойка берсерка, Перехват и атаки по группе.</td></tr><tr><td><b>3</b></td><td data-ru="Прерывание по наведению/цели; дальше — доступные контрольные и защитные умения." data-en="Mouseover/current-target interrupt, followed by available control and defensive actions.">Прерывание по наведению/цели; дальше — доступные контрольные и защитные умения.</td></tr></tbody></table><p><a href="macros.html" data-ru="Открыть тексты и скопировать макросы" data-en="View and copy macro texts">Открыть тексты и скопировать макросы</a></p></section>
-<section class="card guide-card"><h2 data-ru="Как работает приоритет" data-en="How the priority works">Как работает приоритет</h2><p data-ru="Нажимай выбранную кнопку повторно: клиент проверяет команды сверху вниз, но обычно выполняет только одно доступное действие с GCD за нажатие. Следующая строка не означает очередь, которая запустится сама — для следующего действия нужно новое нажатие." data-en="Press the selected key repeatedly: the client checks commands from top to bottom but normally performs only one available GCD action per press. The next line is not an automatic queue; another press is needed for another action.">Нажимай выбранную кнопку повторно: клиент проверяет команды сверху вниз, но обычно выполняет только одно доступное действие с GCD за нажатие. Следующая строка не означает очередь, которая запустится сама — для следующего действия нужно новое нажатие.</p><p data-ru="Способность может не сработать, если она ещё не изучена, требует талант/стойку/оружие, не хватает ярости, цель вне радиуса или действует восстановление. После получения новых умений перепроверь установщик и тестируй на манекене." data-en="An ability may not fire if it is unlearned, needs a talent/stance/weapon, rage is insufficient, the target is out of range, or the cooldown is active. Re-test on a dummy as you learn abilities.">Способность может не сработать, если она ещё не изучена, требует талант/стойку/оружие, не хватает ярости, цель вне радиуса или действует восстановление. После получения новых умений перепроверь установщик и тестируй на манекене.</p></section>
-<section class="card guide-card"><h2 data-ru="Баффы, бурст и выживание" data-en="Buffs, burst, and survival">Баффы, бурст и выживание</h2><p data-ru="Стандартный язык макросов 3.3.5a не проверяет наличие ауры и не решает, когда использовать долгие кулдауны. Поэтому Боевой крик, Жажду смерти и защитные способности нажимай вручную, когда нужен эффект. Не запускай защищённые заклинания через Lua-автокаст." data-en="The standard 3.3.5a macro system cannot inspect aura presence or decide when to use long cooldowns. Trigger Battle Shout, Death Wish, and defensive abilities manually when needed. Do not attempt Lua auto-casts of protected spells.">Стандартный язык макросов 3.3.5a не проверяет наличие ауры и не решает, когда использовать долгие кулдауны. Поэтому Боевой крик, Жажду смерти и защитные способности нажимай вручную, когда нужен эффект. Не запускай защищённые заклинания через Lua-автокаст.</p><p data-ru="Названия, ранги и механика могут отличаться на приватных серверах. Сверяй строки с языком клиента и проверяй их на манекене." data-en="Names, ranks, and mechanics can differ on private servers. Match the client language and test on a training dummy.">Названия, ранги и механика могут отличаться на приватных серверах. Сверяй строки с языком клиента и проверяй их на манекене.</p></section>
-</main></div><script src="assets/js/app.js"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-ru]').forEach(el=>{const val=el.getAttribute('data-'+window.W.lang);if(val!==null)el.textContent=val});document.title=(window.W.lang==='ru'?'Гайд':'Guide')+' — WoW 3.3.5a'});</script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Гайд — WoW 3.3.5 Fury</title>
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  .g-shell{min-height:0;flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+  .g-head{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+  .g-head h2{margin:0;color:var(--gold2);font-size:18px}
+  .g-head p{font-size:11px;color:var(--dim);margin-top:3px}
+  .g-select{margin-left:auto;max-width:270px;background:#11141d;color:var(--gold2);border:1px solid var(--gold);border-radius:9px;padding:9px;font-weight:700}
+  .g-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(62px,1fr);gap:8px;min-height:0;overflow:hidden}
+  .g-item{display:flex;align-items:center;gap:10px;text-align:left;padding:9px;background:linear-gradient(140deg,#242533,#141720);color:var(--txt);border:1px solid var(--line);border-radius:10px;cursor:pointer;min-width:0;overflow:hidden}
+  .g-item:hover{border-color:var(--gold)}
+  .g-item img{width:36px;height:36px;border-radius:8px;flex:0 0 auto}
+  .g-item .t{min-width:0}.g-item b{display:block;color:#fff;font-size:12.5px}
+  .g-item span{display:block;color:var(--dim);font-size:10.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .g-bottom{display:flex;justify-content:flex-end}
+  .g-dialog{width:min(720px,92vw);max-height:82dvh;margin:auto;padding:0;background:#141720;color:var(--txt);border:1px solid var(--gold);border-radius:14px;box-shadow:0 20px 70px #000d}
+  .g-dialog::backdrop{background:#05060bbd;backdrop-filter:blur(4px)}
+  .g-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--gold2);font-weight:800}
+  .g-dialog-head button{background:none;border:0;color:var(--dim);font-size:24px;cursor:pointer}
+  .g-dialog-body{padding:14px 16px;overflow:auto;max-height:calc(82dvh - 52px);font-size:13px;line-height:1.55}
+  .g-dialog-body p{margin:8px 0}.g-dialog-body b{color:var(--gold2)}
+  .g-spells{display:flex;gap:6px;flex-wrap:wrap}.g-spells img{width:32px;height:32px;border-radius:7px}
+  @media(max-width:860px){.g-items{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(55px,1fr);gap:5px}.g-shell{gap:6px}.g-head h2{font-size:15px}.g-item{padding:6px;gap:7px}.g-item img{width:29px;height:29px}.g-item b{font-size:11px}.g-item span{font-size:9.5px}.g-select{max-width:48%;padding:7px;font-size:11px}}
+  @media(max-width:420px){.g-items{grid-template-columns:1fr;grid-auto-rows:minmax(40px,1fr)}.g-item span{display:none}.g-item img{width:25px;height:25px}.g-item{padding:4px 7px}.g-select{max-width:50%}}
+</style>
+</head>
+<body>
+<div id="app">
+<main>
+  <section class="card g-shell">
+    <div class="g-head"><div><h2 id="guideTitle"></h2><p id="guideSubtitle"></p></div><select class="g-select" id="guideCategory"></select></div>
+    <div class="g-items" id="guideItems"></div>
+    <div class="g-bottom"><button class="btn ghost" id="guideSources"></button></div>
+  </section>
+</main>
+</div>
+<dialog class="g-dialog" id="guideDialog"><div class="g-dialog-head"><span id="guideDialogTitle"></span><button class="macro-close" id="closeGuideDialog" aria-label="Close">×</button></div><div class="g-dialog-body" id="guideDialogBody"></div></dialog>
+<script src="assets/js/app.js"></script>
+<script>
+(() => {
+  const lang = window.W.lang;
+  const I = window.W.icon;
+  const R = {
+    title: 'Бой и выживание',
+    subtitle: 'Воин · Неистовство · WotLK 3.3.5a. Как драться, выживать и выжать из персонажа максимум.',
+    fightTitle: 'Как драться',
+    fight: [
+      { icon: 'ability_warrior_charge', name: 'Открывай Рывком',
+        spells: ['ability_warrior_charge', 'ability_warrior_battleshout', 'ability_racial_bloodrage'],
+        text: 'Каждый бой начинай с <b>Рывка</b> — макрос ротации вне боя сам встанет в боевую стойку и рванёт к цели, а пока летишь, ярость уже копится. Перед пулом нажми <b>макрос боя с группой</b> — вне боя макрос сам проверит <b>Боевой крик</b> и повесит его, только если его нет. В бою игра запрещает макросам кастовать из Lua-кода — поэтому в бою крик макрос не трогает: висящий бафф живёт 2 минуты и спокойно доживает до конца боя.' },
+      { icon: 'inv_axe_66', name: 'Ротация — спамь макрос ротации',
+        spells: ['ability_warrior_devastate', 'spell_nature_bloodlust', 'ability_whirlwind'],
+        text: 'Приоритеты зашиты в порядок строк макроса: <b>Победный раж</b> (бесплатный, доступен лишь 20 сек после убийства — жми сразу, окно сгорает) → <b>Кровожадность</b> (ядро ротации, КД 4 сек) → <b>Вихрь</b> → <b>Казнь</b>. За одно нажатие срабатывает первый доступный удар.' },
+      { icon: 'ability_racial_bloodrage', name: 'Ярость — не копи',
+        spells: ['ability_rogue_ambush'],
+        text: 'Ярость капает с ударов и полученного урона, на максимуме сгорает зря. Избыток сбрасывай <b>Ударом героя</b> — он единственный живёт на отдельной кнопке: не занимает общий КД, жми при ярости 50+. <b>Кровавая ярость</b> вшита в макрос ротации и выходит с кулдауна сама в бою — она не в общем КД.' },
+      { icon: 'ability_parry', name: 'Стой за спиной',
+        spells: ['ability_parry', 'ability_backstab'],
+        text: 'Спереди моб может <b>парировать и уклоняться</b> от твоих ударов — обходи цель со спины, урон будет ровнее. И не убегай от мобов спиной: удары в спину <b>оглушают</b> и не дают оторваться.' },
+      { icon: 'ability_whirlwind', name: 'Пак — жми макрос боя с группой',
+        spells: ['ability_whirlwind', 'ability_warrior_cleave', 'ability_warrior_warcry'],
+        text: 'Два и больше мобов — макрос боя с группой вместо макроса ротации: <b>Вихрь</b> бьёт всех вокруг обоими оружиями, <b>Рассекающий удар</b> превращает каждый свинг в удар по всем, а <b>Перехват</b> сам догоняет разбежавшихся. Против пары целей чередуй макрос ротации и макрос боя с группой.' },
+      { icon: 'spell_shadow_deathpact', name: 'Бурст на боссах',
+        spells: ['spell_shadow_deathpact', 'ability_criticalstrike', 'inv_sword_48'],
+        text: '<b>Жажда смерти</b> (+20% физического урона на 30 сек) и <b>Безрассудство</b> (три удара критуют) срабатывают <b>сами</b>, по кулдауну, прямо из макроса ротации — отдельные клавиши не нужны. Фаза <b>Казни</b> (цель ниже 20% HP) превращается в волну критов.' },
+    ],
+    survTitle: 'Как выживать',
+    surv: [
+      { icon: 'spell_nature_reincarnation', name: 'Лечение в бою',
+        text: '<b>Кровожадность</b> лечит: три следующие атаки после неё возвращают по 1% здоровья. Талант <b>Безудержное восстановление</b> возвращает 30% здоровья за 10 сек — он требует эффекта исступления, так что сначала дай себе <b>Кровавую ярость</b> или Жажду смерти.' },
+      { icon: 'ability_warrior_warcry', name: 'Профилактика урона',
+        text: '<b>Деморализующий крик</b> снижает силу атаки мобов — против больших паков кричи его вручную (правило игры: в бою макрос не может проверить дебафф и скастовать сам). Если нужно пережить сильный урон, вручную переключись в Оборонительную стойку и прожми подходящее защитное умение.' },
+      { icon: 'ability_golemthunderclap', name: 'Контроль и побег',
+        text: 'Устрашающий крик распугает мобов вокруг. Талант <b>Пронзительный вой</b> замедлит погоню. Сначала распугай или замедли — потом беги к дружественным NPC или из зоны мобов.' },
+      { icon: 'spell_shadow_charm', name: 'Аварийные умения',
+        text: 'Каждый за себя (у людей) снимает эффекты потери контроля. Защитный макрос сохраняет команды для Устрашающего крика, Оборонительной стойки, Разоружения и Провокации без сочетаний клавиш. Он пробует строки по очереди; для точного контроля кулдаунов используй нужные способности отдельно. Выбрался — жми макрос ротации: макрос сам вернёт стойку берсерка.' },
+      { icon: 'spell_misc_food', name: 'Между боями',
+        text: 'Еда восстанавливает здоровье и даёт бонус к стату, <b>Первая помощь</b> — быстрые бинты из ткани. Не лезь в следующий бой с пустой полосой: смерть стоит дороже короткого перекура.' },
+    ],
+    tgTitle: 'Хватка титана — два двуручных (60+)',
+    tg: [
+      { icon: 'ability_racial_avatar', name: 'Что даёт Хватка титана',
+        spells: ['ability_racial_avatar', 'inv_sword_20', 'inv_axe_66'],
+        text: 'На 60-м уровне, когда в Неистовстве уже вложено 50 очков, 51-м берёшь <b>Хватку титана</b> — и надеваешь <b>два двуручных меча, топора или булавы</b>, по одному в каждую руку. Штраф: весь физический урон −10%. Не пугайся: два двуручных дают столько урона и статов, что штраф с лихвой перекрывается — суммарный ДПС растёт, а Вихрь и Победный раж начинают бить по-настоящему больно.' },
+      { icon: 'inv_sword_20', name: 'Какое оружие брать',
+        spells: ['inv_sword_20', 'inv_axe_66', 'ability_warrior_weaponmastery'],
+        text: 'В ветке Неистовства нет специализаций на тип оружия — меч, топор или булава равнозначны, бери <b>пару с самым высоким уроном в секунду</b>. Предпочитай медленные двуручные (скорость атаки 3.0 сек и медленнее): урон способностей считается от урона оружия, а не от его скорости. До 60-го спокойно качайся на паре одноручных или одном двуручном — лучшем из найденного: Хватка всё равно переплюнет.' },
+      { icon: 'ability_whirlwind', name: 'Ротация не меняется — только бьёт больнее',
+        spells: ['ability_whirlwind', 'ability_rogue_ambush', 'spell_nature_bloodlust'],
+        text: 'Макросы три боевых макроса остаются прежними. <b>Вихрь</b> теперь бьёт обоими двуручками — становится главной способностью. <b>Удар героя</b> заменяет удар главной руки и стоит заметно больше ярости — сливай только избыток с его отдельной кнопки. <b>Кровожадность</b> считается от силы атаки и от оружия не зависит. А вот прок таланта <b>Прилив крови</b> (мгновенный <b>Мощный удар</b> после Удара героя, Вихря или Кровожадности) в макрос не засунуть — правило Blizzard про бой; повесь Мощный удар на отдельную кнопку и жми, когда иконка засветилась.' },
+      { icon: 'inv_shoulder_22', name: 'Статы и выживание на 80-м',
+        spells: ['inv_shoulder_22', 'spell_nature_enchantarmor', 'inv_misc_gem_01'],
+        text: 'Приоритет: <b>сила</b> &gt; <b>меткость</b> (особые удары почти не промахиваются примерно от 5% против ровесников; на 80-м в рейдах планка выше) &gt; <b>крит</b> (кормит Шквал и Буйство) &gt; скорость. Пробивание брони ценится в эндгейме. Выносливость не собирай: лучшая защита фури-солиста — убить первым, а лечат Кровожадность и Безудержное восстановление (30% здоровья за 10 сек, требует эффекта исступления — например, Кровавой ярости).' },
+    ],
+    rotTitle: 'Ротация PvE · приоритеты важнее спама',
+    rot: [
+      { icon: 'ability_warrior_devastate', name: 'Победный раж', why: 'бесплатно, окно 20 сек после убийства — жми первым' },
+      { icon: 'spell_nature_bloodlust', name: 'Кровожадность', why: 'КД 4 сек — ядро ротации, ещё и лечит' },
+      { icon: 'ability_whirlwind', name: 'Вихрь', why: 'КД 10 сек, бьёт обоими оружиями — с Хваткой титана главный урон' },
+      { icon: 'inv_sword_48', name: 'Казнь', why: 'под 20% HP цели; по гайдам WotLK — последний приоритет: у Кровожадности лучше скейлинг' },
+      { icon: 'ability_rogue_ambush', name: 'Удар героя (отдельная кнопка)', why: 'сброс лишней ярости при 50+, не в общем КД' },
+    ],
+    auto: [
+      { icon: 'ability_warrior_battleshout', name: 'Боевой крик (макрос боя с группой, вне боя)', why: 'проверит бафф и повесит только недостающее' },
+      { icon: 'spell_shadow_deathpact', name: 'Жажда смерти и Безрассудство', why: 'макрос срабатывает сам; рейдовый бурст лучше планировать под бой вручную' },
+      { icon: 'ability_racial_avatar', name: 'Стойки сами', why: 'боевая для Рывка, берсерка для ротации' },
+      { icon: 'ability_racial_bloodrage', name: 'Кровавая ярость', why: 'сама выходит с кулдауна из макроса ротации' },
+      { icon: 'spell_nature_ancestralguardian', name: 'Ярость берсерка', why: 'сама с кнопки защитный макрос: ярость и иммунитет к страху' },
+      { icon: 'ability_racial_avatar', name: 'Хватка титана (60+)', why: 'макросы те же: надел два двуручных — и продолжай жать макрос ротации и макрос для групы' },
+    ],
+    learnTitle: 'Что и где изучать',
+    learn: [
+      { icon: 'ability_warrior_weaponmastery', name: 'Классовый тренер',
+        text: 'Умения и их новые ранги покупаются у <b>тренера воинов</b> в столице. У большинства ударов несколько рангов — устаревший бьёт заметно слабее. Проверяй тренера каждый раз, как оказался в городе.' },
+      { icon: 'ability_racial_avatar', name: 'Таланты',
+        text: 'Все очки — в <b>Неистовство</b>: Безжалостность → Шквал → Кровожадность → Прилив крови. К 60-му в ветке должно быть 50 очков — 51-м берёшь <b>Хватку титана</b> и пересядешь с пары одноручных на два двуручных. Готовые пути по уровням — на вкладке <a class="tal-link" href="talents.html?lang=ru">Таланты</a>: там пресеты до 80-го по гайдам и мои (ДПС и выживание), для всех трёх веток.' },
+      { icon: 'spell_shadow_charm', name: 'Расовые способности',
+        text: 'За человека: <b>Каждый за себя</b> — снимает эффекты потери контроля, кулдаун 2 минуты. Нажми его отдельно, когда тебя оглушили, испугали или обездвижили.' },
+      { icon: 'inv_sword_20', name: 'Навык оружия',
+        text: 'У каждого типа оружия свой навык: взял в руки незнакомый тип — начнутся промахи. Прокачай навык на манекене в столице или парой ударов по слабым мобам, прежде чем идти в бой.' },
+      { icon: 'inv_shoulder_22', name: 'Экипировка',
+        text: 'Ищи <b>силу</b> (сила атаки), <b>меткость</b> (особые удары перестают промахиваться) и <b>крит</b> (поддерживает Шквал и Буйство). До 60-го — пара одноручных или один двуручный с лучшим уроном; с 60-го, с Хваткой титана, — <b>два двуручных меча или топора</b>. Источники: данжи, групповые квесты, крафт, аукцион.' },
+      { icon: 'spell_nature_enchantarmor', name: 'Усиления',
+        text: '<b>Зачарования и камни</b> — даже дешёвые лучше никаких: сила и меткость на всё подряд. Еда со статом, зелья лечения на крайний случай, эликсиры — в данжи.' },
+    ],
+  };
+  const E = {
+    title: 'Combat & Survival',
+    subtitle: 'Warrior · Fury · WotLK 3.3.5a. How to fight, stay alive and squeeze the maximum out of your character.',
+    fightTitle: 'How to fight',
+    fight: [
+      { icon: 'ability_warrior_charge', name: 'Open with Charge',
+        spells: ['ability_warrior_charge', 'ability_warrior_battleshout', 'ability_racial_bloodrage'],
+        text: 'Start every fight with <b>Charge</b> — out of combat rotation macro swaps you to Battle Stance and charges in, and rage builds while you fly. Before the pull use the <b>AoE macro</b> — out of combat the macro checks <b>Battle Shout</b> and applies it only if missing. In combat the game forbids macros from casting via Lua code — so in combat the macro leaves the shout alone: the 2-minute buff comfortably outlasts the fight.' },
+      { icon: 'inv_axe_66', name: 'Rotation — repeat the macro',
+        spells: ['ability_warrior_devastate', 'spell_nature_bloodlust', 'ability_whirlwind'],
+        text: 'Priorities are baked into the order of rotation macro lines: <b>Victory Rush</b> (free, available for only 20 sec after a kill — fire it before the window closes) → <b>Bloodthirst</b> (the core, 4s CD) → <b>Whirlwind</b> → <b>Execute</b>. One press fires the first available strike.' },
+      { icon: 'ability_racial_bloodrage', name: 'Don\u2019t cap rage',
+        spells: ['ability_rogue_ambush'],
+        text: 'Rage builds from your swings and from damage taken, and burns pointlessly at the cap. Dump the surplus into <b>Heroic Strike</b> — the one ability on its own button: it sits off the global cooldown, press it above 50 rage. <b>Bloodrage</b> is built into rotation macro and fires itself off cooldown in combat — also off the GCD.' },
+      { icon: 'ability_parry', name: 'Fight from behind',
+        spells: ['ability_parry', 'ability_backstab'],
+        text: 'From the front the mob can <b>parry and dodge</b> your attacks — circle behind the target for smoother damage. And don\u2019t run with your back to mobs: blows to the back <b>daze</b> you and let them keep up.' },
+      { icon: 'ability_whirlwind', name: 'Packs — используй макрос для группы',
+        spells: ['ability_whirlwind', 'ability_warrior_cleave', 'ability_warrior_warcry'],
+        text: 'Two or more mobs — макрос боя с группой instead of макрос ротации: <b>Whirlwind</b> hits everything around with both weapons, <b>Cleave</b> turns every white swing into a hit on all of them, and <b>Intercept</b> chases down runners on its own. On exactly two targets alternate макрос ротации and макрос боя с группой.' },
+      { icon: 'spell_shadow_deathpact', name: 'Burst on bosses',
+        spells: ['spell_shadow_deathpact', 'ability_criticalstrike', 'inv_sword_48'],
+        text: '<b>Death Wish</b> (+20% physical damage for 30 sec) and <b>Recklessness</b> (your next three strikes crit) fire <b>themselves</b>, off cooldown, straight from rotation macro — no extra keys needed. The <b>Execute</b> phase (target under 20% HP) turns into a wave of crits.' },
+    ],
+    survTitle: 'How to survive',
+    surv: [
+      { icon: 'spell_nature_reincarnation', name: 'Healing in combat',
+        text: '<b>Bloodthirst</b> heals: your next three attacks after it restore 1% health each. The talent <b>Enraged Regeneration</b> restores 30% of health over 10 sec — it requires an enrage effect, so give yourself <b>Bloodrage</b> or Death Wish first.' },
+      { icon: 'ability_warrior_warcry', name: 'Damage prevention',
+        text: '<b>Demoralizing Shout</b> lowers mob attack power — shout it by hand against big packs (a game rule: in combat a macro cannot check a debuff and cast it for you). If you need to survive heavy damage, switch to Defensive Stance and use a defensive ability manually.' },
+      { icon: 'ability_golemthunderclap', name: 'Control and escape',
+        text: '<b>Intimidating Shout</b> scares the mobs around. The <b>Piercing Howl</b> talent slows the chase. Fear or slow first — then run to friendly NPCs or out of the mob zone.' },
+      { icon: 'spell_shadow_charm', name: 'Emergency abilities',
+        text: 'Every Man for Himself (human racial) breaks stuns, fears and other loss-of-control effects. Defense macro retains commands for Intimidating Shout, Defensive Stance, Disarm and Taunt without modifier keys. It checks them in order; use individual abilities when you need exact cooldown control. Once you are safe, use the rotation macro — the macro swaps you back to Berserker Stance.' },
+      { icon: 'spell_misc_food', name: 'Between fights',
+        text: 'Food restores health and adds a stat bonus, <b>First Aid</b> gives quick bandages from cloth. Don\u2019t pull the next mob on an empty bar: death costs more than a short break.' },
+    ],
+    tgTitle: "Titan's Grip — two two-handers (60+)",
+    tg: [
+      { icon: 'ability_racial_avatar', name: "What Titan's Grip gives",
+        spells: ['ability_racial_avatar', 'inv_sword_20', 'inv_axe_66'],
+        text: 'At level 60, with 50 points already invested in Fury, your 51st point is <b>Titan\u2019s Grip</b> — equip <b>two two-handed swords, axes or maces</b>, one per hand. The penalty: all physical damage done is reduced by 10%. Don\u2019t be scared: two 2H weapons bring so much damage and stats that the penalty is repaid many times over — total DPS grows, and Whirlwind and Victory Rush start to really hurt.' },
+      { icon: 'inv_sword_20', name: 'Which weapons to take',
+        spells: ['inv_sword_20', 'inv_axe_66', 'ability_warrior_weaponmastery'],
+        text: 'Fury has no weapon-type specializations (those live in Arms) — sword, axe or mace are equal, so grab <b>the pair with the highest damage per second</b>. Prefer slow two-handers (attack speed 3.0 sec or slower): ability damage scales with weapon damage, not speed. Before 60, happily level on two one-handers or a single two-hander — the best you have found: Titan\u2019s Grip out-scales it all anyway.' },
+      { icon: 'ability_whirlwind', name: 'The rotation does not change — it just hits harder',
+        spells: ['ability_whirlwind', 'ability_rogue_ambush', 'spell_nature_bloodlust'],
+        text: 'Macros три боевых макроса stay exactly as they are. <b>Whirlwind</b> now hits with both two-handers — it becomes your hardest hitter. <b>Heroic Strike</b> replaces the main-hand swing and costs noticeably more rage — dump only the surplus from its own button. <b>Bloodthirst</b> scales with attack power, not with the weapon. The <b>Bloodsurge</b> proc (instant <b>Slam</b> after Heroic Strike, Whirlwind or Bloodthirst) cannot go into a macro — Blizzard\u2019s combat rule; bind Slam to a separate button and press it when its icon lights up.' },
+      { icon: 'inv_shoulder_22', name: 'Stats and survival at 80',
+        spells: ['inv_shoulder_22', 'spell_nature_enchantarmor', 'inv_misc_gem_01'],
+        text: 'Priority: <b>strength</b> &gt; <b>hit rating</b> (specials nearly stop missing around 5% against same-level mobs; at 80 in raids the bar is higher) &gt; <b>crit</b> (feeds Flurry and Rampage) &gt; haste. Armor penetration shines in the endgame. Do not stack stamina: a solo Fury warrior\u2019s best defense is killing first — healing comes from Bloodthirst and Enraged Regeneration (30% health over 10 sec, requires an enrage effect such as Bloodrage).' },
+    ],
+    rotTitle: 'PvE rotation · priorities before spam',
+    rot: [
+      { icon: 'ability_warrior_devastate', name: 'Victory Rush', why: 'free, 20-sec window after a kill — press it first' },
+      { icon: 'spell_nature_bloodlust', name: 'Bloodthirst', why: '4s CD — the core of the rotation, heals too' },
+      { icon: 'ability_whirlwind', name: 'Whirlwind', why: '10s CD, hits with both weapons — the top damage with Titan\u2019s Grip' },
+      { icon: 'inv_sword_48', name: 'Execute', why: 'under 20% target HP; per WotLK guides the lowest priority — Bloodthirst scales better' },
+      { icon: 'ability_rogue_ambush', name: 'Heroic Strike (own button)', why: 'rage dump above 50 rage, off GCD' },
+    ],
+    auto: [
+      { icon: 'ability_warrior_battleshout', name: 'Battle Shout (макрос боя с группой, out of combat)', why: 'checks the buff and applies only what is missing' },
+      { icon: 'spell_shadow_deathpact', name: 'Death Wish & Recklessness', why: 'the macro fires them automatically; plan raid burst manually for best timing' },
+      { icon: 'ability_racial_avatar', name: 'Stances', why: 'Battle for Charge, Berserker for the rotation' },
+      { icon: 'ability_racial_bloodrage', name: 'Bloodrage', why: 'fires itself off cooldown from the макрос ротации button' },
+      { icon: 'spell_nature_ancestralguardian', name: 'Berserker Rage', why: 'fires itself from defense macro: rage plus fear immunity' },
+      { icon: 'ability_racial_avatar', name: "Titan's Grip (60+)", why: 'macros stay the same: equip two 2H — and keep pressing макрос ротации и макрос для групы' },
+    ],
+    learnTitle: 'What & where to learn',
+    learn: [
+      { icon: 'ability_warrior_weaponmastery', name: 'Class trainer',
+        text: 'Abilities and their new ranks are bought from the <b>warrior trainer</b> in a capital city. Most strikes have several ranks — an outdated one hits noticeably weaker. Check the trainer every time you are in town.' },
+      { icon: 'ability_racial_avatar', name: 'Talents',
+        text: 'Put every point into <b>Fury</b>: Cruelty → Flurry → Bloodthirst → Bloodsurge. By level 60 the tree must hold 50 points — the 51st is <b>Titan\u2019s Grip</b>, and you switch from one-handers to two two-handed weapons. Ready-made level paths live on the <a class="tal-link" href="talents.html?lang=en">Talents</a> tab: presets to 80 from the top guides and mine (DPS and survival), for all three trees.' },
+      { icon: 'spell_shadow_charm', name: 'Racial abilities',
+        text: 'As a human: <b>Every Man for Himself</b> — breaks loss-of-control effects on a 2-minute cooldown. Use it separately when stunned, feared or rooted.' },
+      { icon: 'inv_sword_20', name: 'Weapon skill',
+        text: 'Every weapon type has its own skill: picked up an unfamiliar type — misses begin. Train it on a capital-city dummy or with a couple of hits on weak mobs before fighting for real.' },
+      { icon: 'inv_shoulder_22', name: 'Gear',
+        text: 'Look for <b>strength</b> (attack power), <b>hit rating</b> (specials stop missing) and <b>crit</b> (feeds Flurry and Rampage). Before 60 — two one-handers or a single two-hander with the best damage; from 60, with Titan\u2019s Grip — <b>two two-handed swords or axes</b>. Sources: dungeons, group quests, crafting, the auction house.' },
+      { icon: 'spell_nature_enchantarmor', name: 'Upgrades',
+        text: '<b>Enchants and gems</b> — even cheap ones beat none: strength and hit on everything. Stat food, healing potions for emergencies, elixirs for dungeons.' },
+    ],
+  };
+  const D = lang === 'ru' ? R : E;
+  document.title = D.title + ' — WoW 3.3.5 Fury';
+
+  const categories=[
+    ['fight',D.fightTitle,D.fight],['surv',D.survTitle,D.surv],['tg',D.tgTitle,D.tg],
+    ['rot',D.rotTitle,D.rot],['auto',lang==='ru'?'Работа макросов':'Macro behavior',D.auto],['learn',D.learnTitle,D.learn]
+  ];
+  const select=document.getElementById('guideCategory');
+  select.innerHTML=categories.map(([key,title])=>`<option value="${key}">${title}</option>`).join('');
+  document.getElementById('guideTitle').textContent=D.title;
+  document.getElementById('guideSubtitle').textContent=D.subtitle;
+  const items=document.getElementById('guideItems');
+  const dialog=document.getElementById('guideDialog');
+  const clean=s=>(s||'').replace(/<[^>]*>/g,'').replace(/&gt;/g,'>').replace(/&lt;/g,'<');
+  const openEntry=(p)=>{
+    document.getElementById('guideDialogTitle').textContent=p.name;
+    const description=p.text||p.why||'';
+    const spells=p.spells?`<div class="g-spells">${p.spells.map(s=>`<img src="${I(s)}" alt="">`).join('')}</div>`:'';
+    document.getElementById('guideDialogBody').innerHTML=`${spells}<p>${description}</p>`;
+    dialog.showModal();
+  };
+  const showCategory=()=>{
+    const group=categories.find(x=>x[0]===select.value);
+    items.innerHTML=group[2].map((p,i)=>`<button class="g-item" data-entry="${i}"><img src="${I(p.icon)}" alt=""><span class="t"><b>${p.name}</b><span>${clean(p.why||p.text).slice(0,145)}</span></span></button>`).join('');
+    items.querySelectorAll('[data-entry]').forEach(btn=>btn.onclick=()=>openEntry(group[2][+btn.dataset.entry]));
+  };
+  select.onchange=showCategory;
+  showCategory();
+  const ru=lang==='ru';
+  document.getElementById('guideSources').textContent=ru?'Источники':'Sources';
+  document.getElementById('guideSources').onclick=()=>{
+    document.getElementById('guideDialogTitle').textContent=ru?'Источники и примечания':'Sources and notes';
+    document.getElementById('guideDialogBody').innerHTML=`<p>${ru?'Гайд сверяется с WotLK-руководствами; детали талантов и макросов могут отличаться на отдельных серверах 3.3.5a.':'This guide is cross-checked against WotLK guides; talent and macro details may vary on individual 3.3.5a realms.'}</p><p><a class="tal-link" href="https://www.wowhead.com/wotlk/guide/classes/warrior/fury/dps-rotation-cooldowns-abilities-pve" target="_blank" rel="noreferrer">Wowhead · rotation</a></p><p><a class="tal-link" href="https://www.icy-veins.com/wotlk-classic/fury-warrior-dps-pve-rotation-cooldowns-abilities" target="_blank" rel="noreferrer">Icy Veins · priorities</a></p>`;
+    dialog.showModal();
+  };
+  document.getElementById('closeGuideDialog').onclick=()=>dialog.close();
+})();
+</script>
+</body>
+</html>

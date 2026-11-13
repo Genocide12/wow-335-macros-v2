@@ -1,13 +1,210 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Макросы — WoW 3.3.5a</title><link rel="stylesheet" href="assets/css/app.css"><style>
-main{max-width:1080px;margin:28px auto;padding:0 16px}.intro,.notice{line-height:1.6;color:#c8cfdb}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:16px}.card{min-width:0;background:linear-gradient(150deg,rgba(33,34,41,.95),rgba(14,16,22,.97));border:1px solid rgba(202,174,97,.4);border-radius:14px;padding:18px;box-shadow:0 10px 26px rgba(0,0,0,.3)}.card h2{margin:0 0 8px;color:var(--gold2)}.card p{line-height:1.5;color:#c8cfdb}.card pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0e1117;padding:12px;border-radius:8px;font-size:12px;max-height:260px;overflow:auto}.actions{display:flex;gap:8px;flex-wrap:wrap}.copy{padding:9px 12px;border:1px solid #3b4452;border-radius:8px;cursor:pointer;color:inherit;background:#202631}.notice{margin:20px 0;padding:14px 16px;border-left:4px solid #e7b75c;background:rgba(28,32,41,.9)}.separator{height:1px;background:linear-gradient(90deg,transparent,rgba(232,201,106,.5),transparent);margin:22px 0}
-</style></head><body><div id="app"><main>
-<h1 data-ru="Боевые макросы Fury-воина" data-en="Fury Warrior macros">Боевые макросы Fury-воина</h1><p class="intro" data-ru="Три боевые кнопки: 1 — одна цель, 2 — AoE и Боевой крик до боя, 3 — прерывание и аварийные действия. Боевые макросы работают обычным нажатием; в макросе 3 используется только Alt для условных аварийных действий." data-en="Three combat buttons: 1 single target, 2 AoE and pre-pull Battle Shout, 3 interrupt and emergency actions. Combat macros use plain presses; macro 3 uses Alt only for optional emergency actions.">Три боевые кнопки: 1 — одна цель, 2 — AoE и Боевой крик до боя, 3 — прерывание и аварийные действия. Боевые макросы работают обычным нажатием; в макросе 3 используется только Alt для условных аварийных действий.</p>
-<div class="notice"><b data-ru="Важно про 3.3.5a:" data-en="3.3.5a note:">Важно про 3.3.5a:</b> <span data-ru="макрос проверяет строки при нажатии. Обычно за одно нажатие проходит одно действие с GCD. Проверка собственного баффа через UnitBuff и CastSpellByName разрешена только вне боя с /stopmacro [combat]; каст из Lua в бою защищён. Проверку дебаффа цели через UnitDebuff автоматически не используем: применяй Деморализующий крик вручную или Alt-клавишей отдельного макроса." data-en="macros evaluate lines only when pressed and normally perform one GCD action per press. UnitBuff plus CastSpellByName for your own buff is only used out of combat behind /stopmacro [combat]; Lua casts are protected in combat. We do not auto-cast target debuffs via UnitDebuff; use Demoralizing Shout manually or with the separate Alt condition in the helper macro.">макрос проверяет строки при нажатии. Обычно за одно нажатие проходит одно действие с GCD. Проверка собственного баффа через UnitBuff и CastSpellByName разрешена только вне боя с /stopmacro [combat]; каст из Lua в бою защищён. Проверку дебаффа цели через UnitDebuff автоматически не используем: применяй Деморализующий крик вручную или Alt-клавишей отдельного макроса.</span></div>
-<div id="cards" class="cards"></div><div class="separator"></div><h2 data-ru="Дополнительная кнопка перед боем" data-en="Optional pre-pull helper">Дополнительная кнопка перед боем</h2><p class="intro" data-ru="Макрос 4 обновляет Боевой крик, если бафф отсутствует, и вне боя применяет Деморализующий крик, если на цели нет дебаффа. Это отдельная кнопка по твоему выбору; она не нужна для ротации и её можно не устанавливать." data-en="Macro 4 checks Battle Shout and target Demoralizing Shout before combat. It is an optional separate button, not part of the rotation; skip it if you don't want an extra key.">Макрос 4 обновляет Боевой крик, если бафф отсутствует, и вне боя применяет Деморализующий крик, если на цели нет дебаффа. Это отдельная кнопка по твоему выбору; она не нужна для ротации и её можно не устанавливать.</p><section class="card" id="buffcard"></section><p class="small muted" data-ru="Перед пуллом выбери вражескую цель и нажми макрос 4. В бою он остановится до Lua-проверок; дебафф не будет автоподдерживаться." data-en="Before a pull, select an enemy and press macro 4. In combat it stops before Lua checks; the target debuff will not be auto-refreshed.">Перед пуллом выбери вражескую цель и нажми макрос 4. В бою он остановится до Lua-проверок; дебафф не будет автоподдерживаться.</p>
-</main></div><script src="assets/js/app.js"></script><script src="assets/js/macros-data.js"></script><script>
-const specs=[['01-attack-rotation','1'],['02-aoe-pack','2'],['03-interrupt','3']];const names={ru:{'01-attack-rotation':'1 · Одна цель','02-aoe-pack':'2 · AoE и крик','03-interrupt':'3 · Прерывание / защита'},en:{'01-attack-rotation':'1 · Single target','02-aoe-pack':'2 · AoE and shout','03-interrupt':'3 · Interrupt / defense'}};const label={ru:{key:'Клавиша',copy:'Скопировать',done:'Скопировано',fail:'Копирование недоступно'},en:{key:'Key',copy:'Copy',done:'Copied',fail:'Copy unavailable'}};
-function fallbackCopy(v){const t=document.createElement('textarea');t.value=v;t.style.position='fixed';t.style.opacity='0';document.body.append(t);t.select();let ok=false;try{ok=document.execCommand('copy')}catch{}t.remove();return ok}
-function addCard(root,lang,title,key,body,desc){const c=document.createElement('section');c.className='card';const h=document.createElement('h2');h.textContent=title;const p=document.createElement('p');p.textContent=label[lang].key+' '+key+' · '+desc;const pre=document.createElement('pre');pre.textContent=body;const row=document.createElement('div');row.className='actions';const b=document.createElement('button');b.className='copy';b.type='button';b.textContent=label[lang].copy;b.onclick=async()=>{let ok=false;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(body);ok=true}}catch{}if(!ok)ok=fallbackCopy(body);b.textContent=ok?label[lang].done:label[lang].fail;setTimeout(()=>b.textContent=label[lang].copy,1300)};row.append(b);c.append(h,p,pre,row);root.append(c)}
-function render(){const lang=window.W.lang,data=window.MACRO_TXT[lang]||window.MACRO_TXT.ru,root=document.getElementById('cards');for(const [id,key] of specs)addCard(root,lang,names[lang][id],key,data[id],lang==='ru'?'обычное нажатие':'plain press');addCard(document.getElementById('buffcard'),lang,lang==='ru'?'4 · Проверка баффов':'4 · Buff checker','4',data['04-buff-check'],lang==='ru'?'вне боя · дополнительная кнопка':'out of combat · optional helper')}
-document.addEventListener('DOMContentLoaded',render);
-</script></div></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Макросы — WoW 3.3.5 Fury</title>
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  .macro-page{min-height:0;flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+  .m-tabs{display:none}
+  .m-tabs button{flex:1;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-weight:700;cursor:pointer}
+  .m-tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .m-tabs button.on{border-color:var(--gold);color:var(--gold2);background:linear-gradient(135deg,#3c3525,#211f20)}
+  .m-grid { grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: minmax(0,1fr); overflow: hidden; gap:10px }
+  .m-card { display:flex; flex-direction: column; gap: 8px; overflow: hidden; min-height:0; cursor:pointer }
+  .m-card .macro-box{display:none}
+  .m-card .m-extra{display:none}
+  .m-card { position:relative; border-color:#5a4d34; background:linear-gradient(145deg,rgba(42,39,32,.97),rgba(17,19,27,.98)); box-shadow:inset 0 0 0 1px rgba(218,183,103,.08),0 10px 26px #0005; animation:arrive .45s both; }
+  .m-card:nth-child(2){animation-delay:.08s}.m-card:nth-child(3){animation-delay:.16s}.m-card:nth-child(4){animation-delay:.24s}
+  @keyframes arrive{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .npc-dialog { display:flex;align-items:center;gap:11px;padding:9px 11px;background:linear-gradient(90deg,#302a1d,#1c1d25);border:1px solid #79643c;border-radius:10px;color:#e4d9bd;font-size:12px;line-height:1.45; }
+  .npc-dialog img{width:48px;height:48px;object-fit:cover;border:2px solid #b59858;border-radius:7px;box-shadow:0 0 15px #c8a95135}
+  .npc-dialog b{display:block;color:#f1d791;font-size:13px;margin-bottom:2px}
+  .m-card pre { font-size: 10.5px; line-height: 1.35; white-space:pre-wrap;overflow-wrap:anywhere;overflow:hidden;max-height:min(150px,20vh); }
+  .m-head { display: flex; align-items: center; gap: 10px; }
+  .m-head img { width: 40px; height: 40px; border-radius: 9px; border: 1px solid var(--gold); }
+  .m-head .t b { display: block; font-size: 15px; color: #fff; }
+  .m-head .t span { font-size: 12px; color: var(--dim); }
+  .key { display: inline-flex; width: 26px; height: 26px; border-radius: 7px; background: #0a0c12;
+    border: 1px solid var(--gold); color: var(--gold2); align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; margin-left: auto; flex: 0 0 auto; }
+  .m-card pre { flex: 0 0 auto; max-height:min(150px,20vh); }
+  .m-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 11px; font-weight: 700; color: var(--dim); border: 1px solid var(--line);
+    border-radius: 999px; padding: 3px 9px; }
+  .m-feats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 10px; border-top: 1px dashed var(--line); padding-top: 7px; }
+  .mf { display: flex; gap: 8px; align-items: center; }
+  .mf img { width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; }
+  .mf .t { font-size: 11.5px; line-height: 1.3; color: var(--dim); }
+  .mf .t b { color: var(--gold2); font-size: 12px; }
+  .m-note { font-size: 11.5px; color: var(--dim); border-top: 1px dashed var(--line); padding-top: 7px; line-height: 1.45; }
+  .m-note b { color: var(--gold2); }
+  .m-dialog{width:min(720px,92vw);max-height:82dvh;margin:auto;padding:0;background:#141720;color:var(--txt);border:1px solid var(--gold);border-radius:14px;box-shadow:0 20px 70px #000d}
+  .m-dialog::backdrop{background:#05060bbd;backdrop-filter:blur(4px)}
+  .m-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--gold2);font-weight:800}
+  .m-dialog-head button{background:none;border:0;color:var(--dim);font-size:24px;cursor:pointer}
+  .m-dialog-body{padding:14px 16px;overflow:auto;max-height:calc(82dvh - 50px)}
+  .mod-card { background: linear-gradient(160deg, var(--panel2), var(--panel)); }
+  .mod-row { display: flex; gap: 10px; align-items: center; background: rgba(10,12,18,.55); border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 10px; }
+  .mod-row img { width: 30px; height: 30px; border-radius: 7px; flex: 0 0 auto; }
+  .mod-row .t b { display: block; font-size: 13px; color: #fff; }
+  .mod-row .t span { font-size: 11.5px; color: var(--dim); }
+  .mod-k { display: inline-flex; min-width: 26px; height: 26px; border-radius: 7px; background: #0a0c12;
+    border: 1px solid var(--gold); color: var(--gold2); align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 800; margin-left: auto; padding: 0 7px; flex: 0 0 auto; }
+  @media (max-width: 860px) {
+    .macro-page{gap:5px}.m-tabs button{padding:6px 4px;font-size:11px}
+    .m-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:repeat(3,minmax(0,1fr));gap:6px}
+    .m-card { grid-column: auto !important; }
+    .m-card{padding:7px 9px;gap:5px}.npc-dialog{padding:4px 7px;font-size:10px}.npc-dialog img{width:30px;height:30px}.npc-dialog b{font-size:11px}
+    .m-head img{width:30px;height:30px}.m-head .t b{font-size:13px}.m-head .t span{font-size:10px}
+    .m-card .detail-btn{align-self:flex-start;padding:6px 10px;font-size:11px}
+    .m-feats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .m-card pre { max-height:min(130px,18vh); }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <main>
+  <div class="macro-page">
+    <div class="m-tabs" id="macroTabs"></div>
+    <div class="grid m-grid" id="cards"></div>
+  </div>
+</main>
+</div>
+<dialog class="m-dialog" id="macroDetails"><div class="m-dialog-head"><span id="macroDetailsTitle"></span><button class="macro-close" id="closeMacroDetails" aria-label="Close">×</button></div><div class="m-dialog-body" id="macroDetailsBody"></div></dialog>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/macros-data.js"></script>
+<script>
+const L10N = { ru: { copy: 'копировать' }, en: { copy: 'copy' } };
+// macro bodies come from macros-data.js (embedded, no fetch)
+const MACROS = [
+  {
+    file: '01-attack-rotation', icon: 'inv_axe_66',
+    ru: ['Ротация — одна кнопка', 'Рывок → Победный раж → Кровожадность → Вихрь → Казнь; кулдауны срабатывают сами'],
+    en: ['Rotation — one button', 'Charge → Victory Rush → Bloodthirst → Whirlwind → Execute; cooldowns fire themselves'],
+    tags: { ru: ['одна цель', 'без сочетаний клавиш', 'нажимать повторно'],
+            en: ['single target', 'no key modifiers', 'press repeatedly'] },
+    feats: {
+      ru: [
+        { i: 'ability_warrior_charge', t: 'Рывок сам', d: 'вне боя макрос встанет в боевую стойку и рванёт к цели; в бою вернёт стойку берсерка' },
+        { i: 'ability_warrior_devastate', t: 'Победный раж первым', d: 'доступен только 20 сек после убийства — макрос бьёт им первым, окно не сгорает зря' },
+        { i: 'ability_racial_bloodrage', t: 'Кровавая ярость сама', d: 'только в бою и не в общем КД: жмёшь макрос ротации — ярость капает сама' },
+        { i: 'ability_criticalstrike', t: 'Безрассудство само', d: 'как только кулдаун готов в бою, три следующих удара критуют — без зажатых клавиш' },
+        { i: 'spell_shadow_deathpact', t: 'Жажда смерти сама', d: '+20% физического урона на 30 сек — выходит с кулдауна прямо из ротации' },
+        { i: 'inv_sword_48', t: 'Казнь в конце списка', d: 'макрос пробует её после основных ударов; он не может проверять здоровье цели на 20%' },
+      ],
+      en: [
+        { i: 'ability_warrior_charge', t: 'Charge on its own', d: 'out of combat it charges from Battle Stance; in combat it returns you to Berserker Stance' },
+        { i: 'ability_warrior_devastate', t: 'Victory Rush first', d: 'available for 20 sec after a kill — the macro fires it immediately, before the window closes' },
+        { i: 'ability_racial_bloodrage', t: 'Bloodrage on its own', d: 'in combat only and off the GCD — press press it and rage trickles in by itself' },
+        { i: 'ability_criticalstrike', t: 'Recklessness on its own', d: 'once its cooldown is up in combat, your next three strikes crit — no keys to hold' },
+        { i: 'spell_shadow_deathpact', t: 'Death Wish on its own', d: '+20% physical damage for 30 sec — rides the rotation off its cooldown' },
+        { i: 'inv_sword_48', t: 'Execute at the end', d: 'the macro tries it after core attacks; it cannot test whether the target is below 20% health' },
+      ],
+    },
+    note: { ru: 'Одно нажатие — первый доступный удар списка: просто спамь макрос ротации. Безрассудство и Жажда смерти срабатывают по кулдауну сами. Если нужно придержать бурст для босса, используй эти способности отдельно.',
+            en: 'Every press fires the first available ability — just repeat the rotation macro. Recklessness and Death Wish fire themselves off cooldown. If you need to save burst for a boss, use those abilities separately.' },
+  },
+  {
+    file: '02-aoe-pack', icon: 'ability_whirlwind',
+    ru: ['AoE — пак из 2+ мобов', 'Вихрь + Кровожадность + Рассекающий удар; Перехват; вне боя сам вешает Боевой крик'],
+    en: ['AoE — packs of 2+', 'Whirlwind + Bloodthirst + Cleave; Intercept; out of combat it keeps Battle Shout up'],
+    tags: { ru: ['AoE', 'автотаргет', 'крик по проверке'],
+            en: ['AoE', 'auto-target', 'checked shout'] },
+    feats: {
+      ru: [
+        { i: 'inv_misc_key_02', t: 'Автотаргет', d: 'нет цели или цель мертва — макрос сам возьмёт ближайшего врага и начнёт атаку' },
+        { i: 'ability_rogue_sprint', t: 'Перехват сам', d: 'в бою макрос встанет в стойку берсерка и догонит убегающего моба' },
+        { i: 'ability_whirlwind', t: 'Вихрь первым', d: 'бьёт каждого моба пака обоими оружиями — с Хваткой титана очень больно' },
+        { i: 'ability_warrior_cleave', t: 'Рассекающий удар', d: 'каждый белый свинг бьёт по площади — ярость в урон без GCD' },
+        { i: 'ability_warrior_battleshout', t: 'Боевой крик по проверке', d: 'вне боя макрос проверит бафф и повесит только если его нет — ни GCD, ни ярости впустую' },
+        { i: 'inv_jewelry_talisman_04', t: 'Резерв под аксессуар — 9 симв.', d: 'верни строку /use 13 после Рассекающего удара, когда добудешь тринкет — влезает впритык' },
+      ],
+      en: [
+        { i: 'inv_misc_key_02', t: 'Auto-target', d: 'no target or a dead one — the macro grabs the nearest enemy and starts attacking' },
+        { i: 'ability_rogue_sprint', t: 'Intercept on its own', d: 'in combat the macro swaps to Berserker Stance and chases down runners' },
+        { i: 'ability_whirlwind', t: 'Whirlwind first', d: 'hits every mob in the pack with both weapons — a monster with Titan’s Grip' },
+        { i: 'ability_warrior_cleave', t: 'Cleave', d: 'every white swing hits the whole pack — rage into damage, off the GCD' },
+        { i: 'ability_warrior_battleshout', t: 'Battle Shout with a check', d: 'out of combat the macro checks the buff and applies it only if missing — no GCD, no rage wasted' },
+        { i: 'inv_jewelry_talisman_04', t: 'Trinket reserve — 9 chars', d: 'once you get a trinket, re-add the line /use 13 after Cleave — it fits' },
+      ],
+    },
+    note: { ru: 'Проверка крика работает <b>только вне боя</b>: строка /stopmacro [combat] сама отключает её в бою — таково правило 3.3.5a (Blizzard блокирует каст из Lua-кода в бою, обойти нельзя). В бою крик не трогается, чтобы не жечь ярость — висящий бафф спокойно доживает до конца большинства паков. Использование аксессуара (/use 13) пока убрано по запросу — в макросе зарезервировано <b>9 символов</b>.',
+            en: 'The shout check runs <b>out of combat only</b>: the /stopmacro [combat] line disables it in combat — that is the 3.3.5a rule (Blizzard blocks Lua casts in combat, no way around it). In combat the macro leaves the shout alone so rage is not burned — an applied buff comfortably outlasts most packs. The trinket use (/use 13) is removed for now — <b>9 characters reserved</b>.' },
+  },
+  {
+    file: '03-interrupt', icon: 'inv_gauntlets_04',
+    ru: ['Прерывание и защита', 'Зуботычина по наведению, стойка и все команды защитного макроса'],
+    en: ['Interrupt & defense', 'Mouseover Pummel, stance, and the full defensive sequence'],
+    tags: { ru: ['мышь', 'без смены цели', 'одна кнопка'],
+            en: ['mouseover', 'no target switch', 'single button'] },
+    feats: {
+      ru: [
+        { i: 'inv_gauntlets_04', t: 'Сбивай не меняя цель', d: 'Зуботычина летит в моба под курсором — твоя цель не переключается' },
+        { i: 'ability_racial_avatar', t: 'Стойка сама', d: 'не в стойке берсерка — сначала встанет в неё, со второго нажатия бьёт' },
+        { i: 'spell_nature_ancestralguardian', t: 'Ярость берсерка сама', d: 'выходит с кулдауна при нажатии: ярость и иммунитет к страху — без отдельной кнопки' },
+        { i: 'ability_warrior_disarm', t: 'Полный набор действий', d: 'После прерывания макрос содержит команды для расовой способности, страха, защитной стойки, Разоружения и Провокации — без сочетаний клавиш' },
+        { i: 'ability_parry', t: 'Вернись в бой', d: 'выбрался из передряги — жми макрос ротации: макрос сам вернёт стойку берсерка' },
+      ],
+      en: [
+        { i: 'inv_gauntlets_04', t: 'Interrupt without switching', d: 'Pummel goes into the mob under the cursor — your target stays' },
+        { i: 'ability_racial_avatar', t: 'Stance on its own', d: 'not in Berserker Stance — it swaps first, interrupts from the second press' },
+        { i: 'spell_nature_ancestralguardian', t: 'Berserker Rage on its own', d: 'fires off cooldown on press: rage plus fear immunity — no extra button' },
+        { i: 'ability_warrior_disarm', t: 'Full action sequence', d: 'The macro retains its racial, fear, Defensive Stance, Disarm, and Taunt commands without modifier keys' },
+        { i: 'ability_parry', t: 'Back into the fight', d: 'survived the pinch — use the rotation macro: it swaps you back to Berserker Stance' },
+      ],
+    },
+    note: { ru: 'Команды выполняются в порядке списка. Стойка берсерка и Ярость берсерка могут занять нажатие до прерывания; защитные действия оставлены отдельными строками, чтобы их не потерять.',
+            en: 'Commands are checked in list order. Berserker Stance and Berserker Rage can take a press before Pummel; the defensive actions remain as separate lines so they are not lost.' },
+  },
+];
+document.addEventListener('DOMContentLoaded', () => {
+  const lang = window.W.lang;
+  const I = window.W.icon;
+  const L = L10N[lang] || L10N.ru;
+  document.title = (lang === 'ru' ? 'Макросы' : 'Macros') + ' — WoW 3.3.5 Fury';
+  const wrap = document.getElementById('cards');
+  const rows = [];
+  for (const m of MACROS) {
+    const body = (((window.MACRO_TXT || {})[lang] || {})[m.file] || '').trim();
+    const [name, sub] = m[lang];
+    const tags = (m.tags[lang] || []).map(t => `<span class="tag">${t}</span>`).join('');
+    const feats = (m.feats[lang] || []).map(f =>
+      `<div class="mf"><img src="${I(f.i)}" alt=""><div class="t"><b>${f.t}</b> — ${f.d}</div></div>`).join('');
+    rows.push(`
+    <section class="card m-card">
+      <div class="m-head">
+        <img src="${I(m.icon)}" alt="">
+        <div class="t"><b>${name}</b><span>${sub}</span></div>
+        
+      </div>
+      <div class="macro-box"><button class="copy-btn" data-copy="${encodeURIComponent(body)}">✓ ${L.copy}</button>
+      <pre>${body.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</pre></div>
+      <div class="m-meta">${tags}</div>
+      <button class="btn ghost detail-btn" data-detail>${lang==='ru'?'Подробнее':'Details'}</button>
+      <div class="m-extra" hidden><div class="m-feats">${feats}</div><div class="m-note">${m.note[lang]}</div></div>
+    </section>`);
+  }
+  wrap.innerHTML = rows.join('');
+  const tabs=document.getElementById('macroTabs');
+  tabs.innerHTML=MACROS.map((m,i)=>`<button class="${i===0?'on':''}" data-macro="${i}">${m[lang][0]}</button>`).join('');
+  wrap.querySelectorAll('.m-card').forEach((card,i)=>{
+    card.querySelector('[data-detail]').onclick=()=>{
+      document.getElementById('macroDetailsTitle').textContent=MACROS[i][lang][0];
+      document.getElementById('macroDetailsBody').innerHTML=card.querySelector('.macro-box').outerHTML+card.querySelector('.m-extra').innerHTML+`<p class="m-note">${lang==='ru'?'В игре открой меню Escape → Макросы или введи /macro. Создай макрос, вставь текст, выбери значок и перетащи его на панель действий. Назначь ему любую удобную клавишу в настройках игры. Обычный макрос не выполняет всю ротацию одним нажатием.':'In game, press Escape → Macros or type /macro. Create a macro, paste the text, choose an icon, and drag it to your action bar. Bind any key you prefer in the game settings. A normal macro cannot run the full rotation with one press.'}</p>`;
+      document.getElementById('macroDetails').showModal();
+    };
+    card.onclick=event=>{if(event.target.closest('button'))return;card.querySelector('[data-detail]').click()};
+  });
+  document.getElementById('closeMacroDetails').onclick=()=>document.getElementById('macroDetails').close();
+  wrap.querySelectorAll('.m-card:not(.mod-card)').forEach((card,i)=>{
+    const q=document.createElement('div');q.className='npc-dialog';q.innerHTML=`<img src="${I(['npc_undead_male_warrior','npc_human_male_warrior','npc_orc_male_warrior'][i])}" onerror="this.src='${I('ability_warrior_battleshout')}'" alt=""><span><b>${lang==='ru'?'Наставник воинов':'Warrior Trainer'}</b>${lang==='ru'?'Тактика проста: выбери приём, изучи запись и забери её в книгу макросов.':'Choose an ability, review the inscription, and copy it into your macro book.'}</span>`;card.insertBefore(q,card.children[1]);
+  });
+});
+</script>
+</body>
+</html>
