@@ -7,6 +7,7 @@
     ['talents.html', { ru: 'Таланты', en: 'Talents' }],
     ['hero.html', { ru: 'Герой', en: 'Hero' }],
     ['guide.html', { ru: 'Гайд', en: 'Guide' }],
+    ['warrior-modes.html', { ru: 'Направления', en: 'Warrior paths' }],
   ];
 
   function getLang() {
@@ -40,7 +41,7 @@
       <header class="top">
         <a class="logo" href="index.html?lang=${lang}">
           <img src="assets/icons/logo.jpg" alt="">
-          <span class="t">WoW 3.3.5 · Fury</span>
+          <span class="t">WoW 3.3.5 · Warrior</span>
         </a>
         <nav>${nav}</nav>
         <button class="lang-btn" id="langBtn">${lang === 'ru' ? 'EN' : 'RU'}</button>
@@ -50,7 +51,7 @@
     // footer
     app.append(h(`
       <footer class="bot">
-        <span>WotLK 3.3.5a · ${lang === 'ru' ? 'Воин — Неистовство' : 'Fury Warrior'}</span>
+        <span>WotLK 3.3.5a · ${lang === 'ru' ? 'Пути воина' : 'Warrior paths'}</span>
         <a href="https://github.com/Genocide12/wow-335-macros-v2" target="_blank" rel="noopener">GitHub</a> <a href="https://github.com/Genocide12/wow-335-macros-v2/releases" target="_blank" rel="noopener">${lang === 'ru' ? 'Релизы' : 'Releases'}</a> <a href="https://github.com/Genocide12/wow-335-macros-v2/issues" target="_blank" rel="noopener">${lang === 'ru' ? 'Ошибки' : 'Issues'}</a>
         <span style="margin-left:auto" class="muted">${lang === 'ru' ? 'Иконки: Wowhead / zamimg' : 'Icons: Wowhead / zamimg'}</span>
       </footer>`));
