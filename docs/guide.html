@@ -11,12 +11,17 @@
   .g-head h2{margin:0;color:var(--gold2);font-size:18px}
   .g-head p{font-size:11px;color:var(--dim);margin-top:3px}
   .g-select{margin-left:auto;max-width:270px;background:#11141d;color:var(--gold2);border:1px solid var(--gold);border-radius:9px;padding:9px;font-weight:700}
-  .g-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(62px,1fr);gap:8px;min-height:0;overflow:hidden}
-  .g-item{display:flex;align-items:center;gap:10px;text-align:left;padding:9px;background:linear-gradient(140deg,#242533,#141720);color:var(--txt);border:1px solid var(--line);border-radius:10px;cursor:pointer;min-width:0;overflow:hidden}
-  .g-item:hover{border-color:var(--gold)}
-  .g-item img{width:36px;height:36px;border-radius:8px;flex:0 0 auto}
-  .g-item .t{min-width:0}.g-item b{display:block;color:#fff;font-size:12.5px}
-  .g-item span{display:block;color:var(--dim);font-size:10.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .g-items{position:relative;isolation:isolate;flex:1;min-height:0;overflow:hidden;border:1px solid #5b4a2b;border-radius:14px;background:radial-gradient(circle at center,#252331 0,#141720 34%,#0c0f17 75%);box-shadow:inset 0 0 42px #000a,0 8px 25px #0006}
+  .g-orbit{position:absolute;z-index:-1;left:50%;top:50%;width:min(72%,min(58vh,520px));aspect-ratio:1;transform:translate(-50%,-50%);border:1px solid #c8a95145;border-radius:50%;box-shadow:0 0 28px #c8a95112,inset 0 0 22px #c8a9510c}
+  .g-center{position:absolute;left:50%;top:50%;width:clamp(74px,11vw,120px);aspect-ratio:1;transform:translate(-50%,-50%);display:grid;place-items:center;border:2px solid #9b7d40;border-radius:50%;background:radial-gradient(circle at 40% 30%,#403b31,#11141d 70%);box-shadow:0 0 24px #c8a95135,inset 0 0 16px #000b;color:#e8c96a;font:900 10px/1.2 Georgia,serif;text-align:center;letter-spacing:.1em;text-transform:uppercase}
+  .g-center img{width:48%;height:48%;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 9px #e8c96a66)}
+  .g-item{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:clamp(70px,8vw,92px);aspect-ratio:1;transform:translate(-50%,-50%);padding:5px;background:linear-gradient(145deg,#292b35,#10131b);color:var(--txt);border:1px solid #817044;border-radius:50%;cursor:pointer;overflow:hidden;box-shadow:0 5px 18px #0009,inset 0 0 0 2px #ffffff07;transition:transform .18s,border-color .18s,box-shadow .18s}
+  .g-item:hover,.g-item:focus-visible{transform:translate(-50%,-50%) scale(1.09);border-color:var(--gold2);box-shadow:0 0 23px #d6b86166,inset 0 0 0 2px #ffffff12;outline:none}
+  .g-item img{width:42%;aspect-ratio:1;border:1px solid #c8a951;border-radius:9px;flex:0 0 auto;box-shadow:0 0 10px #000b}
+  .g-item b{display:block;width:100%;color:#fff;font-size:clamp(8px,.9vw,11px);line-height:1.1;text-align:center}
+  .g-tooltip{display:none;position:fixed;z-index:110;width:min(330px,calc(100vw - 20px));max-height:min(60dvh,390px);overflow:auto;padding:12px;background:#10131beF;border:1px solid var(--gold);border-radius:11px;box-shadow:0 14px 45px #000d;color:#ddd8cc;font-size:12px;line-height:1.45;pointer-events:none}
+  .g-tooltip.on{display:block;animation:tip-in .12s ease-out}@keyframes tip-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .g-tooltip strong{display:block;color:var(--gold2);font-size:13px;margin-bottom:6px}.g-tooltip p{margin:0}.g-tooltip .g-spells{margin:6px 0}
   .g-bottom{display:flex;justify-content:flex-end}
   .g-dialog{width:min(720px,92vw);max-height:82dvh;margin:auto;padding:0;background:#141720;color:var(--txt);border:1px solid var(--gold);border-radius:14px;box-shadow:0 20px 70px #000d}
   .g-dialog::backdrop{background:#05060bbd;backdrop-filter:blur(4px)}
@@ -24,9 +29,9 @@
   .g-dialog-head button{background:none;border:0;color:var(--dim);font-size:24px;cursor:pointer}
   .g-dialog-body{padding:14px 16px;overflow:auto;max-height:calc(82dvh - 52px);font-size:13px;line-height:1.55}
   .g-dialog-body p{margin:8px 0}.g-dialog-body b{color:var(--gold2)}
-  .g-spells{display:flex;gap:6px;flex-wrap:wrap}.g-spells img{width:32px;height:32px;border-radius:7px}
-  @media(max-width:860px){.g-items{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(55px,1fr);gap:5px}.g-shell{gap:6px}.g-head h2{font-size:15px}.g-item{padding:6px;gap:7px}.g-item img{width:29px;height:29px}.g-item b{font-size:11px}.g-item span{font-size:9.5px}.g-select{max-width:48%;padding:7px;font-size:11px}}
-  @media(max-width:420px){.g-items{grid-template-columns:1fr;grid-auto-rows:minmax(40px,1fr)}.g-item span{display:none}.g-item img{width:25px;height:25px}.g-item{padding:4px 7px}.g-select{max-width:50%}}
+  .g-spells{display:flex;gap:6px;flex-wrap:wrap}.g-spells img{width:42px;height:42px;border:1px solid #5c4b2b;border-radius:8px}
+  @media(max-width:860px){.g-shell{gap:6px}.g-head h2{font-size:15px}.g-select{max-width:48%;padding:7px;font-size:11px}.g-orbit{width:min(78%,min(54vh,460px))}.g-item{width:clamp(64px,12vw,82px)}}
+  @media(max-width:420px){.g-select{max-width:50%}.g-orbit{width:min(82%,min(48vh,380px))}.g-item{width:68px}.g-center{width:70px}}
 </style>
 </head>
 <body>
@@ -39,6 +44,7 @@
   </section>
 </main>
 </div>
+<div class="g-tooltip" id="guideTooltip" role="status"></div>
 <dialog class="g-dialog" id="guideDialog"><div class="g-dialog-head"><span id="guideDialogTitle"></span><button class="macro-close" id="closeGuideDialog" aria-label="Close">×</button></div><div class="g-dialog-body" id="guideDialogBody"></div></dialog>
 <script src="assets/js/app.js"></script>
 <script>
@@ -68,6 +74,12 @@
       { icon: 'spell_shadow_deathpact', name: 'Бурст на боссах',
         spells: ['spell_shadow_deathpact', 'ability_criticalstrike', 'inv_sword_48'],
         text: '<b>Жажда смерти</b> (+20% физического урона на 30 сек) и <b>Безрассудство</b> (три удара критуют) срабатывают <b>сами</b>, по кулдауну, прямо из макроса ротации — отдельные клавиши не нужны. Фаза <b>Казни</b> (цель ниже 20% HP) превращается в волну критов.' },
+      { icon: 'ability_warrior_bloodsurge', name: 'Мощный удар по Волне крови',
+        spells: ['ability_warrior_bloodsurge', 'ability_warrior_decisivestrike', 'spell_nature_bloodlust', 'ability_whirlwind'],
+        text: 'Талант <b>Прилив крови</b> даёт мгновенный Мощный удар после успешных Кровожадности, Вихря или Удара героя. Нажимай его отдельно, когда прок появился: он не заменяет Кровожадность и Вихрь по готовности и не должен задерживать их.' },
+      { icon: 'inv_gauntlets_04', name: 'Прерывай каст Зуботычиной',
+        spells: ['inv_gauntlets_04', 'ability_warrior_shieldbash', 'ability_warrior_punishingblow'],
+        text: 'Зуботычина работает в Стойке берсерка. Если макрос сначала меняет стойку, повторное нажатие потребуется уже после перехода. Следи за полосой применения заклинания: прерывай опасное лечение или контроль, а не каждый безвредный каст.' },
     ],
     survTitle: 'Как выживать',
     surv: [
@@ -81,6 +93,8 @@
         text: 'Каждый за себя (у людей) снимает эффекты потери контроля. Защитный макрос сохраняет команды для Устрашающего крика, Оборонительной стойки, Разоружения и Провокации без сочетаний клавиш. Он пробует строки по очереди; для точного контроля кулдаунов используй нужные способности отдельно. Выбрался — жми макрос ротации: макрос сам вернёт стойку берсерка.' },
       { icon: 'spell_misc_food', name: 'Между боями',
         text: 'Еда восстанавливает здоровье и даёт бонус к стату, <b>Первая помощь</b> — быстрые бинты из ткани. Не лезь в следующий бой с пустой полосой: смерть стоит дороже короткого перекура.' },
+      { icon: 'spell_nature_ancestralguardian', name: 'Сними страх Яростью берсерка',
+        text: '<b>Ярость берсерка</b> снимает страх и даёт временную невосприимчивость к страху. Используй её под контроль, а не по перезарядке ради небольшого количества ярости.' },
     ],
     tgTitle: 'Хватка титана — два двуручных (60+)',
     tg: [
@@ -152,6 +166,12 @@
       { icon: 'spell_shadow_deathpact', name: 'Burst on bosses',
         spells: ['spell_shadow_deathpact', 'ability_criticalstrike', 'inv_sword_48'],
         text: '<b>Death Wish</b> (+20% physical damage for 30 sec) and <b>Recklessness</b> (your next three strikes crit) fire <b>themselves</b>, off cooldown, straight from rotation macro — no extra keys needed. The <b>Execute</b> phase (target under 20% HP) turns into a wave of crits.' },
+      { icon: 'ability_warrior_bloodsurge', name: 'Slam on Bloodsurge',
+        spells: ['ability_warrior_bloodsurge', 'ability_warrior_decisivestrike', 'spell_nature_bloodlust', 'ability_whirlwind'],
+        text: 'The <b>Bloodsurge</b> talent makes Slam instant after a successful Bloodthirst, Whirlwind, or Heroic Strike. Use Slam separately when the proc appears; do not delay Bloodthirst or Whirlwind for it.' },
+      { icon: 'inv_gauntlets_04', name: 'Interrupt with Pummel',
+        spells: ['inv_gauntlets_04', 'ability_warrior_shieldbash', 'ability_warrior_punishingblow'],
+        text: 'Pummel requires Berserker Stance. If your macro changes stance first, press it again after the stance swap. Watch cast bars and interrupt dangerous heals or control effects rather than every harmless cast.' },
     ],
     survTitle: 'How to survive',
     surv: [
@@ -165,6 +185,8 @@
         text: 'Every Man for Himself (human racial) breaks stuns, fears and other loss-of-control effects. Defense macro retains commands for Intimidating Shout, Defensive Stance, Disarm and Taunt without modifier keys. It checks them in order; use individual abilities when you need exact cooldown control. Once you are safe, use the rotation macro — the macro swaps you back to Berserker Stance.' },
       { icon: 'spell_misc_food', name: 'Between fights',
         text: 'Food restores health and adds a stat bonus, <b>First Aid</b> gives quick bandages from cloth. Don\u2019t pull the next mob on an empty bar: death costs more than a short break.' },
+      { icon: 'spell_nature_ancestralguardian', name: 'Break fear with Berserker Rage',
+        text: '<b>Berserker Rage</b> removes fear and grants a short fear immunity. Save it for control effects instead of spending it on cooldown for a small amount of rage.' },
     ],
     tgTitle: "Titan's Grip — two two-handers (60+)",
     tg: [
@@ -220,12 +242,39 @@
     ['fight',D.fightTitle,D.fight],['surv',D.survTitle,D.surv],['tg',D.tgTitle,D.tg],
     ['rot',D.rotTitle,D.rot],['auto',lang==='ru'?'Работа макросов':'Macro behavior',D.auto],['learn',D.learnTitle,D.learn]
   ];
+  const mode=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
+  if(mode==='arms'||mode==='prot'){
+    const arms=mode==='arms';
+    const book=arms?[
+      {icon:'ability_warrior_charge',name:lang==='ru'?'Вход в бой':'Engage',spells:['ability_warrior_charge','ability_warrior_bloodfrenzy'],text:lang==='ru'?'Открой дистанцию Рывком, затем удерживай цель Замедлением. Переходи к Удару героя/Смертельному удару после выхода на дистанцию; сначала проверь стойку и доступность навыка.':'Open with Charge, then keep Hamstring on the target. Use Mortal Strike once in range; check stance and ability availability.'},
+      {icon:'ability_warrior_savageblow',name:lang==='ru'?'Давление на цель':'Pressure the kill target',spells:['ability_warrior_savageblow','ability_warrior_bloodbath','ability_warrior_punishingblow'],text:lang==='ru'?'Смертельный удар снижает получаемое целью лечение. Поддерживай Ренд и замедление, а не пытайся свести PvP к фиксированной PvE-ротации.':'Mortal Strike reduces healing received. Maintain Rend and Hamstring; PvP pressure is situational rather than a fixed PvE rotation.'},
+      {icon:'ability_warrior_punishingblow',name:lang==='ru'?'Контроль и прерывания':'Control & interrupts',spells:['ability_warrior_punishingblow','ability_warrior_disarm','inv_gauntlets_04'],text:lang==='ru'?'Зуботычину используй на опасном касте, Разоружение — против физического бурста. Фокус-макрос помогает не терять основную цель.':'Use Pummel on dangerous casts and Disarm against melee burst. Focus macros let you keep your main target.'},
+      {icon:'spell_nature_ancestralguardian',name:lang==='ru'?'Ответ на контроль':'Break control',spells:['spell_nature_ancestralguardian','ability_warrior_defensivestance'],text:lang==='ru'?'Ярость берсерка оставь под страх; Стойку и защитные кулдауны переключай осознанно. Не сливай их автоматически одним макросом.':'Save Berserker Rage for fear; use stance and defensive cooldowns deliberately instead of firing them blindly from one macro.'},
+      {icon:'ability_warrior_bladestorm',name:lang==='ru'?'Окно бурста':'Burst window',spells:['ability_warrior_bladestorm','ability_criticalstrike','inv_sword_48'],text:lang==='ru'?'Подготовь цель замедлением и дебаффом лечения. Вихрь клинков и аксессуары используй, когда цель не может просто выйти из зоны или закрыться защитой.':'Set up with a slow and healing debuff. Use Bladestorm and trinkets when the target cannot easily escape or answer with a defensive.'}
+    ]:[
+      {icon:'ability_warrior_shieldslam',name:lang==='ru'?'Одиночная угроза':'Single-target threat',spells:['ability_warrior_shieldslam','ability_warrior_revenge','ability_warrior_devastate'],text:lang==='ru'?'Поддерживай Удар щитом и Реванш по готовности, заполняй паузы Сокрушением. Следи за яростью и угрозой; макрос не заменит оценку агро.':'Use Shield Slam and Revenge when ready, filling gaps with Devastate. Watch rage and threat; macros do not judge aggro.'},
+      {icon:'ability_warrior_cleave',name:lang==='ru'?'Угроза по группе':'Pack threat',spells:['ability_whirlwind','ability_warrior_cleave','ability_warrior_thunderclap'],text:lang==='ru'?'Начни с Громового раската и распределяй угрозу по целям. Переключайся на отстающего моба; не полагайся на один автотаргет.':'Open with Thunder Clap and spread threat. Swap to mobs losing aggro; do not rely on auto-targeting.'},
+      {icon:'spell_nature_reincarnation',name:lang==='ru'?'Провокация и помощь группе':'Taunt & group utility',spells:['spell_nature_reincarnation','ability_warrior_intervene','ability_warrior_vigilance'],text:lang==='ru'?'Провокацию по наведению используй для перехвата конкретной цели. Проверяй, что курсор над нужным врагом; для группы назначай Бдительность и помогай Перехватом.':'Use mouseover Taunt to recover a specific mob. Confirm the cursor target; assign Vigilance and Intervene to support the group.'},
+      {icon:'ability_warrior_shieldwall',name:lang==='ru'?'Защитные кулдауны':'Defensive cooldowns',spells:['ability_warrior_shieldwall','ability_warrior_laststand','ability_warrior_shieldblock'],text:lang==='ru'?'Блок щитом уменьшает физический урон, Глухая оборона и Последний рубеж — ответы на опасные пики. Согласуй их с лекарем и механикой босса.':'Shield Block reduces physical damage; Shield Wall and Last Stand answer dangerous spikes. Coordinate with the healer and encounter.'},
+      {icon:'ability_warrior_charge',name:lang==='ru'?'Стойки и позиция':'Stance & positioning',spells:['ability_warrior_defensivestance','ability_warrior_charge','ability_warrior_intervene'],text:lang==='ru'?'Держи босса спиной к группе и двигай мобов минимально. Защитная стойка — базовая; смена стойки может сбросить ярость, поэтому переключайся осознанно.':'Keep the boss facing away from the group and minimize movement. Defensive Stance is your default; stance swaps can cost rage.'}
+    ];
+    categories.splice(0,categories.length,[mode,arms?'Arms · PvP':'Protection · PvE',book]);
+    document.getElementById('guideTitle').textContent=arms?'Arms · PvP':'Protection · PvE tank';
+    document.getElementById('guideSubtitle').textContent=arms?(lang==='ru'?'План игры строится по цели, стойке и окнам контроля.':'Play around target selection, stance, and control windows.'):(lang==='ru'?'Угроза, позиция и защита для подземелий и рейдов.':'Threat, positioning, and mitigation for dungeons and raids.');
+  }
   const select=document.getElementById('guideCategory');
   select.innerHTML=categories.map(([key,title])=>`<option value="${key}">${title}</option>`).join('');
   document.getElementById('guideTitle').textContent=D.title;
   document.getElementById('guideSubtitle').textContent=D.subtitle;
+  if(mode==='arms'||mode==='prot'){
+    const arms=mode==='arms';
+    document.getElementById('guideTitle').textContent=arms?'Arms · PvP':'Protection · PvE tank';
+    document.getElementById('guideSubtitle').textContent=arms?(lang==='ru'?'План игры строится по цели, стойке и окнам контроля.':'Play around target selection, stance, and control windows.'):(lang==='ru'?'Угроза, позиция и защита для подземелий и рейдов.':'Threat, positioning, and mitigation for dungeons and raids.');
+    document.title=(arms?'Arms PvP':'Protection PvE tank')+' — WoW 3.3.5a';
+  }
   const items=document.getElementById('guideItems');
   const dialog=document.getElementById('guideDialog');
+  const guideTooltip=document.getElementById('guideTooltip');
   const clean=s=>(s||'').replace(/<[^>]*>/g,'').replace(/&gt;/g,'>').replace(/&lt;/g,'<');
   const openEntry=(p)=>{
     document.getElementById('guideDialogTitle').textContent=p.name;
@@ -234,18 +283,47 @@
     document.getElementById('guideDialogBody').innerHTML=`${spells}<p>${description}</p>`;
     dialog.showModal();
   };
+  const showTooltip=(p,btn)=>{
+    const spells=p.spells?`<div class="g-spells">${p.spells.map(s=>`<img src="${I(s)}" alt="">`).join('')}</div>`:'';
+    guideTooltip.innerHTML=`<strong>${p.name}</strong>${spells}<p>${p.text||p.why||''}</p>`;
+    guideTooltip.classList.add('on');
+    const r=btn.getBoundingClientRect(),w=guideTooltip.offsetWidth,h=guideTooltip.offsetHeight;
+    let left=r.right+12;if(left+w>innerWidth-8)left=r.left-w-12;
+    let top=Math.max(8,Math.min(innerHeight-h-8,r.top+(r.height-h)/2));
+    guideTooltip.style.left=`${Math.max(8,left)}px`;guideTooltip.style.top=`${top}px`;
+  };
+  document.addEventListener('pointerdown',e=>{if(!e.target.closest('.g-item,.g-tooltip'))guideTooltip.classList.remove('on');});
+  const layoutWheel=()=>{
+    const buttons=[...items.querySelectorAll('.g-item')],w=items.clientWidth,h=items.clientHeight;
+    const cx=w/2,cy=h/2,r=Math.max(40,Math.min(w,h)*.37);
+    buttons.forEach((btn,i)=>{const angle=-Math.PI/2+2*Math.PI*i/buttons.length;btn.style.left=`${cx+Math.cos(angle)*r}px`;btn.style.top=`${cy+Math.sin(angle)*r}px`;});
+  };
   const showCategory=()=>{
     const group=categories.find(x=>x[0]===select.value);
-    items.innerHTML=group[2].map((p,i)=>`<button class="g-item" data-entry="${i}"><img src="${I(p.icon)}" alt=""><span class="t"><b>${p.name}</b><span>${clean(p.why||p.text).slice(0,145)}</span></span></button>`).join('');
-    items.querySelectorAll('[data-entry]').forEach(btn=>btn.onclick=()=>openEntry(group[2][+btn.dataset.entry]));
+    items.innerHTML=`<div class="g-orbit"></div><div class="g-center"><img src="${I('ability_racial_avatar')}" alt=""></div>`+group[2].map((p,i)=>`<button class="g-item" data-entry="${i}" aria-label="${p.name}"><img src="${I(p.icon)}" alt=""><b>${p.name}</b></button>`).join('');
+    layoutWheel();
+    items.querySelectorAll('[data-entry]').forEach(btn=>{
+      const entry=group[2][+btn.dataset.entry];
+      btn.onpointerenter=e=>{if(e.pointerType==='mouse')showTooltip(entry,btn);};
+      btn.onpointerleave=e=>{if(e.pointerType==='mouse')guideTooltip.classList.remove('on');};
+      let lastPointer='mouse';btn.onpointerdown=e=>{lastPointer=e.pointerType;};
+      btn.onclick=()=>{if(lastPointer==='touch'||lastPointer==='pen'){showTooltip(entry,btn);return;}openEntry(entry);};
+    });
   };
+  new ResizeObserver(layoutWheel).observe(items);
   select.onchange=showCategory;
   showCategory();
   const ru=lang==='ru';
   document.getElementById('guideSources').textContent=ru?'Источники':'Sources';
   document.getElementById('guideSources').onclick=()=>{
     document.getElementById('guideDialogTitle').textContent=ru?'Источники и примечания':'Sources and notes';
-    document.getElementById('guideDialogBody').innerHTML=`<p>${ru?'Гайд сверяется с WotLK-руководствами; детали талантов и макросов могут отличаться на отдельных серверах 3.3.5a.':'This guide is cross-checked against WotLK guides; talent and macro details may vary on individual 3.3.5a realms.'}</p><p><a class="tal-link" href="https://www.wowhead.com/wotlk/guide/classes/warrior/fury/dps-rotation-cooldowns-abilities-pve" target="_blank" rel="noreferrer">Wowhead · rotation</a></p><p><a class="tal-link" href="https://www.icy-veins.com/wotlk-classic/fury-warrior-dps-pve-rotation-cooldowns-abilities" target="_blank" rel="noreferrer">Icy Veins · priorities</a></p>`;
+    document.getElementById('guideDialogBody').innerHTML=`<p>${ru?'Гайд сверялся с несколькими руководствами по Fury PvE, Arms PvP и Protection PvE. Для конкретного сервера 3.3.5a проверь названия рангов, локализацию и доступные способности.':'Cross-checked against multiple Fury PvE, Arms PvP, and Protection PvE guides. Check spell ranks, localization, and available abilities on your specific 3.3.5a realm.'}</p>
+      <p><a class="tal-link" href="https://www.wowhead.com/wotlk/guide/classes/warrior/fury/dps-rotation-cooldowns-abilities-pve" target="_blank" rel="noreferrer">Wowhead · Fury DPS</a></p>
+      <p><a class="tal-link" href="https://www.warcrafttavern.com/wotlk/guides/pve-fury-warrior-rotation-cooldowns/" target="_blank" rel="noreferrer">Warcraft Tavern · Fury rotation and cooldowns</a></p>
+      <p><a class="tal-link" href="https://www.icy-veins.com/wotlk-classic/fury-warrior-dps-pve-rotation-cooldowns-abilities" target="_blank" rel="noreferrer">Icy Veins · Fury priorities</a></p>
+      <p><a class="tal-link" href="https://www.warcrafttavern.com/wotlk/guides/pvp-arms-warrior-rotation-cooldowns-abilities/" target="_blank" rel="noreferrer">Warcraft Tavern · Arms PvP</a></p>
+      <p><a class="tal-link" href="https://www.warcrafttavern.com/wotlk/guides/pve-protection-warrior-tank-rotations-cooldowns/" target="_blank" rel="noreferrer">Warcraft Tavern · Protection Tank</a></p>
+      <p><a class="tal-link" href="https://www.icy-veins.com/wotlk-classic/protection-warrior-tank-pve-guide" target="_blank" rel="noreferrer">Icy Veins · Protection Tank</a></p>`;
     dialog.showModal();
   };
   document.getElementById('closeGuideDialog').onclick=()=>dialog.close();

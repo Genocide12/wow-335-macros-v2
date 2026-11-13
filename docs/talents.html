@@ -48,12 +48,13 @@
   .arrow { display:none; }
   /* tooltip card */
   .t-info { position: sticky; top: 0; }
-  .tipcard { background: #0b0d14; border: 1px solid var(--gold); border-radius: 12px; padding: 12px 14px; }
+  .tipcard { position:fixed;background:#0b0d14;border:1px solid var(--gold);border-radius:12px;padding:12px 14px;z-index:80;pointer-events:none;box-shadow:0 12px 42px #000c;width:min(290px,calc(100vw - 20px)) }
   .tipcard img { width: 44px; height: 44px; border-radius: 9px; float: left; margin-right: 10px; }
   .tipcard b { color: var(--gold2); font-size: 15px; }
   .tipcard .req { color: var(--red); font-size: 12px; margin-top: 4px; }
   .tipcard .desc { font-size: 12.5px; line-height: 1.5; color: var(--txt); margin-top: 6px; max-height: 150px; overflow-y: auto; white-space: pre-line; }
   .tipcard .rk { color: var(--dim); font-size: 11.5px; margin-top: 6px; }
+  .tipcard .tip-hint{display:block;color:#8b93a7;font-size:10.5px;margin-top:8px;padding-top:6px;border-top:1px solid #ffffff16}
   @media (max-width: 900px) {
     .t-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: auto auto minmax(0,1fr); }
     .t-tabs { grid-column: auto; gap:4px; }
@@ -146,7 +147,8 @@
     { tree: 'prot', lvl: 80, src: 'raid', ru: 'Финал: танк данжей и рейдов', en: 'Final: dungeon & raid tank',
       pts: { 1601: 5, 138: 5, 147: 2, 1654: 2, 141: 2, 153: 1, 144: 3, 149: 2, 142: 2, 140: 5, 146: 3, 702: 5, 152: 1, 2247: 2, 150: 2, 151: 2, 1660: 3, 1653: 2, 148: 1, 1872: 1, 1666: 1, 1871: 3, 1893: 3, 2236: 1, 2246: 2, 1652: 2, 157: 5, 2250: 3 } },
   ];
-  const state = { tree: 'fury', pts: {}, tipTalent: null };
+  const preferredTree={arms:'arms',fury:'fury',prot:'prot'}[new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury']||'fury';
+  const state = { tree: preferredTree, pts: {}, tipTalent: null };
   let longPressTimer=0, suppressClickUntil=0;
   const TREES = TALENTS.trees;
   const byId = {};
@@ -195,7 +197,7 @@
           <div class="frame"><img src="${I(x.ic)}" alt=""></div>
           <span class="rank ${cur === x.rk ? 'max' : ''}">${cur}/${x.rk}</span></div>`;
       }).join('');
-      rows.push(`<div class="t-row" data-r="${r}">${cells}</div>`);
+      rows.unshift(`<div class="t-row" data-r="${r}">${cells}</div>`);
     }
     // arrows between rows
     let arrows = '';
@@ -237,7 +239,8 @@
         if(canLearn(x)){state.pts[x.id]=(state.pts[x.id]||0)+1;state.tipTalent=x.id;draw();showTip(x);}
         else showTip(x);
       };
-      el.onmouseenter = () => showTip(x, true);
+      el.onmouseenter = e => showTip(x, true, e);
+      el.onmouseleave = () => { const tip=document.querySelector('.tipcard'); if(tip?.dataset.pinned!=='true')tip.style.display='none'; };
     });
 
     // side panel
@@ -277,11 +280,12 @@
       <path d="M5 ${len} L15 ${len} L10 ${len + 9} Z" fill="#4d5a78"/></svg>`;
   }
 
-  function showTip(x, hover) {
+  function showTip(x, hover, event) {
     state.tipTalent = hover ? state.tipTalent : x.id;
     const el = document.getElementById('inner');
     let tip = el.querySelector('.tipcard');
-    if (!tip) { tip = document.createElement('div'); tip.className = 'tipcard'; el.appendChild(tip); tip.style.position = 'absolute'; tip.style.zIndex = 10; }
+    if (!tip) { tip = document.createElement('div'); tip.className = 'tipcard'; el.appendChild(tip); }
+    tip.dataset.pinned=String(!hover);
     const cur = state.pts[x.id] || 0;
     const name = lang === 'ru' ? x.ru : x.en;
     const reqs = x.req.map(([id, q]) => {
@@ -293,14 +297,17 @@
       ? `<div class="req">${lang === 'ru' ? `Требует ${x.r * 5} оч. в ветке` : `Requires ${x.r * 5} pts in tree`} (${treePoints(x.tree)})</div>` : '';
     tip.innerHTML = `<img src="${I(x.ic)}" alt=""><b>${name}</b>
       <div class="rk">${lang === 'ru' ? 'Ранг' : 'Rank'} ${cur}/${x.rk}</div>
-      ${reqs}${tier}<div class="desc">${fmtDesc(x, cur)}</div>`;
+      ${reqs}${tier}<div class="desc">${fmtDesc(x, cur)}</div><small class="tip-hint">${lang==='ru'?'ЛКМ — добавить · ПКМ — снять последнее очко · касание и удержание на телефоне':'Left click adds · right click removes the last point · touch and hold on mobile'}</small>`;
     const slot = el.querySelector(`.tal[data-id="${x.id}"]`);
     if (slot) {
-      const tr = el.getBoundingClientRect(), sr = slot.getBoundingClientRect();
-      let left = sr.left - tr.left + 78;
-      if (left + 290 > tr.width) left = Math.max(4, sr.left - tr.left - 290);
-      tip.style.left = left + 'px';
-      tip.style.top = Math.max(4, sr.top - tr.top) + 'px';
+      const sr = slot.getBoundingClientRect();
+      tip.style.display='block';
+      const tw=tip.offsetWidth,th=tip.offsetHeight;
+      const px=event?.clientX??(sr.left+sr.width/2),py=event?.clientY??(sr.top+sr.height/2);
+      let left=sr.right+14;if(left+tw>innerWidth-8)left=sr.left-tw-14;
+      let top=Math.max(8,Math.min(innerHeight-th-8,py-th/2));
+      if(Math.abs(top-py)<32)top=Math.max(8,py-th-14);
+      tip.style.left=`${Math.max(8,left)}px`;tip.style.top=`${top}px`;
     }
   }
 

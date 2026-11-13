@@ -7,7 +7,7 @@
     ['talents.html', { ru: 'Таланты', en: 'Talents' }],
     ['hero.html', { ru: 'Герой', en: 'Hero' }],
     ['guide.html', { ru: 'Гайд', en: 'Guide' }],
-    ['warrior-modes.html', { ru: 'Пути воина', en: 'Warrior paths' }],
+    ['gear.html', { ru: 'Экипировка', en: 'Gear' }],
   ];
 
   function getLang() {
@@ -23,13 +23,15 @@
   const lang = LANGS.includes(getLang()) ? getLang() : 'ru';
   let soundOn = localStorage.getItem('wfxSound') === 'on';
   const UI_SOUND = 'https://wow.zamimg.com/wowsounds/sound/interface/uchatscrollbutton.ogg';
-  let uiAudio;
+  const uiAudio = new Map();
   function playUiSound(kind = 'click') {
     if (!soundOn) return;
     try {
-      uiAudio ||= new Audio(UI_SOUND);
-      uiAudio.currentTime = 0;
-      uiAudio.play().catch(() => {});
+      const profiles={click:[.16,1],open:[.14,.92],select:[.15,1.08],copy:[.2,.84],success:[.2,.76]};
+      const [volume,rate]=profiles[kind]||profiles.click;
+      let audio=uiAudio.get(kind);
+      if(!audio){audio=new Audio(UI_SOUND);audio.preload='auto';uiAudio.set(kind,audio);}
+      audio.volume=volume;audio.playbackRate=rate;audio.currentTime=0;audio.play().catch(()=>{});
     } catch (_) {}
   }
 
@@ -52,7 +54,7 @@
     const app = document.getElementById('app');
     // header
     const cur = location.pathname.split('/').pop() || 'index.html';
-    const nav = PAGES.map(([f, n]) =>
+    const nav = PAGES.filter(([f]) => f !== 'gear.html' || cur !== 'index.html').map(([f, n]) =>
       `<a href="${f}?lang=${lang}" class="${f === cur ? 'on' : ''}">${n[lang]}</a>`
     ).join('');
     app.prepend(h(`
@@ -65,6 +67,8 @@
         <button class="sound-btn" id="soundBtn" type="button" aria-pressed="${soundOn}" title="${lang === 'ru' ? 'Звуки интерфейса' : 'Interface sounds'}">${soundOn ? '♫' : '♪'}</button>
         <button class="lang-btn" id="langBtn">${lang === 'ru' ? 'EN' : 'RU'}</button>
       </header>`));
+    const activeSpec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
+    const labels={arms:lang==='ru'?'Воин — Оружие · PvP':'Arms Warrior · PvP',fury:lang==='ru'?'Воин — Неистовство · PvE ДД':'Fury Warrior · PvE DPS',prot:lang==='ru'?'Воин — Защита · PvE танк':'Protection Warrior · PvE tank'};
     document.getElementById('langBtn').onclick = () => setLang(lang === 'ru' ? 'en' : 'ru');
     document.getElementById('soundBtn').onclick = event => {
       soundOn = !soundOn;
@@ -77,10 +81,11 @@
     // footer
     app.append(h(`
       <footer class="bot">
-        <span>WotLK 3.3.5a · ${lang === 'ru' ? 'Воин — Неистовство' : 'Fury Warrior'}</span>
+        <span id="pathFooter">WotLK 3.3.5a · ${lang === 'ru' ? 'Воин — Неистовство' : 'Fury Warrior'}</span>
         <a href="https://github.com/Genocide12/wow-335-macros-v2" target="_blank" rel="noopener">GitHub</a>
         <span style="margin-left:auto" class="muted">${lang === 'ru' ? 'Иконки: Wowhead / zamimg' : 'Icons: Wowhead / zamimg'}</span>
       </footer>`));
+    const pathFooter=document.getElementById('pathFooter');if(pathFooter)pathFooter.textContent='WotLK 3.3.5a · '+(labels[activeSpec]||labels.fury);
 
   });
 
@@ -97,7 +102,7 @@
     const btn = event.target.closest('[data-copy]');
     const interactive = target.closest('button, a, .tal[data-id], .slot, .t-tab, .g-item');
     if (interactive) {
-      playUiSound(interactive.matches('.krow a, .detail-btn, #guideSources') ? 'open' : (interactive.matches('.tal[data-id], .t-tab, .g-item') ? 'select' : 'click'));
+      if(!interactive.matches('[data-copy]'))playUiSound(interactive.matches('.krow a, .detail-btn, #guideSources') ? 'open' : (interactive.matches('.tal[data-id], .t-tab, .g-item') ? 'select' : 'click'));
       interactive.classList.remove('ui-hit');
       void interactive.offsetWidth;
       interactive.classList.add('ui-hit');
@@ -120,6 +125,7 @@
     }
     const old = btn.textContent;
     btn.textContent = copied ? '✓' : (lang === 'ru' ? 'Выделено' : 'Selected');
+    if(copied)playUiSound('copy');
     btn.classList.add('ok');
     if (!copied) { const pre=btn.parentElement.querySelector('pre'); if(pre){const r=document.createRange();r.selectNodeContents(pre);getSelection().removeAllRanges();getSelection().addRange(r);} }
     setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1400);

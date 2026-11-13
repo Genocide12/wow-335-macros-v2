@@ -29,6 +29,14 @@
   .macro-dropdown pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#07090e;border:1px solid var(--line);border-radius:8px;padding:10px;color:#e2e5eb;font:11px/1.5 ui-monospace,monospace;max-height:190px;overflow:auto}
   .macro-dropdown .copy-btn{position:static;float:right}
   .macro-close{float:right;background:none;border:0;color:var(--dim);font-size:21px;cursor:pointer}
+  .path-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(840px,100%);margin-top:4px}
+  .path-card{display:flex;align-items:center;gap:10px;text-align:left;padding:11px;border:1px solid #70603b;border-radius:11px;color:var(--txt);background:linear-gradient(145deg,#22232a,#10131b);cursor:pointer;transition:.18s}
+  .path-card:hover,.path-card.selected{border-color:var(--gold2);box-shadow:0 0 18px #e8c96a2b;transform:translateY(-2px)}
+  .path-card img{width:38px;height:38px;border-radius:8px;border:1px solid var(--gold);flex:0 0 auto}
+  .path-card b{display:block;color:var(--gold2);font-size:14px}.path-card small{display:block;color:#aaa8a0;font-size:11px;margin-top:3px}
+  .path-actions{display:none;align-items:center;gap:8px;flex-wrap:wrap}.path-actions.open{display:flex;animation:drop-in .2s ease-out}
+  .path-actions a{font-size:13px;padding:8px 12px}
+  @media(max-width:700px){.path-picker{gap:6px}.path-card{padding:8px;gap:6px;flex-direction:column;text-align:center}.path-card img{width:31px;height:31px}.path-card b{font-size:11px}.path-card small{font-size:9px}}
   @media(max-width:860px){.hero-grid{grid-template-rows:1fr}.hero-main{min-height:0;padding:22px}.macro-dropdown{left:12px;bottom:12px;width:calc(100% - 24px);max-height:48%}}
 </style>
 </head>
@@ -42,8 +50,17 @@
       <p data-ru="WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку."
          data-en="WotLK 3.3.5a · Fury Warrior · Russian client. Macros check commands in order; one press cannot run a full rotation. Open an ability card and bind it to any button in game.">WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку.</p>
       <div class="cta">
-        <a class="btn" href="macros.html" data-ru="Открыть макросы" data-en="Open macros">Открыть макросы</a>
+        <a class="btn" href="macros.html" data-ru="Макросы выбранного пути" data-en="Selected path macros">Макросы выбранного пути</a>
         <a class="btn ghost" href="hero.html" data-ru="Импортировать героя" data-en="Import your hero">Импортировать героя</a>
+      </div>
+      <h2 class="path-title" data-ru="Выбери путь воина" data-en="Choose your warrior path">Выбери путь воина</h2>
+      <div class="path-picker" id="pathPicker">
+        <button class="path-card" data-spec="arms"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_rogue_eviscerate.jpg" alt=""><span><b>Arms · PvP</b><small data-ru="Давление и контроль" data-en="Pressure & control">Давление и контроль</small></span></button>
+        <button class="path-card selected" data-spec="fury"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_racial_avatar.jpg" alt=""><span><b>Fury · PvE ДД</b><small data-ru="Урон по приоритету" data-en="Priority damage">Урон по приоритету</small></span></button>
+        <button class="path-card" data-spec="prot"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_defensivestance.jpg" alt=""><span><b>Protection · PvE танк</b><small data-ru="Угроза и выживаемость" data-en="Threat & survival">Угроза и выживаемость</small></span></button>
+      </div>
+      <div class="path-actions open" id="pathActions">
+        <a class="btn ghost" data-page="macros.html" href="macros.html">Макросы</a><a class="btn ghost" data-page="talents.html" href="talents.html">Таланты</a><a class="btn ghost" data-page="gear.html" href="gear.html">Экипировка</a><a class="btn ghost" data-page="guide.html" href="guide.html">Гайд</a>
       </div>
       <div class="krow">
         <a href="#macro-q"><span data-ru="Ротация" data-en="Rotation">Ротация</span><img src="https://wow.zamimg.com/images/wow/icons/large/inv_axe_66.jpg" alt=""></a>
@@ -66,7 +83,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const v = el.getAttribute('data-' + lang);
     if (v != null) el.innerHTML = v;
   });
-  const titles=lang==='ru'?[
+  const paths={arms:['Воин Оружия · PvP','Arms Warrior · PvP','Макросы контроля и прерываний · таланты Arms · экипировка для арены.','Control and interrupt macros · Arms talents · arena gearing.'],fury:['Воин Неистовства · PvE ДД','Fury Warrior · PvE DPS','Приоритеты урона · таланты Fury · экипировка для PvE.','Damage priorities · Fury talents · PvE gearing.'],prot:['Воин Защиты · PvE танк','Protection Warrior · PvE tank','Угроза и защита · таланты Protection · экипировка танка.','Threat and mitigation · Protection talents · tank gearing.']};
+  const actions=document.getElementById('pathActions');let spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
+  let titles=[];
+  const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);document.querySelectorAll('.path-card').forEach(x=>x.classList.toggle('selected',x.dataset.spec===value));document.querySelector('.hero-main h1').innerHTML=lang==='ru'?`Гайды и приёмы: <b>${paths[value][0]}</b>`:`Guides & abilities: <b>${paths[value][1]}</b>`;document.querySelector('.hero-main>p').textContent=`WotLK 3.3.5a · ${lang==='ru'?paths[value][2]:paths[value][3]}`;const foot=document.getElementById('pathFooter');if(foot)foot.textContent=`WotLK 3.3.5a · ${lang==='ru'?paths[value][0]:paths[value][1]}`;document.title=paths[value][1]+' — WoW 3.3.5a';actions.querySelectorAll('a').forEach(a=>a.href=`${a.dataset.page}?lang=${lang}&spec=${value}`);document.querySelector('.cta a[href^="macros.html"]').href=`macros.html?lang=${lang}&spec=${value}`;
+    const sets={
+      arms:lang==='ru'?[['Прерывание','Фокус / курсор','/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина','inv_gauntlets_04'],['Сближение','Боевая стойка → Рывок','/cast [nostance:1]Боевая стойка\n/cast [stance:1]Рывок','ability_warrior_charge'],['Разоружение','Под курсором','/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение','ability_warrior_disarm']]:[['Interrupt','Focus / mouseover','/cast [nostance:3]Berserker Stance\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Pummel','inv_gauntlets_04'],['Gap close','Battle Stance → Charge','/cast [nostance:1]Battle Stance\n/cast [stance:1]Charge','ability_warrior_charge'],['Disarm','Mouseover target','/cast [nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Disarm','ability_warrior_disarm']],
+      prot:lang==='ru'?[['Угроза','Удар щитом → Реванш → Сокрушение','/startattack\n/cast Удар щитом\n/cast Реванш\n/cast Сокрушение','ability_warrior_shieldslam'],['Провокация','Наведение / текущая цель','/cast [@mouseover,harm,nodead][]Провокация','spell_nature_reincarnation'],['Удар щитом','Прерывание по наведению','/cast [nostance:1,nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Удар щитом','inv_shield_05']]:[['Threat priority','Shield Slam → Revenge → Devastate','/startattack\n/cast Shield Slam\n/cast Revenge\n/cast Devastate','ability_warrior_shieldslam'],['Taunt','Mouseover / current target','/cast [@mouseover,harm,nodead][]Taunt','spell_nature_reincarnation'],['Shield Bash','Interrupt by mouseover','/cast [nostance:1,nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Shield Bash','inv_shield_05']]
+    };
+    if(value==='fury'){titles=lang==='ru'?[['Ротация одной цели','Кровожадность → Вихрь → Казнь','/startattack\n/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка\n/cast Победный раж\n/cast [combat]Кровавая ярость\n/cast [combat]Безрассудство\n/cast [combat]Жажда смерти\n/cast Кровожадность\n/cast Вихрь\n/cast Казнь','inv_axe_66'],['Бой с группой','Вихрь и Рассекающий удар','/targetenemy [noharm][dead]\n/startattack\n/cast [combat,nostance:3]Стойка берсерка\n/cast Перехват\n/cast Вихрь\n/cast Кровожадность\n/cast Рассекающий удар','ability_whirlwind'],['Прерывание','Зуботычина по наведению','/cast [@mouseover,harm,nodead][]Зуботычина\n/cast [nostance:3]Стойка берсерка','inv_gauntlets_04']]:[['Single-target priority','Bloodthirst → Whirlwind → Execute','/startattack\n/cast Victory Rush\n/cast Bloodthirst\n/cast Whirlwind\n/cast Execute','inv_axe_66'],['Area damage','Whirlwind and Cleave','/targetenemy [noharm][dead]\n/startattack\n/cast Whirlwind\n/cast Bloodthirst\n/cast Cleave','ability_whirlwind'],['Interrupt','Mouseover Pummel','/cast [@mouseover,harm,nodead][]Pummel','inv_gauntlets_04']];}else titles=sets[value];
+    document.querySelectorAll('.krow a').forEach((link,i)=>{link.querySelector('span').textContent=titles[i][0];link.querySelector('img').src=`https://wow.zamimg.com/images/wow/icons/large/${titles[i][3]}.jpg`;});
+  };
+  document.querySelectorAll('.path-card').forEach(btn=>btn.onclick=()=>setPath(btn.dataset.spec));setPath(spec);
+  titles=lang==='ru'?[
     ['Ротация одной цели','Кровожадность → Вихрь → Казнь','/startattack\n/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка\n/cast Победный раж\n/cast [combat]Кровавая ярость\n/cast [combat]Безрассудство\n/cast [combat]Жажда смерти\n/cast Кровожадность\n/cast Вихрь\n/cast Казнь','inv_axe_66'],
     ['Бой с группой','Вихрь и Рассекающий удар','/targetenemy [noharm][dead]\n/startattack\n/cast [combat,nostance:3]Стойка берсерка\n/cast Перехват\n/cast Вихрь\n/cast Кровожадность\n/cast Рассекающий удар\n/stopmacro [combat]\n/run s="Боевой крик"if not UnitBuff("player",s)then CastSpellByName(s)end','ability_whirlwind'],
     ['Прерывание и защита','Зуботычка и защитные умения','/cast [@mouseover,harm,nodead][]Зуботычка\n/cast [nostance:3]Стойка берсерка\n/cast Ярость берсерка\n/cast Каждый за себя\n/cast Устрашающий крик\n/cast Оборонительная стойка\n/cast Разоружение\n/cast Провокация','inv_gauntlets_04']
@@ -75,10 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ['Cleave pack','Whirlwind and Cleave','/targetenemy [noharm][dead]\n/startattack\n/cast [combat,nostance:3]Berserker Stance\n/cast Intercept\n/cast Whirlwind\n/cast Bloodthirst\n/cast Cleave\n/stopmacro [combat]\n/run s="Battle Shout"if not UnitBuff("player",s)then CastSpellByName(s)end','ability_whirlwind'],
     ['Interrupt & defense','Pummel and defensive abilities','/cast [@mouseover,harm,nodead][]Pummel\n/cast [nostance:3]Berserker Stance\n/cast Berserker Rage\n/cast Every Man for Himself\n/cast Intimidating Shout\n/cast Defensive Stance\n/cast Disarm\n/cast Taunt','inv_gauntlets_04']
   ];
+  setPath(spec);
   const dropdown=document.getElementById('macroDropdown');
-  const openMacro=i=>{const [name,sub,body]=titles[i];dropdown.innerHTML=`<button class="macro-close" aria-label="Close">×</button><h2>${name}</h2><p>${sub}</p><button class="copy-btn" data-copy="${encodeURIComponent(body)}">✓ ${lang==='ru'?'Копировать':'Copy'}</button><pre>${body.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</pre><a class="tal-link" href="macros.html?lang=${lang}">${lang==='ru'?'Все макросы и подробности →':'All macros and details →'}</a>`;dropdown.classList.add('open');dropdown.querySelector('.macro-close').onclick=()=>dropdown.classList.remove('open');};
+  const openMacro=i=>{const [name,sub,body]=titles[i];dropdown.innerHTML=`<button class="macro-close" aria-label="Close">×</button><h2>${name}</h2><p>${sub}</p><button class="copy-btn" data-copy="${encodeURIComponent(body)}">✓ ${lang==='ru'?'Копировать':'Copy'}</button><pre>${body.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</pre>`;dropdown.classList.add('open');dropdown.querySelector('.macro-close').onclick=()=>dropdown.classList.remove('open');};
   document.querySelectorAll('.krow a').forEach((link,i)=>link.addEventListener('click',event=>{event.preventDefault();openMacro(i);}));
-  document.title = lang === 'ru' ? 'WoW 3.3.5 · Fury Warrior — умные макросы' : 'WoW 3.3.5 · Fury Warrior — smart macros';
+  document.querySelector('.cta a[href="hero.html"]').href=`hero.html?lang=${lang}`;
 });
 </script>
 </body>

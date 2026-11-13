@@ -140,6 +140,15 @@ h2 img.ic { object-fit: cover; }
   .grid { overflow: hidden; }
   .card { overflow: hidden; }
 }
+@media (min-width: 1200px) {
+  body { font-size:16px; }
+  header.top nav a { font-size:15px; padding:9px 15px; }
+  .card h2 { font-size:17px; }
+  .small { font-size:14px; }
+  .btn { font-size:15px; }
+  footer.bot { font-size:13px; }
+  .tipcard,.g-tooltip,.g-dialog-body { font-size:14px; }
+}
 ::-webkit-scrollbar { width: 0; height: 0; }
 /* Mobile app behavior: prevent accidental selection while keeping code and form fields usable. */
 @media (pointer: coarse) {

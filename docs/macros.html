@@ -64,6 +64,10 @@
     .m-feats { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .m-card pre { max-height:min(130px,18vh); }
   }
+  @media (min-width: 1200px) {
+    .m-head .t b{font-size:18px}.m-head .t span{font-size:14px}.m-feats .t{font-size:14px}.m-feats .t b{font-size:15px}
+    .m-note{font-size:14px}.macro-box pre{font-size:13px;line-height:1.55}.tag{font-size:12px;padding:4px 10px}
+  }
 </style>
 </head>
 <body>
@@ -81,7 +85,7 @@
 <script>
 const L10N = { ru: { copy: 'копировать' }, en: { copy: 'copy' } };
 // macro bodies come from macros-data.js (embedded, no fetch)
-const MACROS = [
+let MACROS = [
   {
     file: '01-attack-rotation', icon: 'inv_axe_66',
     ru: ['Ротация — одна кнопка', 'Рывок → Победный раж → Кровожадность → Вихрь → Казнь; кулдауны срабатывают сами'],
@@ -166,11 +170,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const lang = window.W.lang;
   const I = window.W.icon;
   const L = L10N[lang] || L10N.ru;
-  document.title = (lang === 'ru' ? 'Макросы' : 'Macros') + ' — WoW 3.3.5 Fury';
+  const spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
+  const names={arms:lang==='ru'?'Arms PvP — макросы контроля':'Arms PvP — control macros',fury:lang==='ru'?'Fury PvE — макросы урона':'Fury PvE — damage macros',prot:lang==='ru'?'Protection PvE — макросы танка':'Protection PvE — tank macros'};
+  document.title = names[spec]+' — WoW 3.3.5';
+  if(spec!=='fury'){
+    const rows=spec==='arms'?
+      [
+        ['Сбить каст по фокусу или наведению','Сохраняет основную цель; при смене стойки может потребоваться повторное нажатие.','#showtooltip Зуботычина\n/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина','inv_gauntlets_04'],
+        ['Рывок из боевой стойки','Подходит для сближения вне боя; стойка меняется отдельной командой, иногда нужно нажать повторно.','#showtooltip Рывок\n/cast [nostance:1]Боевая стойка\n/cast [stance:1]Рывок','ability_warrior_charge'],
+        ['Снять разоружение по наведению','Утилитарная кнопка против вооружённой цели; не складывает смену стойки и способность в один гарантированный каст.','#showtooltip Разоружение\n/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение','ability_warrior_disarm']
+      ]:
+      [
+        ['Приоритет угрозы по цели','Основные способности танка; нажимай повторно и отслеживай угрозу, ярость и перезарядки.','#showtooltip Удар щитом\n/startattack\n/cast Удар щитом\n/cast Реванш\n/cast Сокрушение','ability_warrior_shieldslam'],
+        ['Провокация по наведению','Провоцирует врага под курсором, сохраняя текущую цель; подходит для быстрого перехвата адда.','#showtooltip Провокация\n/cast [@mouseover,harm,nodead][]Провокация','spell_nature_reincarnation'],
+        ['Прерывание по наведению','Удар щитом требует экипированный щит и боевую или защитную стойку; проверь экипировку перед боем.','#showtooltip Удар щитом\n/cast [nostance:1,nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Удар щитом','inv_shield_05']
+      ];
+    MACROS=rows.map(([title,sub,body,icon],i)=>({file:'custom-'+i,icon,body,[lang]:[title,sub],tags:{[lang]:i===0?(spec==='arms'?['фокус','прерывание']:['угроза','приоритет']):['ситуационно','без биндов']},feats:{[lang]:[]},note:{[lang]:spec==='arms'?'Макрос не выбирает момент для контроля: смотри на каст, стойку и перезарядку. Обычный макрос выполняет одну защищённую команду на нажатие.':'Это набор приоритетных попыток, а не автоматическая ротация: игра выполнит доступную команду по правилам глобальной перезарядки. Следи за угрозой, стойкой и ресурсом ярости.'}}));
+  }
   const wrap = document.getElementById('cards');
   const rows = [];
   for (const m of MACROS) {
-    const body = (((window.MACRO_TXT || {})[lang] || {})[m.file] || '').trim();
+    const body = (m.body || (((window.MACRO_TXT || {})[lang] || {})[m.file] || '')).trim();
     const [name, sub] = m[lang];
     const tags = (m.tags[lang] || []).map(t => `<span class="tag">${t}</span>`).join('');
     const feats = (m.feats[lang] || []).map(f =>
