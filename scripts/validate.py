@@ -142,9 +142,10 @@ def main()->int:
                     errors.append(f"Hero gear route {spec} must cover levels 1–80")
                     continue
                 for level,items in levels.items():
-                    for slot in ("1","7"):
-                        if slot not in items:
-                            errors.append(f"Hero gear route {spec}/{level} is missing head or legs")
+                    if "7" not in items:
+                        errors.append(f"Hero gear route {spec}/{level} is missing legs")
+                    if items.get("1", {}).get("id") in (3536, 4193):
+                        errors.append(f"Hero gear route {spec}/{level} uses unobtainable/deprecated helmet data")
                     for slot,item in items.items():
                         if not all(int(item.get(key) or 0)>0 for key in ("id","displayId","inventoryType")):
                             errors.append(f"Hero gear route {spec}/{level}/{slot} has no item/display/slot data")

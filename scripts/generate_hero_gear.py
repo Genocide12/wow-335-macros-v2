@@ -66,6 +66,9 @@ def main():
             for row in tuples(line):
                 if len(row) < len(columns): continue
                 get = lambda key: row[ix[key]]
+                # These historical placeholder items were never obtainable by
+                # players and do not have reliable appearances in the viewer.
+                if get("entry") in (3536, 4193): continue
                 if get("entry") in (49623, 50730, 50070): print("DEBUG ITEM", get("entry"), [(k,get(k)) for k in ("name","class","subclass","InventoryType","ItemLevel","RequiredLevel","Quality","AllowableClass","AllowableRace","requiredhonorrank","RequiredReputationFaction")])
                 item_class, inv = get("class"), get("InventoryType")
                 if item_class not in (2, 4) or inv not in SLOTS: continue

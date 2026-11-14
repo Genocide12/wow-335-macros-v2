@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Герой — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114i">
+<link rel="stylesheet" href="assets/css/app.css?v=20261115c">
 <style>
   .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr);width:100%;margin-inline:auto; }
   #doll{display:flex;flex-direction:column;border:1px solid #927b49;background:radial-gradient(ellipse at 50% 35%,#252a37 0,transparent 55%),linear-gradient(145deg,#24242a,#11141c 62%,#181713);box-shadow:inset 0 0 0 1px #f0d58a18,inset 0 0 48px #a8833512,0 12px 40px #0009}
@@ -69,6 +69,10 @@
   .tipcard .tl { color: #9aa3b5; }
   .tipcard .body { margin-top: 6px; border-top: 1px solid #2a3049; padding-top: 5px; }
   .tipcard .body b { font-weight: 700; }
+  .tipcard .item-source{margin-top:8px;padding:7px 8px;border:1px solid #806a39;border-radius:5px;background:linear-gradient(110deg,#302719,#171612);color:#f1dfb5}
+  .tipcard .item-source strong{display:block;margin-bottom:3px;color:#e7c75e;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .tipcard .item-source a{color:#d9c58f;text-decoration:underline;text-underline-offset:2px}
+  .hero-cap-guide[open]{padding-bottom:5px}
   .q0 { color: #9d9d9d; } .q1 { color: #fff; } .q2 { color: #1eff00; } .q3 { color: #0070dd; }
   .q4 { color: #a335ee; } .q5 { color: #ff8000; } .q6 { color: #e6cc80; }
   .import { display: flex; flex-direction: column; gap: 7px; height: 100%; overflow:hidden; }
@@ -122,7 +126,7 @@
   }
   @media(max-height:620px) and (max-width:700px){.character-stage{height:clamp(185px,34vh,245px);min-height:185px;max-height:34vh}.step{font-size:9px}.import textarea{height:42px}.h-layout>.hero-panel{padding:6px}#doll{overflow-y:auto}.doll-col{gap:1px}.slot{width:23px;height:23px}.slot img{width:19px;height:19px}.hero-stats{max-height:26vh}}
   @media(max-height:560px) and (min-width:701px){.character-stage{height:clamp(250px,48vh,330px)}.slot{width:28px;height:28px}.slot img{width:23px;height:23px}.doll-col{gap:2px}.import textarea{height:48px}.steps{gap:3px}.step{font-size:10px}}
-  @media(min-width:981px){.h-layout{max-width:none;width:100%;margin:0}.doll-grid{grid-template-columns:clamp(38px,3.2vw,48px) minmax(0,1fr) clamp(38px,3.2vw,48px) minmax(280px,320px);gap:6px}.doll-center{height:100%;gap:5px}.character-stage{order:1;height:auto;min-height:0;flex:1 1 auto}.talents{order:2;flex:0 0 auto}.weapons{order:3;flex:0 0 auto;margin-top:0;padding-bottom:2px}.doll-col{justify-content:center;gap:clamp(3px,.65vh,8px)}.slot{width:clamp(34px,3vw,46px);height:clamp(34px,3vw,46px)}.slot img{width:84%;height:84%}}
+  @media(min-width:981px){.h-layout{max-width:none;width:100%;margin:0}.doll-grid{grid-template-columns:clamp(38px,3.2vw,48px) minmax(360px,min(48vw,650px)) clamp(38px,3.2vw,48px) minmax(280px,320px);justify-content:center;gap:6px}.doll-center{height:100%;gap:5px}.character-stage{order:1;height:auto;min-height:0;flex:1 1 auto}.talents{order:2;flex:0 0 auto}.weapons{order:3;flex:0 0 auto;margin-top:0;padding-bottom:2px}.doll-col{justify-content:center;gap:clamp(3px,.65vh,8px)}.slot{width:clamp(34px,3vw,46px);height:clamp(34px,3vw,46px)}.slot img{width:84%;height:84%}}
 </style>
 </head>
 <body>
@@ -159,11 +163,11 @@
 </div>
 <div class="tipcard" id="itemtip"></div>
 <div class="hero-stat-tooltip" id="heroStatTooltip" role="tooltip"><div class="tip-title"></div><div class="tip-value"></div><div class="tip-copy"></div></div>
-<script src="assets/js/app.js?v=20261114i"></script>
-<script src="assets/js/macros-data.js?v=20261114i"></script>
+<script src="assets/js/app.js?v=20261115c"></script>
+<script src="assets/js/macros-data.js?v=20261115c"></script>
 <script src="assets/js/talents-data.js"></script>
 <script src="assets/data/wotlk-item-displayids.js"></script>
-<script src="assets/js/leveling-gear.js?v=20261114i"></script>
+<script src="assets/js/leveling-gear.js?v=20261115c"></script>
 <script>
 (() => {
   const lang = window.W.lang;
@@ -202,7 +206,13 @@
   const QCOL = { 0: '#9d9d9d', 1: '#fff', 2: '#1eff00', 3: '#0070dd', 4: '#a335ee', 5: '#ff8000', 6: '#e6cc80' };
   const $ = id => document.getElementById(id);
   const state = { char: null, gear: {}, tips: {}, loadingTips:new Set(), tipControllers:new Map(), legacy: false, imported: false, levelBase: null };
-  let itemTipTimer=0;
+  let itemTipTimer=0, activeItemTipSlot=null, activeItemTipElement=null;
+  const itemTipQueue=[];let activeItemTipLoads=0;
+  const queueItemTip=task=>new Promise((resolve,reject)=>{
+    itemTipQueue.push({task,resolve,reject});
+    const pump=()=>{while(activeItemTipLoads<4&&itemTipQueue.length){const job=itemTipQueue.shift();activeItemTipLoads++;Promise.resolve().then(job.task).then(job.resolve,reject=>job.reject(reject)).finally(()=>{activeItemTipLoads--;pump();});}};
+    pump();
+  });
 
   function macroRun(file) {
     return ((((window.MACRO_TXT || {})[lang] || {})[file] || '')
@@ -246,7 +256,7 @@
     const number = n => Number.isFinite(+n) ? Math.round(+n).toLocaleString(lang==='ru'?'ru-RU':'en-US') : '—';
     const decimal = n => Number.isFinite(+n) ? (+n).toLocaleString(lang==='ru'?'ru-RU':'en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
     const pct = n => Number.isFinite(+n) ? `${decimal(n)}%` : '—';
-    const row = (label,value,positive=false,title='') => {const shown=String(value).trim();if(!shown||shown.includes('—'))return '';return `<div class="hero-stat-row"${title?` data-stat-tip="${encodeURIComponent(title)}" tabindex="0" aria-describedby="heroStatTooltip"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${shown}</span></div>`;};
+    const row = (label,value,positive=false,title='') => {const shown=String(value).trim();if(!shown||/^(?:—\s*[·–]\s*)*—$/.test(shown))return '';return `<div class="hero-stat-row"${title?` data-stat-tip="${encodeURIComponent(title)}" tabindex="0" aria-describedby="heroStatTooltip"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${shown}</span></div>`;};
     const cap = {
       strength:lang==='ru'?'Даёт воину силу атаки и немного блокирования щитом. Универсального капа нет.':'Adds warrior attack power and a small amount of shield block. No universal cap.',
       agility:lang==='ru'?'Даёт броню и критический удар; вклад зависит от класса. Капа нет.':'Adds armor and critical chance; effect depends on class. No cap.',
@@ -273,7 +283,7 @@
     const note=lang==='ru'
       ? (complete?'Значения сняты из клиента игры. Капы указаны для ориентира на 80-м уровне и зависят от цели, талантов и группы.':'Показываются только полученные данные. Запусти команды 2–4 в настройках героя, чтобы добавить боевые характеристики; пустые поля скрываются.')
       : (complete?'Values are read from the game client. Level-80 caps are reference points and depend on target, talents, and group.':'Only received data is shown. Run commands 2–4 in Hero settings to add combat stats; empty fields stay hidden.');
-    pane.innerHTML = `${avg?`<div class="hero-stats-title">${lang==='ru'?'Уровень предмета':'Item level'} <span class="value">${avg}</span></div>`:''}
+    pane.innerHTML = `${avg?`<div class="hero-stats-title">${lang==='ru'?'Средний уровень предметов':'Average item level'} <span class="value">${avg}</span></div>`:''}
       <div class="hero-stats-section">${lang==='ru'?'Основные':'Basic'}</div>
       ${row(lang==='ru'?'Сила':'Strength',number(c.str),true,cap.strength)}
       ${row(lang==='ru'?'Ловкость':'Agility',number(c.agi),false,cap.agility)}
@@ -301,7 +311,7 @@
       ${row(lang==='ru'?'Природа':'Nature resistance',getRes(4),false,cap.noCap)}
       ${row(lang==='ru'?'Лёд':'Frost resistance',getRes(5),false,cap.noCap)}
       ${row(lang==='ru'?'Тьма':'Shadow resistance',getRes(6),false,cap.noCap)}
-      <details class="hero-cap-guide"><summary>${lang==='ru'?'Все рейтинги и пояснения':'All ratings and notes'}</summary>${allRatings}<p>${cap.hit}</p><p>${cap.expertise}</p><p>${cap.defense}</p><p>${cap.arp}</p><p>${cap.noCap}</p></details>
+      <details class="hero-cap-guide" open><summary>${lang==='ru'?'Все рейтинги и пояснения':'All ratings and notes'}</summary>${allRatings}<p>${cap.hit}</p><p>${cap.expertise}</p><p>${cap.defense}</p><p>${cap.arp}</p><p>${cap.noCap}</p></details>
       <div class="hero-stats-note">${note}</div>`;
   }
 
@@ -316,10 +326,11 @@
     if (base.char.hp) c.hp = Math.max(1, Math.round(base.char.hp + delta * 30));
     state.gear = { ...base.gear };
     const spec = localStorage.getItem('warriorSpec') || 'fury';
+    const gearSpec = spec === 'protection' ? 'prot' : spec;
     const importedSpec = state.imported ? localStorage.getItem('wheroImportedSpec') : '';
     const changedImportedSpec = !!importedSpec && spec !== importedSpec;
-    const showGearRoute = state.imported ? (c.lvl !== base.char.lvl || changedImportedSpec) : c.lvl > 1;
-    const route = window.LEVELING_GEAR?.[spec]?.[String(c.lvl)] || window.LEVELING_GEAR?.arms?.[String(c.lvl)];
+    const showGearRoute = state.imported ? (c.lvl !== base.char.lvl || changedImportedSpec) : true;
+    const route = window.LEVELING_GEAR?.[gearSpec]?.[String(c.lvl)] || window.LEVELING_GEAR?.arms?.[String(c.lvl)];
     if (route) {
       state.gear = showGearRoute
         ? { ...state.gear, ...route }
@@ -575,11 +586,32 @@
     for (const [slot, g] of jobs) {
       state.loadingTips.add(+g.id);
       const controller=new AbortController();state.tipControllers.set(+g.id,controller);
-      fetch(`https://nether.wowhead.com/wotlk/tooltip/item/${g.id}?locale=${lang}`,{signal:controller.signal})
-        .then(r => r.ok ? r.json() : null)
+      const load=async()=>{
+        const urls=[`https://nether.wowhead.com/wotlk/tooltip/item/${g.id}?locale=${lang}`,
+          `https://wotlk.warcraftdb.com/api/v1/tooltip/item/${g.id}`];
+        for(const url of urls){
+          for(let attempt=0;attempt<2;attempt++){
+            try{
+              const response=await fetch(url,{signal:controller.signal,cache:'force-cache'});
+              if(!response.ok){if(response.status>=500&&attempt===0){await new Promise(resolve=>setTimeout(resolve,300));continue;}break;}
+              const data=await response.json();
+              if(data&&(data.tooltip||data.html))return {...data,tooltip:data.tooltip||data.html};
+              break;
+            }catch(error){if(controller.signal.aborted)return null;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,250));}
+          }
+        }
+        return null;
+      };
+      queueItemTip(load)
         .then(j => {
           if (!j) return;
           state.tips[g.id] = j;
+          const sourceMatch=String(j.tooltip||'').match(/<div[^>]*class=["'][^"']*whtt-(?:droppedby|soldby|quest|crafted|source)[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
+          if(sourceMatch){
+            j.sourceType=(sourceMatch[0].match(/whtt-(droppedby|soldby|quest|crafted|source)/i)||[])[1]||'source';
+            const sourceText=sourceMatch[1].replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+            j.source=sourceText.replace(/^(?:Dropped by|Добывается с|Sold by|Продаётся у|Quest|Задание|Source|Источник)\s*:?\s*/i,'').trim();
+          }
           const displayId=+(j.displayId||j.displayid||j.display_id||(window.WOTLK_ITEM_DISPLAY_IDS||{})[g.id]||0);
           if(displayId){g.displayId=displayId;if(+state.gear[slot]?.id===+g.id)window.updateWowGearItem?.(+slot,g);}
           g.ilvl=+g.ilvl||+(j.itemLevel||j.itemlevel||0)||+(String(j.tooltip||'').match(/(?:Item Level|Уровень предмета)\s*:?\s*(\d+)/i)||[])[1]||0;
@@ -592,6 +624,7 @@
           }
           if (g.q == null && j.quality != null) d.style.borderColor = QCOL[j.quality] || '#4a4436';
           renderStats();
+          if(activeItemTipSlot===+slot&&activeItemTipElement===d)showTip(d,+slot);
         }).catch(() => {}).finally(() => {state.loadingTips.delete(+g.id);state.tipControllers.delete(+g.id);});
     }
   }
@@ -619,6 +652,7 @@
   }
 
   function showTip(el, slot) {
+    activeItemTipSlot=+slot;activeItemTipElement=el;
     const T = L[lang], slots = T.slots();
     const g = state.gear[slot];
     const tip = $('itemtip');
@@ -631,7 +665,13 @@
       let html = `<b class="nm q${q}">${esc(nm)}</b><br>`;
       if (g.ilvl) html += `<span class="tl">${T.ilvlLine} ${g.ilvl}</span><br>`;
       html += `<span class="tl">${slots[slot]}</span>`;
-      if (t && t.tooltip) html += `<div class="body">${cleanTip(t.tooltip)}</div>`;
+      if (t && t.tooltip) {
+        const body=t.source?t.tooltip.replace(/<div[^>]*class=["'][^"']*whtt-(?:droppedby|soldby|quest|crafted|source)[^"']*["'][^>]*>[\s\S]*?<\/div>/i,''):t.tooltip;
+        html += `<div class="body">${cleanTip(body)}</div>`;
+        const sourceLabels=lang==='ru'?{droppedby:'Добывается с',soldby:'Продаётся у',quest:'Награда за задание',crafted:'Создаётся через профессию',source:'Источник'}:{droppedby:'Dropped by',soldby:'Sold by',quest:'Quest reward',crafted:'Crafted with',source:'Source'};
+        html += t.source?`<div class="item-source"><strong>${sourceLabels[t.sourceType]||sourceLabels.source}</strong>${esc(t.source)}</div>`:
+          `<div class="item-source"><strong>${lang==='ru'?'Источник не указан':'Source not listed'}</strong><a href="https://www.wowhead.com/wotlk/item=${+g.id}" target="_blank" rel="noopener">${lang==='ru'?'Проверить карточку предмета':'Check item record'}</a></div>`;
+      }
       else if (g.id) html += `<div class="body"><span class="tl">…</span></div>`;
       tip.innerHTML = html;
     }
@@ -643,7 +683,7 @@
     if (y + th > innerHeight - 8) y = Math.max(8, innerHeight - th - 8);
     tip.style.left = x + 'px'; tip.style.top = y + 'px';
   }
-  function hideTip() { $('itemtip').style.display = 'none'; }
+  function hideTip() { $('itemtip').style.display = 'none';activeItemTipSlot=null;activeItemTipElement=null; }
 
   // Authentic level-one Human Warrior starter outfit from the WotLK 3.3.5 data.
   const DEMO = [
@@ -669,7 +709,16 @@
     const {generateModels}=window.WowModelViewerBundle;
     let activeModel=null, modelRequest=0;
     const convertedItems=new Map(Object.entries(JSON.parse(localStorage.getItem('wotlkDisplayIds')||'{}')));
+    // Keep known appearances available even when the public conversion API is down.
+    for(const [key,id] of Object.entries({'10763:28783':178483,'7719:15811':15562}))
+      if(!convertedItems.has(key))convertedItems.set(key,id);
     const convertingItems=new Map();
+    const displayConversionQueue=[];let activeDisplayConversions=0;
+    const queueDisplayConversion=task=>new Promise((resolve,reject)=>{
+      displayConversionQueue.push({task,resolve,reject});
+      const pump=()=>{while(activeDisplayConversions<2&&displayConversionQueue.length){const job=displayConversionQueue.shift();activeDisplayConversions++;Promise.resolve().then(job.task).then(job.resolve,reject=>job.reject(reject)).finally(()=>{activeDisplayConversions--;pump();});}};
+      pump();
+    });
     const pendingGearItems=new Map();
     const lockModelInput=host=>{
       if(host.dataset.inputLocked)return;
@@ -684,17 +733,22 @@
       const key=itemId+':'+classicDisplayId;
       if(convertedItems.has(key))return +convertedItems.get(key);
       if(convertingItems.has(key))return convertingItems.get(key);
-      const request=(async()=>{
-        try{
-          const response=await fetch(`${window.WOTLK_TO_RETAIL_DISPLAY_ID_API}/${itemId}/${classicDisplayId}`);
-          if(response.ok){const data=await response.json();const id=+(data.newDisplayId||data.data?.newDisplayId||0);if(id){
-            convertedItems.set(key,id);
-            try{localStorage.setItem('wotlkDisplayIds',JSON.stringify(Object.fromEntries(convertedItems)));}catch(_){}
-            return id;
-          }}
-        }catch(error){console.warn('WotLK display conversion failed:',itemId,error);}
+      const request=queueDisplayConversion(async()=>{
+        for(let attempt=0;attempt<4;attempt++){
+          try{
+            const response=await fetch(`${window.WOTLK_TO_RETAIL_DISPLAY_ID_API}/${itemId}/${classicDisplayId}`,{cache:'force-cache'});
+            if(response.ok){const data=await response.json();const id=+(data.newDisplayId||data.data?.newDisplayId||0);if(id){
+              convertedItems.set(key,id);
+              try{localStorage.setItem('wotlkDisplayIds',JSON.stringify(Object.fromEntries(convertedItems)));}catch(_){}
+              return id;
+            }return classicDisplayId;}
+            if(response.status<500&&response.status!==429)return classicDisplayId;
+          }catch(error){console.warn('WotLK display conversion attempt failed:',itemId,error);}
+          if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)));
+        }
+        console.warn('WotLK display conversion unavailable; keeping item icon visible:',itemId);
         return classicDisplayId;
-      })().finally(()=>convertingItems.delete(key));
+      }).finally(()=>convertingItems.delete(key));
       convertingItems.set(key,request);
       return request;
     }
@@ -711,14 +765,9 @@
         // Render the character body first. Item conversion endpoints are slow or
         // unavailable on some Pages visitors; never let optional gear block the model.
         const displaySlotOf=(slot,item)=>({16:21,17:22,18:15}[+slot]||(+item?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[item?.id]||+slot));
-        const modelGearItems=Object.entries(gear||{}).flatMap(([slot,item])=>{
-          // Keep ranged weapon visible in its equipment slot, but do not render
-          // a bow or gun in the character's hands on the 3D preview.
-          if(+slot===18)return [];
-          const displayId=+item?.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[item?.id]||0;
-          return item?.id&&displayId?[[displaySlotOf(slot,item),displayId]]:[];
-        });
-        const modelOptions={race:char.raceId,gender:char.gender,skin:0,face:0,hairStyle:0,hairColor:0,facialStyle:0,items:modelGearItems,hideProgressBar:false};
+        // Start with the body; attach gear through the bounded conversion queue
+        // after the model is ready so slow item lookups cannot drop a slot.
+        const modelOptions={race:char.raceId,gender:char.gender,skin:0,face:0,hairStyle:0,hairColor:0,facialStyle:0,items:[],hideProgressBar:false};
         let nextModel;
         try{nextModel=await generateModels(modelAspect,'#wow-model',modelOptions,'live');}
         catch(proxyError){
