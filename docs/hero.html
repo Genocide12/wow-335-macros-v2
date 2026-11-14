@@ -142,7 +142,7 @@
       <div class="export-copy"><span data-ru="Экспорт героя" data-en="Character export">Экспорт героя</span><span class="macro-box" id="m1"></span></div>
       <textarea id="paste" placeholder="WEXP1|…&#10;WEXP2|…"></textarea>
       <div class="import-progress" id="importProgress" aria-live="polite">Сначала запусти макрос «Экспорт · 1» в игре.</div>
-      <div class="import-actions"><button class="btn" id="pasteClipboard" data-ru="Вставить ответ из игры" data-en="Paste response from game">Вставить ответ из игры</button></div>
+      <div class="import-actions"><button class="btn" id="pasteClipboard" data-ru="Вставить ответ из игры" data-en="Paste response from game">Вставить ответ из игры</button><button class="btn ghost" id="resetHeroDemo" type="button" data-ru="Сбросить к демо · 1 уровень" data-en="Reset to demo · level 1">Сбросить к демо · 1 уровень</button></div>
     </section>
   </dialog>
 </main>
@@ -322,6 +322,7 @@
     $('paste').addEventListener('input',()=>{clearTimeout(pasteTimer);pasteTimer=setTimeout(()=>parse(true),180);});
     $('pasteClipboard').onclick=async()=>{try{const text=await navigator.clipboard.readText();if(!/WEXP[12]\|/.test(text)){ $('importProgress').textContent=lang==='ru'?'Сначала запусти игровой макрос и скопируй все строки WEXP из чата.':'Run the in-game macro first, then copy all WEXP chat lines.';return;}$('paste').value=text.trim();parse(true);}catch(_){document.querySelector('.import').classList.add('paste-fallback');$('importInstruction').textContent=lang==='ru'?'Вставь все строки WEXP из игрового чата в поле ниже. Герой обновится автоматически.':'Paste all WEXP lines from game chat below. The character updates automatically.';$('paste').focus();}};
     $('openHeroImport').onclick=()=>{ $('paste').value='';$('importProgress').textContent=lang==='ru'?'Шаг 1 из 2 · скопируй команду и запусти игровой макрос.':'Step 1 of 2 · copy the command and run the in-game macro.';$('heroImportDialog').showModal();};
+    $('resetHeroDemo').onclick=()=>{localStorage.removeItem('wheroData');state.imported=false;$('paste').value=DEMO.join('\n');parse(true,true);$('paste').value='';$('heroImportDialog').close();};
     $('m1').addEventListener('click',e=>{if(e.target.closest('#copyM1')){$('importProgress').textContent=lang==='ru'?'Команда скопирована · шаг 1 из 2. Создай игровой макрос, запусти его и скопируй ответ из чата.':'Command copied · step 1 of 2. Create and run the macro, then copy its chat output.';$('importInstruction').textContent=lang==='ru'?'Шаг 2: скопируй из игрового чата все строки WEXP, вернись сюда и нажми «Вставить данные из чата».':'Step 2: copy all WEXP lines from game chat, return here and choose “Paste chat data”.';}});
     $('cname').onclick=()=>{if(!state.imported)$('openHeroImport').click();};
     $('closeHeroImport').onclick=()=>$('heroImportDialog').close();
