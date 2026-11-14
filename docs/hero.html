@@ -7,16 +7,19 @@
 <link rel="stylesheet" href="assets/css/app.css?v=20261114d">
 <style>
   .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr); }
-  #doll{border:1px solid #77633a;background:linear-gradient(145deg,#20222a,#10131b);box-shadow:inset 0 0 0 2px #ffffff08,0 10px 35px #0008}
+  #doll{display:flex;flex-direction:column;border:1px solid #77633a;background:linear-gradient(145deg,#20222a,#10131b);box-shadow:inset 0 0 0 2px #ffffff08,0 10px 35px #0008}
   #doll { overflow: hidden; }
   .char-head { display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;text-align:center;margin-bottom:8px; }
   .char-head .nm { font-size: 21px; font-weight: 800; color: #fff; }
+  .name-import-callout{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
+  .name-import-callout.is-action{padding:5px 13px;border:1px solid #d0ad56;border-radius:999px;background:linear-gradient(145deg,#30281a,#12131a);color:#ffe69a;box-shadow:0 0 14px #f0ca564d;animation:hero-name-pulse 1.8s ease-in-out infinite}
+  @keyframes hero-name-pulse{50%{box-shadow:0 0 24px #f0ca5688;filter:brightness(1.15)}}
   .char-head .sub { color: var(--dim); font-size: 12.5px; margin-top: 2px; }
   .hero-util{width:38px;height:38px;display:grid;place-items:center;border:1px solid #75633d;border-radius:10px;background:linear-gradient(145deg,#27251f,#11141c);color:#e8c96a;cursor:pointer}
   #levelNext{border-color:#9e3e39;background:linear-gradient(145deg,#8e2c27,#431a1c);color:#ff6158}
   #levelNext:hover{box-shadow:0 0 16px #e6473d77;filter:brightness(1.18)}
   .hero-util svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .doll-grid { display: grid; grid-template-columns: 42px minmax(0,1fr) 42px; gap: 2px; justify-items: center; align-items: start; }
+  .doll-grid { flex:1;min-height:0;display: grid; grid-template-columns: 42px minmax(250px,1fr) 42px minmax(245px,30%); gap: 10px; justify-items: stretch; align-items: stretch; }
   .doll-col { display: flex; flex-direction: column; gap: 3px; }
   .slot { width: 36px; height: 36px; border-radius: 4px; background: #05070c;
     border: 1px solid #4a4436; display: flex; align-items: center; justify-content: center;
@@ -25,7 +28,7 @@
   .slot.empty img { opacity: .45; filter: grayscale(.45); }
   .slot.has:hover img { transform: scale(1.06); }
   .slot:hover { border-color: #8a7f5c; }
-  .doll-center { text-align: center; padding: 2px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; width:100%; }
+  .doll-center { text-align: center; padding: 2px 6px; display: flex; flex-direction: column; align-items: center; justify-content:center;gap: 6px; width:100%;min-width:0; }
   .character-stage{position:relative;width:100%;height:clamp(270px,46vh,390px);max-height:none;min-height:270px;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;border:0;border-radius:0;background:transparent;box-shadow:none;touch-action:none}
   #wow-model{position:absolute;inset:0;z-index:2;width:100%;height:100%;opacity:1;transition:opacity .5s;cursor:grab;touch-action:none}
   #wow-model:active{cursor:grabbing}
@@ -45,6 +48,12 @@
   .tal .v { font-weight: 800; color: #fff; font-size: 13px; }
   .tal .l { font-size: 9.5px; color: var(--dim); }
   .weapons { display: flex; justify-content: center; gap: 10px; margin-top: 8px; }
+  .hero-stats{min-width:0;align-self:stretch;padding:8px 10px;border:1px solid #665435;border-radius:8px;background:linear-gradient(160deg,#181713ef,#0d0e12f5);box-shadow:inset 0 0 0 1px #ffffff08;overflow:auto;color:#e9dfc8}
+  .hero-stats-title{margin:0 0 7px;padding:7px 5px;text-align:center;border:1px solid #786443;border-radius:6px;background:linear-gradient(#403628,#171512);font-size:15px;font-weight:800;color:#f0dfb5;text-shadow:0 1px #000}
+  .hero-stats-section{margin-top:8px;padding:5px 8px;text-align:center;border:1px solid #54452f;border-radius:6px;background:linear-gradient(#30291f,#15130f);font-weight:700;color:#eee1c1}
+  .hero-stat-row{display:flex;justify-content:space-between;gap:8px;padding:3px 2px;border-bottom:1px solid #ffffff0b;font-size:13px;line-height:1.2}
+  .hero-stat-row .label{color:#e1c65a}.hero-stat-row .value{color:#f0eee6;font-variant-numeric:tabular-nums;text-align:right}.hero-stat-row .value.positive{color:#56e36d}
+  .hero-stats-note{margin-top:6px;color:#aaa493;font-size:10px;line-height:1.3}
   .legacy-warn { display: none; margin-top: 8px; font-size: 12px; line-height: 1.45; color: #ffd35c;
     background: rgba(64,48,10,.35); border: 1px solid #6d5a1f; border-radius: 9px; padding: 8px 10px; }
   .tipcard { position: fixed; z-index: 100; display: none; width: 288px; background: rgba(3,5,10,.96);
@@ -81,6 +90,8 @@
   .import-actions{display:flex;gap:8px;flex-wrap:wrap}.import-actions input[type=file]{display:none}
   @media (max-width: 980px) {
     .h-layout { grid-template-columns: minmax(0,1fr) !important; grid-template-rows: minmax(0,1fr); }
+    .doll-grid{grid-template-columns:34px minmax(0,1fr) 34px minmax(210px,32%);gap:6px}
+    .hero-stat-row{font-size:12px}
   }
   @media(max-width:700px){
     main.hero-main-container{gap:6px;padding:7px}
@@ -90,7 +101,8 @@
     .h-layout>.hero-panel.active{display:flex}
     #doll{flex-direction:column;gap:4px}
   .char-head{margin-bottom:2px}.char-head .nm{font-size:16px}.char-head .sub{font-size:10px}.hero-util{width:32px;height:32px}
-    .doll-grid{grid-template-columns:30px minmax(0,1fr) 30px;gap:2px}
+    .doll-grid{grid-template-columns:30px minmax(0,1fr) 30px;grid-template-rows:minmax(0,1fr) auto;gap:2px}
+    .hero-stats{grid-column:1/-1;max-height:34vh;padding:5px 8px}.hero-stats-title{margin-bottom:4px;padding:4px;font-size:13px}.hero-stats-section{margin-top:4px;padding:3px;font-size:12px}.hero-stat-row{font-size:11px;padding:2px}.hero-stats-note{font-size:9px}
     .doll-col{gap:2px}.slot{width:26px;height:26px}.slot img{width:22px;height:22px}
     .doll-center{gap:3px;padding:0 2px}
     .character-stage{height:clamp(210px,40vh,330px);min-height:210px;max-height:40vh;width:100%}
@@ -101,7 +113,7 @@
     .export-copy{padding:4px 6px;font-size:10px}
     .import>.btn,.import button{font-size:11px;padding:7px 9px}
   }
-  @media(max-height:620px) and (max-width:700px){.character-stage{height:clamp(125px,24vh,190px);min-height:125px;max-height:24vh}.step{font-size:9px}.import textarea{height:42px}.h-layout>.hero-panel{padding:6px}#doll{overflow-y:auto}.doll-col{gap:1px}.slot{width:23px;height:23px}.slot img{width:19px;height:19px}}
+  @media(max-height:620px) and (max-width:700px){.character-stage{height:clamp(125px,24vh,190px);min-height:125px;max-height:24vh}.step{font-size:9px}.import textarea{height:42px}.h-layout>.hero-panel{padding:6px}#doll{overflow-y:auto}.doll-col{gap:1px}.slot{width:23px;height:23px}.slot img{width:19px;height:19px}.hero-stats{max-height:26vh}}
   @media(max-height:560px) and (min-width:701px){.character-stage{height:clamp(250px,48vh,330px)}.slot{width:28px;height:28px}.slot img{width:23px;height:23px}.doll-col{gap:2px}.import textarea{height:48px}.steps{gap:3px}.step{font-size:10px}}
 </style>
 </head>
@@ -112,7 +124,7 @@
     <section class="card hero-panel active" id="doll">
       <div class="char-head">
         <button class="hero-util" id="levelNext" type="button" title="Следующий уровень" aria-label="Следующий уровень"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/><path d="M7 5h10M7 19h10"/></svg></button>
-        <div><div class="nm" id="cname" data-ru="Твой герой" data-en="Your hero">Твой герой</div>
+        <div><button class="nm name-import-callout" id="cname" type="button" data-ru="Добавить героя" data-en="Add character">Добавить героя</button>
         <div class="sub" id="csub" data-ru="Образец персонажа" data-en="Character preview">Образец персонажа</div></div>
         <button class="hero-util" id="openHeroImport" type="button" title="Добавить или обновить героя" aria-label="Добавить или обновить героя"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.4v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6.7v-2.4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L8 8.6l1.7-1.7.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h2.4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
       </div>
@@ -175,9 +187,24 @@
     16: 'inv_sword_10', 17: 'inv_shield_04', 18: 'inv_weapon_crossbow_01', 19: 'inv_shirt_guildtabard_01'
   };
   const QCOL = { 0: '#9d9d9d', 1: '#fff', 2: '#1eff00', 3: '#0070dd', 4: '#a335ee', 5: '#ff8000', 6: '#e6cc80' };
+  // Public leveling guide weapon milestones. The page previews a realistic upgrade
+  // path; it never edits the character data exported from the game.
+  const LEVEL_WEAPONS = [
+    { level: 15, id: 12975, name: "Prospector Axe" },
+    { level: 28, id: 2299, name: "Burning War Axe" },
+    { level: 34, id: 6830, name: "Bonebiter" },
+    { level: 51, id: 11816, name: "Angerforge's Battle Axe" },
+    { level: 61, id: 24394, name: "Warsong Howling Axe" },
+    { level: 65, id: 25762, name: "Honed Voidaxe" },
+    { level: 68, id: 27986, name: "Crow Wing Reaper" },
+    { level: 68, id: 38237, name: "Axe of Frozen Death" },
+    { level: 72, id: 38212, name: "Death Knight's Anguish" },
+    { level: 75, id: 41816, name: "De-Raged Waraxe" },
+    { level: 78, id: 36962, name: "Wyrmclaw Battleaxe" }
+  ];
 
   const $ = id => document.getElementById(id);
-  const state = { char: null, gear: {}, tips: {}, legacy: false, imported: false };
+  const state = { char: null, gear: {}, tips: {}, legacy: false, imported: false, levelBase: null };
 
   function macroRun(file) {
     return ((((window.MACRO_TXT || {})[lang] || {})[file] || '')
@@ -191,6 +218,90 @@
     if (g && g.tex) return texIcon(g.tex);
     if (g && g.id && state.tips[g.id] && state.tips[g.id].icon) return window.W.icon(state.tips[g.id].icon);
     return window.W.icon(SLOT_ICONS[slot] || 'inv_misc_questionmark');
+  }
+
+  function itemLevelOf(g) {
+    if (!g) return 0;
+    if (+g.ilvl) return +g.ilvl;
+    const tip = state.tips[g.id], direct = +(tip?.itemLevel || tip?.itemlevel || 0);
+    if (direct) return direct;
+    const plain = (tip?.tooltip || '').replace(/<[^>]+>/g, ' ');
+    return +(plain.match(/(?:Item Level|Уровень предмета)\s*:?\s*(\d+)/i) || [])[1] || 0;
+  }
+
+  function itemStatTotal(pattern) {
+    let total = 0;
+    Object.values(state.gear).forEach(g => {
+      const plain = (state.tips[g?.id]?.tooltip || '').replace(/<[^>]+>/g, ' ');
+      const match = plain.match(pattern);
+      if (match) total += +(match[1] || 0);
+    });
+    return total;
+  }
+
+  function renderStats() {
+    const c = state.char, pane = $('hero-stats');
+    if (!c || !pane) return;
+    const equipped = Object.values(state.gear).filter(Boolean);
+    const itemLevels = equipped.map(itemLevelOf).filter(Boolean);
+    const avg = itemLevels.length ? Math.round(itemLevels.reduce((a,b)=>a+b,0)/itemLevels.length) : 0;
+    const ap = c.ap ? Math.round(c.ap) : Math.round(3*c.lvl + 2*((+c.str||0)+(+c.agi||0)));
+    const hp = c.hp ? Math.round(c.hp) : 0;
+    const armor = itemStatTotal(/(?:^|\s)(\d[\d,]*)\s*(?:Armor|Брон[ья])/i);
+    const intellect = itemStatTotal(/\+\s*(\d+)\s*(?:Intellect|Интеллект)/i);
+    const spirit = itemStatTotal(/\+\s*(\d+)\s*(?:Spirit|Дух)/i);
+    const number = n => Number.isFinite(+n) && +n > 0 ? Math.round(+n).toLocaleString(lang==='ru'?'ru-RU':'en-US') : '—';
+    const row = (label,value,positive=false,title='') => `<div class="hero-stat-row"${title?` title="${title}"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${value}</span></div>`;
+    const note = lang==='ru' ? 'Сила, ловкость и выносливость взяты из экспорта; ~ показывает расчёт предпросмотра. Здоровье и вторичные статы экспорт не содержит.' : 'Strength, agility and stamina are exported; ~ marks preview estimates. Health and secondary stats are not in the current export.';
+    const displayed = n => `${c.lvl !== state.levelBase?.char?.lvl ? '~' : ''}${number(n)}`;
+    pane.innerHTML = `<div class="hero-stats-title">${lang==='ru'?'Уровень предмета':'Item level'} <span class="value">${avg||'—'}</span></div>
+      <div class="hero-stats-section">${lang==='ru'?'Основные':'Basic'}</div>
+      ${row(lang==='ru'?'Сила':'Strength',displayed(c.str),true)}
+      ${row(lang==='ru'?'Ловкость':'Agility',displayed(c.agi))}
+      ${row(lang==='ru'?'Выносливость':'Stamina',displayed(c.sta),true)}
+      ${row(lang==='ru'?'Интеллект':'Intellect',number(intellect))}
+      ${row(lang==='ru'?'Дух':'Spirit',number(spirit))}
+      ${row(lang==='ru'?'Броня':'Armor',number(armor))}
+      <div class="hero-stats-section">${lang==='ru'?'Ближний бой':'Melee'}</div>
+      ${row(lang==='ru'?'Урон':'Damage','—')}${row(lang==='ru'?'Скорость':'Speed','—')}
+      ${row(lang==='ru'?'Сила атаки':'Attack power',c.ap?number(ap):'~'+number(ap),true)}
+      ${row(lang==='ru'?'Здоровье':'Health',c.hp?number(hp):'—',true)}
+      <div class="hero-stats-section">${lang==='ru'?'Дальний бой':'Ranged'}</div>
+      ${row(lang==='ru'?'Урон':'Damage','—')}${row(lang==='ru'?'Скорость':'Speed','—')}
+      <div class="hero-stats-note">${note}</div>`;
+  }
+
+  function levelWeaponFor(level, baseLevel) {
+    return LEVEL_WEAPONS.filter(item => item.level > baseLevel && item.level <= level).at(-1) || null;
+  }
+
+  function refreshLevelPreview() {
+    const base = state.levelBase, c = state.char;
+    if (!base || !c) return;
+    const delta = c.lvl - base.char.lvl;
+    c.str = Math.max(0, Math.round(base.char.str + delta * 2));
+    c.agi = Math.max(0, Math.round(base.char.agi + delta));
+    c.sta = Math.max(0, Math.round(base.char.sta + delta * 2));
+    if (base.char.ap) c.ap = Math.max(0, Math.round(base.char.ap + delta * 5));
+    if (base.char.hp) c.hp = Math.max(1, Math.round(base.char.hp + delta * 30));
+    state.gear = { ...base.gear };
+    const upgrade = levelWeaponFor(c.lvl, base.char.lvl);
+    if (upgrade) state.gear[16] = { id:upgrade.id, name:upgrade.name, q:3,
+      displayId:+(window.WOTLK_ITEM_DISPLAY_IDS||{})[upgrade.id]||0,
+      inventoryType:+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[upgrade.id]||0 };
+    const race = c.race ? (lang==='en' ? (L.en.raceEn[c.race]||c.race) : c.race) : '';
+    const cls = L[lang].clsRu[c.cls] || c.cls || 'Warrior';
+    $('csub').textContent = `${L[lang].lvl} ${c.lvl} ${race ? race + ', ' : ''}${cls}${lang==='ru'?' · предпросмотр':''}`;
+    $('levelNext').disabled = c.lvl >= 80;
+    renderStats();
+    const slot = document.querySelector('.slot[data-slot="16"]'), item = state.gear[16];
+    if (slot) {
+      slot.classList.toggle('has',!!item); slot.classList.toggle('empty',!item);
+      slot.style.borderColor = item ? (QCOL[item.q]||'#4a4436') : '';
+      slot.querySelector('img').src = itemIcon(item,16);
+      if (item?.id) { loadItemTips(); window.updateWowGearItem?.(16,item); }
+      else window.updateWowGearItem?.(16,null);
+    }
   }
 
   function init() {
@@ -210,11 +321,11 @@
     $('pasteClipboard').onclick=async()=>{try{const text=await navigator.clipboard.readText();if(!/WEXP[12]\|/.test(text)){ $('importProgress').textContent=lang==='ru'?'Сначала запусти игровой макрос и скопируй все строки WEXP из чата.':'Run the in-game macro first, then copy all WEXP chat lines.';return;}$('paste').value=text.trim();parse(true);}catch(_){document.querySelector('.import').classList.add('paste-fallback');$('importInstruction').textContent=lang==='ru'?'Вставь все строки WEXP из игрового чата в поле ниже. Герой обновится автоматически.':'Paste all WEXP lines from game chat below. The character updates automatically.';$('paste').focus();}};
     $('openHeroImport').onclick=()=>{ $('paste').value='';$('importProgress').textContent=lang==='ru'?'Шаг 1 из 2 · скопируй команду и запусти игровой макрос.':'Step 1 of 2 · copy the command and run the in-game macro.';$('heroImportDialog').showModal();};
     $('m1').addEventListener('click',e=>{if(e.target.closest('#copyM1')){$('importProgress').textContent=lang==='ru'?'Команда скопирована · шаг 1 из 2. Создай игровой макрос, запусти его и скопируй ответ из чата.':'Command copied · step 1 of 2. Create and run the macro, then copy its chat output.';$('importInstruction').textContent=lang==='ru'?'Шаг 2: скопируй из игрового чата все строки WEXP, вернись сюда и нажми «Вставить данные из чата».':'Step 2: copy all WEXP lines from game chat, return here and choose “Paste chat data”.';}});
-    $('doll').addEventListener('click',e=>{if(e.target.closest('.hero-import-callout'))$('heroImportDialog').showModal();});
+    $('cname').onclick=()=>{if(!state.imported)$('openHeroImport').click();};
     $('closeHeroImport').onclick=()=>$('heroImportDialog').close();
     $('heroImportDialog').addEventListener('click',e=>{if(e.target===$('heroImportDialog'))$('heroImportDialog').close();});
-    $('levelNext').title=lang==='ru'?'ЛКМ: следующий уровень · ПКМ или удержание: предыдущий. Экипировка не меняется.':'Left click: next level · right click or hold: previous. Gear stays the same.';
-    const changeLevel=delta=>{if(!state.char)return;state.char.lvl=Math.max(1,Math.min(80,state.char.lvl+delta));$('csub').textContent=`${L[lang].lvl} ${state.char.lvl} · ${lang==='ru'?'просмотр уровня':'level preview'}`;$('levelNext').disabled=state.char.lvl>=80;window.W.sound(delta>0?'success':'click');};
+    $('levelNext').title=lang==='ru'?'ЛКМ: следующий уровень · ПКМ или удержание: предыдущий. Предпросмотр обновляет статы и оружие на этапах прокачки.':'Left click: next level · right click or hold: previous. Preview updates stats and weapons at leveling milestones.';
+    const changeLevel=delta=>{if(!state.char)return;state.char.lvl=Math.max(1,Math.min(80,state.char.lvl+delta));refreshLevelPreview();window.W.sound(delta>0?'success':'click');};
     let suppressLevelClick=false;
     $('levelNext').onclick=()=>{if(suppressLevelClick){suppressLevelClick=false;return;}changeLevel(1);};
     $('levelNext').oncontextmenu=e=>{e.preventDefault();changeLevel(-1);};
@@ -285,6 +396,7 @@
     }
     const partialImport=!hasGear;
     state.char = char; state.gear = gear; state.legacy = legacy;
+    state.levelBase = { char:{...char}, gear:Object.fromEntries(Object.entries(gear).map(([slot,item])=>[slot,{...item}])) };
     if(!isDemo){state.imported=true;localStorage.setItem('wheroData',lines.join('\n'));}
     drawDoll();
     if(!isDemo){
@@ -324,14 +436,8 @@
     center.innerHTML = `
       <div class="character-stage" id="character-stage" role="img" aria-label="${lang==='ru'?'Трёхмерная модель персонажа World of Warcraft':'World of Warcraft 3D character model'}">
         <div id="wow-model"></div><span class="model-status" id="model-status"></span>
-        ${state.imported?'':`<button class="hero-import-callout" type="button">${lang==='ru'?'Добавить своего героя':'Add your character'}</button>`}
       </div>
       <div class="weapons" id="weapons"></div>
-      <div class="cstats">
-        ${c && !c.legacyStats ? `<button class="crow" type="button" title="${lang==='ru'?'Текущая сила персонажа из игрового экспорта.':'Current Strength from the game export.'}"><span class="l">${T.strength}</span><span class="v">${c.str}</span></button>
-        <button class="crow" type="button" title="${lang==='ru'?'Текущая ловкость персонажа из игрового экспорта.':'Current Agility from the game export.'}"><span class="l">${T.agility}</span><span class="v">${c.agi}</span></button>
-        <button class="crow" type="button" title="${lang==='ru'?'Текущая выносливость персонажа из игрового экспорта.':'Current Stamina from the game export.'}"><span class="l">${T.stamina}</span><span class="v">${c.sta}</span></button>` : c && `<button class="crow" type="button"><span class="l">${lang==='ru'?'Старый экспорт':'Legacy export'}</span><span class="v">${lang==='ru'?'обнови':'update'}</span></button>`}
-      </div>
       ${c && c.tal ? `<div class="talents">
         <div class="tal"><div class="v">${c.tal[0] || 0}</div><div class="l">${T.t0}</div></div>
         <div class="tal"><div class="v">${c.tal[1] || 0}</div><div class="l">${T.t1}</div></div>
@@ -341,12 +447,18 @@
     grid.appendChild(col(LEFT));
     grid.appendChild(center);
     grid.appendChild(col(RIGHT));
+    const stats = document.createElement('aside');
+    stats.className = 'hero-stats'; stats.id = 'hero-stats';
+    stats.setAttribute('aria-label',lang==='ru'?'Характеристики персонажа':'Character stats');
+    grid.appendChild(stats);
+    renderStats();
     const wp = $('weapons');
     wp.innerHTML = '';
     WEAPONS.forEach(s => wp.appendChild(mk(s)));
     // header
     if (c) {
-      $('cname').textContent = c.name;
+      $('cname').textContent = state.imported ? c.name : (lang==='ru'?'Добавить героя':'Add character');
+      $('cname').classList.toggle('is-action',!state.imported);
       $('csub').textContent = `${T.lvl} ${c.lvl} ${race ? race + ', ' : ''}${clsRu}`;
       $('levelNext').disabled=c.lvl>=80;
     }
@@ -363,14 +475,18 @@
         .then(j => {
           if (!j) return;
           state.tips[g.id] = j;
-          const displayId=+(j.displayId||j.displayid||j.display_id||0);
-          if(displayId){g.displayId=displayId;window.updateWowGearItem?.(+slot,g);}
+          const displayId=+(j.displayId||j.displayid||j.display_id||(window.WOTLK_ITEM_DISPLAY_IDS||{})[g.id]||0);
+          if(displayId){g.displayId=displayId;if(+state.gear[slot]?.id===+g.id)window.updateWowGearItem?.(+slot,g);}
+          g.ilvl=+g.ilvl||+(j.itemLevel||j.itemlevel||0)||+(String(j.tooltip||'').match(/(?:Item Level|Уровень предмета)\s*:?\s*(\d+)/i)||[])[1]||0;
+          if(+state.gear[slot]?.id!==+g.id)return;
           const d = document.querySelector(`.slot[data-slot="${slot}"]`);
           if (!d) return;
+          d.title=(j.name||g.name||'')+(g.ilvl?` · ${lang==='ru'?'ур. предмета':'item level'} ${g.ilvl}`:'');
           if (!g.tex && !d.querySelector('img').dataset.iconFallback && j.icon) {
             d.querySelector('img').src = window.W.icon(j.icon);
           }
           if (g.q == null && j.quality != null) d.style.borderColor = QCOL[j.quality] || '#4a4436';
+          renderStats();
         }).catch(() => {});
     }
   }
@@ -424,7 +540,7 @@
   }
   function hideTip() { $('itemtip').style.display = 'none'; }
 
-  const DEMO = ['WEXP1|Новичок|1|Human|2|0|0|0'];
+  const DEMO = ['WEXP1|Новичок|1|Human|2|23|20|22'];
 
   init();
 })();
@@ -485,16 +601,19 @@
         }
         if(request!==modelRequest){nextModel?.destroy?.();return;}
         activeModel=nextModel;
-        activeModel.setDistance(innerWidth>700?21:19);
+        activeModel.setDistance(innerWidth>700?36:30);
         const fixedZenith=activeModel.getZenith?.()??activeModel.renderer?.zenith;
         const lockVerticalOrbit=()=>{if(activeModel!==window.activeWowModel)return;if(Number.isFinite(fixedZenith)&&activeModel.renderer&&activeModel.renderer.zenith!==fixedZenith)activeModel.setZenith(fixedZenith);requestAnimationFrame(lockVerticalOrbit);};
         requestAnimationFrame(lockVerticalOrbit);
         window.activeWowModel=activeModel;
         const attachGearItem=async(slot,g,model=activeModel)=>{
-          if(!model||!g?.id||!g?.displayId)return;
-          const displaySlot=({16:21,17:22,18:15}[+slot]||(g.inventoryType===16?15:g.inventoryType===20?20:g.inventoryType||+slot));
-          const displayId=await liveDisplayId(g.id,g.displayId);
-          if(model!==activeModel)return;
+          if(!model)return;
+          const displaySlot=({16:21,17:22,18:15}[+slot]||(+g?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[g?.id]||+slot));
+          if(!g?.id){try{model.updateItemViewer(displaySlot,0,0);}catch(_){}return;}
+          const classicId=+g.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[g.id]||0;
+          if(!classicId)return;
+          const displayId=await liveDisplayId(+g.id,classicId);
+          if(model!==activeModel||+state.gear[slot]?.id!==+g.id)return;
           if(!model.renderer?.actors?.length){pendingGearItems.set(+slot,g);return;}
           try{model.updateItemViewer(displaySlot,displayId,0);}catch(error){console.warn('Could not attach WoW item model:',displaySlot,displayId,error);}
         };
@@ -504,7 +623,7 @@
           if(request!==modelRequest)return;
           if(activeModel?.renderer?.actors?.length){
             stage.classList.add('model-ready');status.textContent='';
-            for(const [slot,g] of Object.entries(gear))if(g?.id&&g?.displayId&&![2,11,12,13,14].includes(+slot))void attachGearItem(slot,g,activeModel);
+            for(const [slot,g] of Object.entries(gear))if(g?.id&&![2,11,12,13,14].includes(+slot))void attachGearItem(slot,g,activeModel);
             for(const [slot,g] of pendingGearItems)void attachGearItem(slot,g,activeModel);
             pendingGearItems.clear();
             return;
