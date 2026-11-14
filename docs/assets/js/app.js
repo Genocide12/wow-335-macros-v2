@@ -20,8 +20,10 @@
   }
   const lang = LANGS.includes(getLang()) ? getLang() : 'ru';
   let soundOn = localStorage.getItem('wfxSound') !== 'off';
-  const UI_SOUND = 'https://wow.zamimg.com/wowsounds/sound/interface/uchatscrollbutton.ogg';
-  let uiAudio;
+  const UI_SOUND = 'assets/audio/ui-click.ogg';
+  const uiAudio = new Audio(UI_SOUND);
+  uiAudio.preload = 'auto';
+  uiAudio.load();
   const queuedUiSounds = [];
   let soundBusy = false;
   function playUiSound(kind = 'click') {
@@ -30,7 +32,6 @@
       const profiles={click:[.16,1],open:[.14,.92],select:[.15,1.08],copy:[.2,.84],success:[.2,.76]};
       queuedUiSounds.push(kind);
       if(soundBusy)return;
-      if(!uiAudio){uiAudio=new Audio(UI_SOUND);uiAudio.preload='auto';}
       const playNext=()=>{
         const next=queuedUiSounds.shift();
         if(!next){soundBusy=false;return;}
@@ -89,7 +90,6 @@
       localStorage.setItem('wfxSound', soundOn ? 'on' : 'off');
       event.currentTarget.textContent = soundOn ? '♫' : '♪';
       event.currentTarget.setAttribute('aria-pressed', String(soundOn));
-      if (soundOn) playUiSound('open');
     };
 
   });
@@ -107,7 +107,8 @@
     const btn = event.target.closest('[data-copy]');
     const interactive = target.closest('button, a, .tal[data-id], .slot, .t-tab, .g-item');
     if (interactive) {
-      if(!interactive.matches('[data-copy]'))playUiSound(interactive.matches('a[href], .krow a, #guideSources') ? 'open' : (interactive.matches('.tal[data-id], .t-tab, .g-item') ? 'select' : 'click'));
+      const soundKind=interactive.dataset.soundKind||(interactive.matches('#soundBtn, a[href], .krow a, #guideSources')?'open':(interactive.matches('.tal[data-id], .t-tab, .g-item')?'select':(interactive.matches('[data-copy]')?'copy':'click')));
+      playUiSound(soundKind);
       interactive.classList.remove('ui-hit');
       void interactive.offsetWidth;
       interactive.classList.add('ui-hit');
@@ -116,7 +117,7 @@
         const destination=new URL(interactive.href,location.href);
         if(destination.origin===location.origin&&destination.pathname!==location.pathname){
           event.preventDefault();
-          setTimeout(()=>location.assign(destination.href),140);
+          setTimeout(()=>location.assign(destination.href),220);
         }
       }
     }
@@ -143,7 +144,6 @@
     }
     const old = btn.textContent;
     btn.textContent = copied ? (btn.dataset.copySuccess || '✓') : (lang === 'ru' ? 'Выделено' : 'Selected');
-    if(copied)playUiSound('copy');
     btn.classList.add('ok');
     if (!copied) { const pre=btn.parentElement.querySelector('pre'); if(pre){const r=document.createRange();r.selectNodeContents(pre);getSelection().removeAllRanges();getSelection().addRange(r);} }
     setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1400);

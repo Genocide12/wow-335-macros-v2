@@ -124,7 +124,7 @@
   <div class="grid h-layout">
     <section class="card hero-panel active" id="doll">
       <div class="char-head">
-        <button class="hero-util" id="levelNext" type="button" title="Следующий уровень" aria-label="Следующий уровень"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/><path d="M7 5h10M7 19h10"/></svg></button>
+        <button class="hero-util" id="levelNext" type="button" data-sound-kind="success" title="Следующий уровень" aria-label="Следующий уровень"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/><path d="M7 5h10M7 19h10"/></svg></button>
         <div><button class="nm name-import-callout" id="cname" type="button" data-ru="Добавить героя" data-en="Add character">Добавить героя</button>
         <div class="sub" id="csub" data-ru="Образец персонажа" data-en="Character preview">Образец персонажа</div></div>
         <button class="hero-util" id="openHeroImport" type="button" title="Добавить или обновить героя" aria-label="Добавить или обновить героя"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.4v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6.7v-2.4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L8 8.6l1.7-1.7.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h2.4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
@@ -148,7 +148,7 @@
 </main>
 </div>
 <div class="tipcard" id="itemtip"></div>
-<script src="assets/js/app.js?v=20261114d"></script>
+<script src="assets/js/app.js?v=20261114e"></script>
 <script src="assets/js/macros-data.js?v=20261114d"></script>
 <script src="assets/js/talents-data.js"></script>
 <script src="assets/data/wotlk-item-displayids.js"></script>
@@ -322,7 +322,7 @@
     $('closeHeroImport').onclick=()=>$('heroImportDialog').close();
     $('heroImportDialog').addEventListener('click',e=>{if(e.target===$('heroImportDialog'))$('heroImportDialog').close();});
     $('levelNext').title=lang==='ru'?'ЛКМ: следующий уровень · ПКМ или удержание: предыдущий. На каждом уровне обновляются характеристики и рекомендованная экипировка.':'Left click: next level · right click or hold: previous. Stats and recommended gear update at every level.';
-    const changeLevel=delta=>{if(!state.char)return;state.char.lvl=Math.max(1,Math.min(80,state.char.lvl+delta));localStorage.setItem('wheroLevel',String(state.char.lvl));refreshLevelPreview();window.W.sound(delta>0?'success':'click');};
+    const changeLevel=delta=>{if(!state.char)return;state.char.lvl=Math.max(1,Math.min(80,state.char.lvl+delta));localStorage.setItem('wheroLevel',String(state.char.lvl));refreshLevelPreview();};
     let suppressLevelClick=false;
     $('levelNext').onclick=()=>{if(suppressLevelClick){suppressLevelClick=false;return;}changeLevel(1);};
     $('levelNext').oncontextmenu=e=>{e.preventDefault();changeLevel(-1);};
