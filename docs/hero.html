@@ -204,7 +204,7 @@
   ];
 
   const $ = id => document.getElementById(id);
-  const state = { char: null, gear: {}, tips: {}, legacy: false, imported: false, levelBase: null };
+  const state = { char: null, gear: {}, tips: {}, loadingTips:new Set(), legacy: false, imported: false, levelBase: null };
 
   function macroRun(file) {
     return ((((window.MACRO_TXT || {})[lang] || {})[file] || '')
@@ -468,8 +468,9 @@
   }
 
   async function loadItemTips() {
-    const jobs = Object.entries(state.gear).filter(([s, g]) => g && g.id && !state.tips[g.id]);
+    const jobs = Object.entries(state.gear).filter(([s, g]) => g && g.id && !state.tips[g.id] && !state.loadingTips.has(+g.id));
     for (const [slot, g] of jobs) {
+      state.loadingTips.add(+g.id);
       fetch(`https://nether.wowhead.com/wotlk/tooltip/item/${g.id}?locale=${lang}`)
         .then(r => r.ok ? r.json() : null)
         .then(j => {
@@ -487,7 +488,7 @@
           }
           if (g.q == null && j.quality != null) d.style.borderColor = QCOL[j.quality] || '#4a4436';
           renderStats();
-        }).catch(() => {});
+        }).catch(() => {}).finally(() => state.loadingTips.delete(+g.id));
     }
   }
 
