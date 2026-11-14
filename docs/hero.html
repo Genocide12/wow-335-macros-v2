@@ -710,7 +710,12 @@
       try{
         // Render the character body first. Item conversion endpoints are slow or
         // unavailable on some Pages visitors; never let optional gear block the model.
-        const modelOptions={race:char.raceId,gender:char.gender,skin:0,face:0,hairStyle:0,hairColor:0,facialStyle:0,items:[],hideProgressBar:false};
+        const displaySlotOf=(slot,item)=>({16:21,17:22,18:15}[+slot]||(+item?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[item?.id]||+slot));
+        const modelGearItems=Object.entries(gear||{}).flatMap(([slot,item])=>{
+          const displayId=+item?.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[item?.id]||0;
+          return item?.id&&displayId?[[displaySlotOf(slot,item),displayId]]:[];
+        });
+        const modelOptions={race:char.raceId,gender:char.gender,skin:0,face:0,hairStyle:0,hairColor:0,facialStyle:0,items:modelGearItems,hideProgressBar:false};
         let nextModel;
         try{nextModel=await generateModels(modelAspect,'#wow-model',modelOptions,'live');}
         catch(proxyError){
@@ -730,7 +735,6 @@
         const lockVerticalOrbit=()=>{if(activeModel!==window.activeWowModel)return;if(Number.isFinite(fixedZenith)&&activeModel.renderer&&activeModel.renderer.zenith!==fixedZenith)activeModel.setZenith(fixedZenith);requestAnimationFrame(lockVerticalOrbit);};
         requestAnimationFrame(lockVerticalOrbit);
         window.activeWowModel=activeModel;
-        const displaySlotOf=(slot,item)=>({16:21,17:22,18:15}[+slot]||(+item?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[item?.id]||+slot));
         const applyGearItem=(model,slot,item,displaySlot,displayId)=>{
           if(!model||model!==activeModel||!model.renderer?.actors?.length||(+window.currentWowGear?.[slot]?.id||0)!==(+item?.id||0))return;
           try{model.updateItemViewer(displaySlot,displayId,0);}catch(error){console.warn('Could not attach WoW item model:',displaySlot,displayId,error);}
@@ -778,6 +782,9 @@
           if(activeModel?.renderer?.actors?.length){
             stage.classList.add('model-ready');status.textContent='';
             window.syncWowGearItems(window.currentWowGear||gear);
+            [350,1100].forEach(delay=>setTimeout(()=>{
+              if(request===modelRequest&&activeModel===nextModel)window.syncWowGearItems(window.currentWowGear||gear);
+            },delay));
             return;
           }
           if(++checks<120){setTimeout(waitForCharacter,100);return;}
