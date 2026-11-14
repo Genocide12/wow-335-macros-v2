@@ -19,7 +19,7 @@
   #levelNext{border-color:#9e3e39;background:linear-gradient(145deg,#8e2c27,#431a1c);color:#ff6158}
   #levelNext:hover{box-shadow:0 0 16px #e6473d77;filter:brightness(1.18)}
   .hero-util svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .doll-grid { flex:1;min-height:0;display: grid; grid-template-columns: 38px minmax(250px,1fr) 38px minmax(220px,270px); gap: 8px; justify-items: stretch; align-items: stretch; }
+  .doll-grid { flex:1;min-height:0;display: grid; grid-template-columns: 38px minmax(250px,1fr) 38px minmax(220px,270px); gap: 3px; justify-items: stretch; align-items: stretch; }
   .doll-col { display: flex; flex-direction: column; gap: 3px; }
   .slot { width: 36px; height: 36px; border-radius: 4px; background: #05070c;
     border: 1px solid #4a4436; display: flex; align-items: center; justify-content: center;
@@ -28,7 +28,7 @@
   .slot.empty img { opacity: .45; filter: grayscale(.45); }
   .slot.has:hover img { transform: scale(1.06); }
   .slot:hover { border-color: #8a7f5c; }
-  .doll-center { text-align: center; padding: 2px 6px; display: flex; flex-direction: column; align-items: center; justify-content:center;gap: 6px; width:100%;min-width:0; }
+  .doll-center { text-align: center; padding: 2px 0; display: flex; flex-direction: column; align-items: center; justify-content:center;gap: 6px; width:100%;min-width:0; }
   .character-stage{position:relative;width:100%;height:clamp(270px,46vh,390px);max-height:none;min-height:270px;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;border:0;border-radius:0;background:transparent;box-shadow:none;touch-action:none}
   #wow-model{position:absolute;inset:0;z-index:2;width:100%;height:100%;opacity:1;transition:opacity .5s;cursor:grab;touch-action:none}
   #wow-model:active{cursor:grabbing}
@@ -90,7 +90,7 @@
   .import-actions{display:flex;gap:8px;flex-wrap:wrap}.import-actions input[type=file]{display:none}
   @media (max-width: 980px) {
     .h-layout { grid-template-columns: minmax(0,1fr) !important; grid-template-rows: minmax(0,1fr); }
-    .doll-grid{grid-template-columns:34px minmax(0,1fr) 34px minmax(210px,32%);gap:6px}
+    .doll-grid{grid-template-columns:34px minmax(0,1fr) 34px minmax(210px,32%);gap:2px}
     .hero-stat-row{font-size:12px}
   }
   @media(max-width:700px){
@@ -102,10 +102,10 @@
     .h-layout>.hero-panel.active{display:flex}
     #doll{flex-direction:column;gap:4px}
   .char-head{margin-bottom:2px}.char-head .nm{font-size:16px}.char-head .sub{font-size:10px}.hero-util{width:32px;height:32px}
-    .doll-grid{grid-template-columns:30px minmax(0,1fr) 30px;grid-template-rows:minmax(0,1fr) auto;gap:2px}
+    .doll-grid{grid-template-columns:30px minmax(0,1fr) 30px;grid-template-rows:minmax(0,1fr) auto;gap:1px}
     .hero-stats{grid-column:1/-1;max-height:34vh;padding:5px 8px}.hero-stats-title{margin-bottom:4px;padding:4px;font-size:13px}.hero-stats-section{margin-top:4px;padding:3px;font-size:12px}.hero-stat-row{font-size:11px;padding:2px}.hero-stats-note{font-size:9px}
     .doll-col{gap:2px}.slot{width:26px;height:26px}.slot img{width:22px;height:22px}
-    .doll-center{gap:3px;padding:0 2px}
+    .doll-center{gap:3px;padding:0}
     .character-stage{height:clamp(210px,40vh,330px);min-height:210px;max-height:40vh;width:100%}
     .cstats{gap:2px}.crow{font-size:10px;padding:2px 6px}.tal{padding:2px}.tal .v{font-size:11px}.tal .l{font-size:8px}
     .weapons{margin-top:3px;gap:5px}.legacy-warn{margin-top:3px;padding:4px 6px;font-size:10px}
@@ -190,7 +190,8 @@
   };
   const QCOL = { 0: '#9d9d9d', 1: '#fff', 2: '#1eff00', 3: '#0070dd', 4: '#a335ee', 5: '#ff8000', 6: '#e6cc80' };
   const $ = id => document.getElementById(id);
-  const state = { char: null, gear: {}, tips: {}, loadingTips:new Set(), legacy: false, imported: false, levelBase: null };
+  const state = { char: null, gear: {}, tips: {}, loadingTips:new Set(), tipControllers:new Map(), legacy: false, imported: false, levelBase: null };
+  let itemTipTimer=0;
 
   function macroRun(file) {
     return ((((window.MACRO_TXT || {})[lang] || {})[file] || '')
@@ -274,6 +275,8 @@
       if (route) state.gear = { ...state.gear, ...route };
     }
     window.currentWowGear = state.gear;
+    const liveItemIds=new Set(Object.values(state.gear).filter(Boolean).map(g=>+g.id).filter(Boolean));
+    for(const [id,controller] of state.tipControllers)if(!liveItemIds.has(id))controller.abort();
     const race = c.race ? (lang==='en' ? (L.en.raceEn[c.race]||c.race) : c.race) : '';
     const cls = L[lang].clsRu[c.cls] || c.cls || 'Warrior';
     $('csub').textContent = `${L[lang].lvl} ${c.lvl} ${race ? race + ', ' : ''}${cls}${lang==='ru'?' · предпросмотр':''}`;
@@ -287,11 +290,12 @@
       const img=slot.querySelector('img');
       img.src = itemIcon(item,index);
       img.dataset.fallbackSrc=({11:'assets/icons/ring-slot-1.svg',12:'assets/icons/ring-slot-2.svg'})[index]||window.W.icon(SLOT_ICONS[index]||'inv_misc_questionmark');
-      window.updateWowGearItem?.(index,item||null);
     });
+    window.syncWowGearItems?.(state.gear);
     if (showGearRoute) {
       $('csub').textContent += lang==='ru'?' · маршрут экипировки':' · gear route';
-      loadItemTips();
+      clearTimeout(itemTipTimer);
+      itemTipTimer=setTimeout(()=>void loadItemTips(),140);
     }
     if (window.pendingWowCharacter) window.pendingWowCharacter={char:state.char,gear:state.gear};
   }
@@ -465,7 +469,8 @@
     const jobs = Object.entries(state.gear).filter(([s, g]) => g && g.id && !state.tips[g.id] && !state.loadingTips.has(+g.id));
     for (const [slot, g] of jobs) {
       state.loadingTips.add(+g.id);
-      fetch(`https://nether.wowhead.com/wotlk/tooltip/item/${g.id}?locale=${lang}`)
+      const controller=new AbortController();state.tipControllers.set(+g.id,controller);
+      fetch(`https://nether.wowhead.com/wotlk/tooltip/item/${g.id}?locale=${lang}`,{signal:controller.signal})
         .then(r => r.ok ? r.json() : null)
         .then(j => {
           if (!j) return;
@@ -482,7 +487,7 @@
           }
           if (g.q == null && j.quality != null) d.style.borderColor = QCOL[j.quality] || '#4a4436';
           renderStats();
-        }).catch(() => {}).finally(() => state.loadingTips.delete(+g.id));
+        }).catch(() => {}).finally(() => {state.loadingTips.delete(+g.id);state.tipControllers.delete(+g.id);});
     }
   }
 
@@ -559,6 +564,7 @@
     const {generateModels}=window.WowModelViewerBundle;
     let activeModel=null, modelRequest=0;
     const convertedItems=new Map(Object.entries(JSON.parse(localStorage.getItem('wotlkDisplayIds')||'{}')));
+    const convertingItems=new Map();
     const pendingGearItems=new Map();
     const lockModelInput=host=>{
       if(host.dataset.inputLocked)return;
@@ -572,12 +578,20 @@
     async function liveDisplayId(itemId,classicDisplayId){
       const key=itemId+':'+classicDisplayId;
       if(convertedItems.has(key))return +convertedItems.get(key);
-      try{
-        const response=await fetch(`${window.WOTLK_TO_RETAIL_DISPLAY_ID_API}/${itemId}/${classicDisplayId}`);
-        if(response.ok){const data=await response.json();const id=+(data.newDisplayId||data.data?.newDisplayId||0);if(id){convertedItems.set(key,id);localStorage.setItem('wotlkDisplayIds',JSON.stringify(Object.fromEntries(convertedItems)));return id;}}
-      }catch(error){console.warn('WotLK display conversion failed:',itemId,error);}
-      convertedItems.set(key,classicDisplayId);
-      return classicDisplayId;
+      if(convertingItems.has(key))return convertingItems.get(key);
+      const request=(async()=>{
+        try{
+          const response=await fetch(`${window.WOTLK_TO_RETAIL_DISPLAY_ID_API}/${itemId}/${classicDisplayId}`);
+          if(response.ok){const data=await response.json();const id=+(data.newDisplayId||data.data?.newDisplayId||0);if(id){
+            convertedItems.set(key,id);
+            try{localStorage.setItem('wotlkDisplayIds',JSON.stringify(Object.fromEntries(convertedItems)));}catch(_){}
+            return id;
+          }}
+        }catch(error){console.warn('WotLK display conversion failed:',itemId,error);}
+        return classicDisplayId;
+      })().finally(()=>convertingItems.delete(key));
+      convertingItems.set(key,request);
+      return request;
     }
     window.renderWowCharacter=async(char,gear)=>{
       const stage=document.getElementById('character-stage'),host=document.getElementById('wow-model'),status=document.getElementById('model-status');
@@ -606,7 +620,7 @@
         activeModel=nextModel;
         // The previous tight framing cropped the character below the waist.
         // Keep the full body visible, including in the short mobile stage.
-        activeModel.setDistance(innerWidth>700?54:36);
+        activeModel.setDistance(innerWidth>700?50:32);
         const fixedZenith=activeModel.getZenith?.()??activeModel.renderer?.zenith;
         const lockVerticalOrbit=()=>{if(activeModel!==window.activeWowModel)return;if(Number.isFinite(fixedZenith)&&activeModel.renderer&&activeModel.renderer.zenith!==fixedZenith)activeModel.setZenith(fixedZenith);requestAnimationFrame(lockVerticalOrbit);};
         requestAnimationFrame(lockVerticalOrbit);
@@ -622,15 +636,36 @@
           if(!model.renderer?.actors?.length){pendingGearItems.set(+slot,g);return;}
           try{model.updateItemViewer(displaySlot,displayId,0);}catch(error){console.warn('Could not attach WoW item model:',displaySlot,displayId,error);}
         };
+        let gearSyncTimer=0,gearSyncRevision=0;
         window.updateWowGearItem=(slot,g)=>attachGearItem(slot,g);
+        window.syncWowGearItems=gear=>{
+          const revision=++gearSyncRevision;
+          clearTimeout(gearSyncTimer);
+          gearSyncTimer=setTimeout(async()=>{
+            const model=activeModel;
+            if(!model?.renderer?.actors?.length){for(const [slot,item] of Object.entries(gear||{}))if(item)pendingGearItems.set(+slot,item);return;}
+            const entries=[1,3,4,5,6,7,8,9,10,15,16,17,18,19].map(String);
+            const resolved=await Promise.all(entries.map(async slot=>{
+              const item=gear?.[slot]||null;
+              const displaySlot=({16:21,17:22,18:15}[+slot]||(+item?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[item?.id]||+slot));
+              if(!item?.id)return {slot,item,displaySlot,displayId:0};
+              const classicId=+item.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[item.id]||0;
+              return {slot,item,displaySlot,displayId:classicId?await liveDisplayId(+item.id,classicId):0};
+            }));
+            if(revision!==gearSyncRevision||model!==activeModel)return;
+            for(const entry of resolved){
+              if((+window.currentWowGear?.[entry.slot]?.id||0)!==(+entry.item?.id||0))continue;
+              try{model.updateItemViewer(entry.displaySlot,entry.displayId,0);}catch(error){console.warn('Could not sync WoW gear:',entry.slot,error);}
+            }
+            pendingGearItems.clear();
+          },90);
+        };
         let checks=0;
         const waitForCharacter=()=>{
           if(request!==modelRequest)return;
           if(activeModel?.renderer?.actors?.length){
             stage.classList.add('model-ready');status.textContent='';
-            for(const [slot,g] of Object.entries(gear))if(g?.id&&![2,11,12,13,14].includes(+slot))void attachGearItem(slot,g,activeModel);
-            for(const [slot,g] of pendingGearItems)void attachGearItem(slot,g,activeModel);
-            pendingGearItems.clear();
+            window.syncWowGearItems(window.currentWowGear||gear);
             return;
           }
           if(++checks<120){setTimeout(waitForCharacter,100);return;}

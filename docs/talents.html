@@ -45,8 +45,8 @@
   .tal.ok .frame img { opacity: 1; filter: none; }
   .tal.ok .frame { border-color: #72bd59;box-shadow:0 0 12px #67b8485e; }
   .tal.max .frame { border-color: #f2d47b;box-shadow:0 0 15px #edc85b7a; }
-  .tal .rank { position: absolute; right: 0; bottom: 0; background: #05070c; border: 1px solid #3a4258; border-radius: 5px;
-    font-size: 9px; font-weight: 800; padding: 0 3px; color: #fff; z-index: 2; }
+  .tal .rank { position: absolute; right: 1px; top: 1px; background: #05070ce8; border: 1px solid #3a4258; border-radius: 4px;
+    font-size: 10px; line-height:1.15; font-weight: 900; min-width:13px; text-align:center; padding: 1px 2px; color: #fff; z-index: 2; pointer-events:none;text-shadow:0 1px 2px #000; }
   .tal .rank.max { color: var(--gold2); }
   .arrow { position:absolute; inset:0; width:100%; height:100%; display:block; overflow:visible; pointer-events:none; z-index:1; }
   .arrow path,.arrow line { stroke:#e8c43b; stroke-width:2.2; fill:none; opacity:.9; filter:drop-shadow(0 0 3px #e7c65a88); }
@@ -213,7 +213,7 @@
           const x=tree.talents.find(v=>v.r===r&&v.c===c);
           if(!x)return '<div class="tal"></div>';
           const cur=state.pts[x.id]||0,cls=cur>0?(cur===x.rk?'ok max':'ok'):'';
-          return `<div class="tal ${cls}" data-id="${x.id}"><div class="frame"><img src="${I(x.ic)}" alt=""></div><span class="rank ${cur===x.rk?'max':''}">${cur}/${x.rk}</span></div>`;
+          return `<div class="tal ${cls}" data-id="${x.id}"><div class="frame"><img src="${I(x.ic)}" alt=""><span class="rank ${cur===x.rk?'max':''}" aria-label="${lang==='ru'?`Вложено очков: ${cur} из ${x.rk}`:`Points spent: ${cur} of ${x.rk}`}" title="${cur}/${x.rk}">${cur||''}</span></div></div>`;
         }).join('');
         rows.push(`<div class="t-row" data-r="${r}">${cells}</div>`);
       }
