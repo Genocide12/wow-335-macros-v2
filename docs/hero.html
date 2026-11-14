@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Герой — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114h">
+<link rel="stylesheet" href="assets/css/app.css?v=20261114i">
 <style>
   .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr);width:100%;margin-inline:auto; }
   #doll{display:flex;flex-direction:column;border:1px solid #927b49;background:radial-gradient(ellipse at 50% 35%,#252a37 0,transparent 55%),linear-gradient(145deg,#24242a,#11141c 62%,#181713);box-shadow:inset 0 0 0 1px #f0d58a18,inset 0 0 48px #a8833512,0 12px 40px #0009}
@@ -159,11 +159,11 @@
 </div>
 <div class="tipcard" id="itemtip"></div>
 <div class="hero-stat-tooltip" id="heroStatTooltip" role="tooltip"><div class="tip-title"></div><div class="tip-value"></div><div class="tip-copy"></div></div>
-<script src="assets/js/app.js?v=20261114f"></script>
-<script src="assets/js/macros-data.js?v=20261114f"></script>
+<script src="assets/js/app.js?v=20261114i"></script>
+<script src="assets/js/macros-data.js?v=20261114i"></script>
 <script src="assets/js/talents-data.js"></script>
 <script src="assets/data/wotlk-item-displayids.js"></script>
-<script src="assets/js/leveling-gear.js?v=20261114b"></script>
+<script src="assets/js/leveling-gear.js?v=20261114i"></script>
 <script>
 (() => {
   const lang = window.W.lang;
@@ -712,6 +712,9 @@
         // unavailable on some Pages visitors; never let optional gear block the model.
         const displaySlotOf=(slot,item)=>({16:21,17:22,18:15}[+slot]||(+item?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[item?.id]||+slot));
         const modelGearItems=Object.entries(gear||{}).flatMap(([slot,item])=>{
+          // Keep ranged weapon visible in its equipment slot, but do not render
+          // a bow or gun in the character's hands on the 3D preview.
+          if(+slot===18)return [];
           const displayId=+item?.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[item?.id]||0;
           return item?.id&&displayId?[[displaySlotOf(slot,item),displayId]]:[];
         });
@@ -741,6 +744,7 @@
         };
         const attachGearItem=(slot,g,model=activeModel)=>{
           if(!model)return;
+          if(+slot===18)return;
           const displaySlot=displaySlotOf(slot,g);
           if(!g?.id){applyGearItem(model,slot,g,displaySlot,0);return;}
           const classicId=+g.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[g.id]||0;
@@ -759,7 +763,7 @@
           gearSyncTimer=setTimeout(async()=>{
             const model=activeModel;
             if(!model?.renderer?.actors?.length){for(const [slot,item] of Object.entries(gear||{}))if(item)pendingGearItems.set(+slot,item);return;}
-            const entries=[...new Set([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,...Object.keys(gear||{}).map(Number)])].map(slot=>{
+            const entries=[...new Set([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,...Object.keys(gear||{}).map(Number)])].filter(slot=>slot!==18).map(slot=>{
               const item=gear?.[slot]||null,displaySlot=displaySlotOf(slot,item);
               return {slot,item,displaySlot,classicId:+item?.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[item?.id]||0};
             });
