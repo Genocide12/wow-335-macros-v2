@@ -1,0 +1,2 @@
+# Экспорт урона, скорости оружия, сопротивлений и пробивания заклинаний. Создай четвертый макрос.
+/run u="player"r={}for i=3,7 do _,r[i]=UnitResistance(u,i)end a,b=UnitDamage(u)x,y=UnitRangedDamage(u)m=UnitAttackSpeed(u)print("WEXP5|"..table.concat({a,b,m,x,y,r[3],r[4],r[5],r[6],r[7],GetSpellPenetration(),GetArmorPenetration()},"|"))

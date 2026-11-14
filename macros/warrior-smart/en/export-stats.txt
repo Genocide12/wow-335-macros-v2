@@ -1,0 +1,2 @@
+# Export exact character stats. Create a second macro and run it.
+/run u="player"_,ar=UnitArmor(u)ma,mb,mc=UnitAttackPower(u)ra,rb,rc=UnitRangedAttackPower(u)t={UnitHealthMax(u),ar,ma+mb+mc,ra+rb+rc,GetCritChance(),GetDodgeChance(),GetParryChance(),GetBlockChance()}print("WEXP3|"..table.concat(t,"|"))

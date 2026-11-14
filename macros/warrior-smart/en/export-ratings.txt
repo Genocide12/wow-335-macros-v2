@@ -1,0 +1,2 @@
+# Export intellect, spirit, defense, expertise, ranged crit, and all combat ratings. Create a third macro and run it.
+/run u="player"d,e=UnitDefense(u)x,y,z=GetExpertisePercent()t={UnitStat(u,4),UnitStat(u,5),d,e,x,y,z,GetRangedCritChance()}for i=1,25 do t[#t+1]=GetCombatRating(i)..":"..GetCombatRatingBonus(i)end print("WEXP4|"..table.concat(t,"|"))
