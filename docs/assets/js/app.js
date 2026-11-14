@@ -60,10 +60,58 @@
     return t.content.firstChild;
   }
 
+  // Replace browser-native title popups with one consistent game-style tooltip.
+  function bindGameTooltips() {
+    const tip=document.createElement('div');
+    tip.className='game-tip';tip.id='gameTooltip';tip.setAttribute('role','tooltip');tip.setAttribute('aria-hidden','true');
+    document.body.appendChild(tip);
+    let active=null;
+    const targetFor=node=>node instanceof Element?node.closest('[title],[data-game-tooltip]'):null;
+    const textFor=el=>el.dataset.gameTooltip||el.getAttribute('title')||'';
+    const hide=()=>{
+      if(!active)return;
+      if(active.dataset.previousDescribedby!==undefined){
+        if(active.dataset.previousDescribedby)active.setAttribute('aria-describedby',active.dataset.previousDescribedby);
+        else active.removeAttribute('aria-describedby');
+        delete active.dataset.previousDescribedby;
+      }
+      tip.classList.remove('on');tip.setAttribute('aria-hidden','true');active=null;
+    };
+    const show=el=>{
+      if(!el)return hide();
+      const text=textFor(el);if(!text)return hide();
+      if(el.hasAttribute('title')){el.dataset.gameTooltip=text;el.removeAttribute('title');}
+      if(active!==el){hide();active=el;active.dataset.previousDescribedby=active.getAttribute('aria-describedby')||'';active.setAttribute('aria-describedby','gameTooltip');}
+      tip.textContent=text;tip.setAttribute('aria-hidden','false');tip.classList.add('on');
+      tip.style.left='0px';tip.style.top='0px';
+      const target=el.getBoundingClientRect(),box=tip.getBoundingClientRect(),pad=10;
+      let left=target.left+target.width/2-box.width/2;
+      left=Math.max(pad,Math.min(left,innerWidth-box.width-pad));
+      let top=target.top-box.height-9;
+      if(top<pad)top=target.bottom+9;
+      if(top+box.height>innerHeight-pad)top=Math.max(pad,innerHeight-box.height-pad);
+      tip.style.left=`${left}px`;tip.style.top=`${top}px`;
+    };
+    document.addEventListener('pointerover',event=>{if(event.pointerType==='touch')return;const el=targetFor(event.target);if(el)show(el);});
+    document.addEventListener('pointerout',event=>{if(event.pointerType==='touch')return;const el=targetFor(event.target);if(el===active&&!el.contains(event.relatedTarget))hide();});
+    document.addEventListener('focusin',event=>{const el=targetFor(event.target);if(el)show(el);});
+    document.addEventListener('focusout',event=>{const el=targetFor(event.target);if(el===active&&!el.contains(event.relatedTarget))hide();});
+    document.addEventListener('pointerdown',event=>{
+      if(event.pointerType==='touch'){
+        const el=targetFor(event.target);
+        if(el)show(active===el?null:el);
+        else if(!event.target.closest('#gameTooltip'))hide();
+      }else if(active&&!active.contains(event.target))hide();
+    });
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')hide();});
+    window.addEventListener('resize',()=>{if(active)show(active);});
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     // Release a stale WebGL pointer lock if a model viewer/browser plugin left one behind.
     if (document.pointerLockElement) document.exitPointerLock?.();
     const app = document.getElementById('app');
+    bindGameTooltips();
     // header
     const cur = location.pathname.split('/').pop() || 'index.html';
     const requestedSpec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
@@ -97,6 +145,9 @@
   // Delegation supports buttons rendered after DOMContentLoaded; decode old encoded payloads.
   document.addEventListener('click', async event => {
     const target = event.target;
+    const hintButton=target instanceof Element?target.closest('.hint > .dot'):null;
+    if(hintButton){const hint=hintButton.closest('.hint'),open=hint.classList.toggle('open');hintButton.setAttribute('aria-expanded',String(open));}
+    else if(!target.closest('.hint'))document.querySelectorAll('.hint.open').forEach(hint=>{hint.classList.remove('open');hint.querySelector('.dot')?.setAttribute('aria-expanded','false');});
     const dialogBackdrop = target instanceof Element ? target.closest('dialog[open]') : null;
     if (dialogBackdrop && target === dialogBackdrop) dialogBackdrop.close();
     const dropdown = document.querySelector('.macro-dropdown.open');
@@ -176,7 +227,8 @@
       return `https://wow.zamimg.com/images/wow/icons/${size || 'large'}/${name}.jpg`;
     },
     hint(text, bottom) {
-      return `<span class="hint${bottom ? ' b' : ''}"><span class="dot">?</span><span class="tip">${text}</span></span>`;
+      const label=lang==='ru'?'Показать подсказку':'Show hint';
+      return `<span class="hint${bottom ? ' b' : ''}"><button class="dot" type="button" aria-label="${label}" aria-expanded="false">?</button><span class="tip" role="tooltip">${text}</span></span>`;
     }
   };
 })();

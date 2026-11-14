@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Герой — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114d">
+<link rel="stylesheet" href="assets/css/app.css?v=20261114f">
 <style>
   .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr);width:min(100%,1260px);margin-inline:auto; }
   #doll{display:flex;flex-direction:column;border:1px solid #927b49;background:radial-gradient(ellipse at 50% 35%,#252a37 0,transparent 55%),linear-gradient(145deg,#24242a,#11141c 62%,#181713);box-shadow:inset 0 0 0 1px #f0d58a18,inset 0 0 48px #a8833512,0 12px 40px #0009}
@@ -53,6 +53,12 @@
   .hero-stats-section{margin-top:8px;padding:5px 8px;text-align:center;border:1px solid #54452f;border-radius:6px;background:linear-gradient(#30291f,#15130f);font-weight:700;color:#eee1c1}
   .hero-stat-row{display:flex;justify-content:space-between;gap:8px;padding:3px 2px;border-bottom:1px solid #ffffff0b;font-size:13px;line-height:1.2}
   .hero-stat-row .label{color:#e1c65a}.hero-stat-row .value{color:#f0eee6;font-variant-numeric:tabular-nums;text-align:right}.hero-stat-row .value.positive{color:#56e36d}
+  .hero-stat-row[data-stat-tip]{cursor:help}.hero-stat-row[data-stat-tip]:focus-visible{outline:1px solid #e8c96a;border-radius:4px}
+  .hero-stat-tooltip{display:none;position:fixed;z-index:140;width:min(340px,calc(100vw - 20px));padding:0;background:linear-gradient(155deg,#211b12 0,#101218 50%,#080a0f 100%);border:2px solid #8a7041;border-radius:7px;box-shadow:inset 0 0 0 1px #e8d29a24,0 12px 36px #000e;color:#ded6c6;text-align:left;pointer-events:none}
+  .hero-stat-tooltip.on{display:block;animation:stat-tip-in .12s ease-out}@keyframes stat-tip-in{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+  .hero-stat-tooltip .tip-title{padding:8px 11px;border-bottom:1px solid #8a704188;background:linear-gradient(90deg,#46351d,#211a12 72%);color:#ffe6a0;font:700 14px/1.25 Georgia,serif;text-shadow:0 1px #000}
+  .hero-stat-tooltip .tip-value{padding:6px 11px 0;color:#62e877;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+  .hero-stat-tooltip .tip-copy{padding:5px 11px 10px;font-size:13px;line-height:1.45;color:#e1dccf}
   .hero-stats-note{margin-top:6px;color:#aaa493;font-size:10px;line-height:1.3}
   .legacy-warn { display: none; margin-top: 8px; font-size: 12px; line-height: 1.45; color: #ffd35c;
     background: rgba(64,48,10,.35); border: 1px solid #6d5a1f; border-radius: 9px; padding: 8px 10px; }
@@ -151,7 +157,8 @@
 </main>
 </div>
 <div class="tipcard" id="itemtip"></div>
-<script src="assets/js/app.js?v=20261114e"></script>
+<div class="hero-stat-tooltip" id="heroStatTooltip" role="tooltip"><div class="tip-title"></div><div class="tip-value"></div><div class="tip-copy"></div></div>
+<script src="assets/js/app.js?v=20261114f"></script>
 <script src="assets/js/macros-data.js?v=20261114f"></script>
 <script src="assets/js/talents-data.js"></script>
 <script src="assets/data/wotlk-item-displayids.js"></script>
@@ -238,7 +245,7 @@
     const number = n => Number.isFinite(+n) ? Math.round(+n).toLocaleString(lang==='ru'?'ru-RU':'en-US') : '—';
     const decimal = n => Number.isFinite(+n) ? (+n).toLocaleString(lang==='ru'?'ru-RU':'en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
     const pct = n => Number.isFinite(+n) ? `${decimal(n)}%` : '—';
-    const row = (label,value,positive=false,title='') => `<div class="hero-stat-row"${title?` title="${title}"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${value}</span></div>`;
+    const row = (label,value,positive=false,title='') => `<div class="hero-stat-row"${title?` data-stat-tip="${encodeURIComponent(title)}" tabindex="0" aria-describedby="heroStatTooltip"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${value}</span></div>`;
     const cap = {
       strength:lang==='ru'?'Даёт воину силу атаки и немного блокирования щитом. Универсального капа нет.':'Adds warrior attack power and a small amount of shield block. No universal cap.',
       agility:lang==='ru'?'Даёт броню и критический удар; вклад зависит от класса. Капа нет.':'Adds armor and critical chance; effect depends on class. No cap.',
@@ -356,6 +363,35 @@
     if (window.pendingWowCharacter) window.pendingWowCharacter={char:state.char,gear:state.gear};
   }
 
+  function bindStatTooltips() {
+    const pane=$('hero-stats'),tip=$('heroStatTooltip');
+    if(!pane||!tip)return;
+    let active=null;
+    const rowFor=node=>node instanceof Element?node.closest('.hero-stat-row[data-stat-tip]'):null;
+    const hide=()=>{tip.classList.remove('on');active=null;};
+    const show=row=>{
+      if(!row)return hide();
+      active=row;
+      tip.querySelector('.tip-title').textContent=row.querySelector('.label')?.textContent||'';
+      tip.querySelector('.tip-value').textContent=row.querySelector('.value')?.textContent||'';
+      try{tip.querySelector('.tip-copy').textContent=decodeURIComponent(row.dataset.statTip||'');}catch(_){tip.querySelector('.tip-copy').textContent=row.dataset.statTip||'';}
+      tip.classList.add('on');tip.style.left='0px';tip.style.top='0px';
+      const r=row.getBoundingClientRect(),b=tip.getBoundingClientRect(),pad=10;
+      let left=r.right+10;if(left+b.width>innerWidth-pad)left=r.left-b.width-10;
+      left=Math.max(pad,Math.min(left,innerWidth-b.width-pad));
+      let top=r.top;if(top+b.height>innerHeight-pad)top=innerHeight-b.height-pad;
+      top=Math.max(pad,top);tip.style.left=`${left}px`;tip.style.top=`${top}px`;
+    };
+    pane.addEventListener('pointerover',event=>{if(event.pointerType==='touch')return;const row=rowFor(event.target);if(row&&row!==active)show(row);});
+    pane.addEventListener('pointerout',event=>{if(event.pointerType==='touch')return;const row=rowFor(event.target);if(row===active&&!row.contains(event.relatedTarget))hide();});
+    pane.addEventListener('focusin',event=>{const row=rowFor(event.target);if(row)show(row);});
+    pane.addEventListener('focusout',event=>{const row=rowFor(event.target);if(row===active&&!row.contains(event.relatedTarget))hide();});
+    pane.addEventListener('pointerdown',event=>{if(event.pointerType==='touch'){const row=rowFor(event.target);if(row)show(active===row?null:row);}});
+    document.addEventListener('pointerdown',event=>{if(!event.target.closest('.hero-stat-row[data-stat-tip],#heroStatTooltip'))hide();});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')hide();});
+    window.addEventListener('resize',()=>{if(active)show(active);});
+  }
+
   function init() {
     document.querySelectorAll('[data-ru]').forEach(el => { el.textContent = el.getAttribute('data-' + lang) || el.textContent; });
     document.title = (lang === 'ru' ? 'Герой' : 'Hero') + ' — WoW 3.3.5 Fury';
@@ -371,6 +407,7 @@
       :'Follow steps 1–4: create and run a game macro for each command, copy its chat output, then choose “Paste game data”. Responses merge into the saved character.';
     $('pasteClipboard').textContent=lang==='ru'?'Вставить данные из чата':'Paste chat data';
     drawDoll();
+    bindStatTooltips();
     let pasteTimer;
     const mergeExportText=input=>{
       const entries=new Map();
@@ -562,7 +599,7 @@
           if(+state.gear[slot]?.id!==+g.id)return;
           const d = document.querySelector(`.slot[data-slot="${slot}"]`);
           if (!d) return;
-          d.title=(j.name||g.name||'')+(g.ilvl?` · ${lang==='ru'?'ур. предмета':'item level'} ${g.ilvl}`:'');
+          d.setAttribute('aria-label',(j.name||g.name||'')+(g.ilvl?` · ${lang==='ru'?'ур. предмета':'item level'} ${g.ilvl}`:''));
           if (!g.tex && !d.querySelector('img').dataset.iconFallback && j.icon) {
             d.querySelector('img').src = window.W.icon(j.icon);
           }

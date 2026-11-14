@@ -93,7 +93,7 @@ h2 img.ic { object-fit: cover; }
 .hint { position: relative; display: inline-flex; }
 .hint > .dot {
   width: 17px; height: 17px; border-radius: 50%; border: 1px solid var(--dim);
-  color: var(--dim); font-size: 11px; font-weight: 800; display: inline-flex;
+  background:transparent;padding:0;color: var(--dim); font-size: 11px; font-weight: 800; display: inline-flex;
   align-items: center; justify-content: center; cursor: help; flex: 0 0 auto;
 }
 .hint > .tip {
@@ -103,8 +103,14 @@ h2 img.ic { object-fit: cover; }
   padding: 10px 12px; font-size: 12.5px; font-weight: 400; color: var(--txt);
   text-align: left; line-height: 1.45; box-shadow: 0 8px 30px rgba(0,0,0,.6);
 }
-.hint:hover > .tip, .hint:focus-within > .tip { display: block; }
+.hint:hover > .tip, .hint:focus-within > .tip, .hint.open > .tip { display: block; }
 .hint.b > .tip { bottom: auto; top: calc(100% + 8px); }
+/* Shared opaque game-frame tooltip for native title hints across every page. */
+.game-tip{position:fixed;z-index:250;width:min(320px,calc(100vw - 20px));padding:9px 12px;background:linear-gradient(155deg,#211b12 0,#101218 56%,#080a0f 100%);border:2px solid #8a7041;border-radius:7px;box-shadow:inset 0 0 0 1px #e8d29a24,0 12px 36px #000e;color:#e1dccf;font-size:13px;line-height:1.45;text-align:left;pointer-events:none;text-shadow:0 1px #000;opacity:0;transform:translateY(3px);transition:opacity .1s ease,transform .1s ease}
+.game-tip.on{opacity:1;transform:none}
+.hint > .tip{background:linear-gradient(155deg,#211b12 0,#101218 56%,#080a0f 100%);border:2px solid #8a7041;border-radius:7px;box-shadow:inset 0 0 0 1px #e8d29a24,0 12px 36px #000b;color:#e1dccf;padding:11px 13px;font-size:13px}
+.tipcard,.g-tooltip,.hero-stat-tooltip,.hint > .tip{background:linear-gradient(155deg,#211b12 0,#101218 56%,#080a0f 100%)!important;border:2px solid #8a7041!important;border-radius:7px!important;box-shadow:inset 0 0 0 1px #e8d29a24,0 12px 36px #000d!important;color:#e1dccf!important}
+.tipcard b,.g-tooltip strong,.hero-stat-tooltip .tip-title{color:#ffe6a0!important;text-shadow:0 1px #000}
 /* ===== code block with copy ===== */
 .macro-box { position: relative; }
 .macro-box pre {

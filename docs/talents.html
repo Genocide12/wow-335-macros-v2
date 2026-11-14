@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Таланты — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114d">
+<link rel="stylesheet" href="assets/css/app.css?v=20261114f">
 <style>
   .t-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: auto minmax(0,1fr); gap: 8px; }
   .t-tabs { display: none; grid-column: 1; gap: 8px; }
@@ -109,7 +109,7 @@
   </div>
 </main>
 </div>
-<script src="assets/js/app.js?v=20261114e"></script>
+<script src="assets/js/app.js?v=20261114f"></script>
 <script src="assets/js/talents-data.js"></script>
 <script>
 (() => {
@@ -213,7 +213,7 @@
           const x=tree.talents.find(v=>v.r===r&&v.c===c);
           if(!x)return '<div class="tal"></div>';
           const cur=state.pts[x.id]||0,cls=cur>0?(cur===x.rk?'ok max':'ok'):'';
-          return `<div class="tal ${cls}" data-id="${x.id}"><div class="frame"><img src="${I(x.ic)}" alt=""><span class="rank ${cur===x.rk?'max':''}" aria-label="${lang==='ru'?`Вложено очков: ${cur} из ${x.rk}`:`Points spent: ${cur} of ${x.rk}`}" title="${cur}/${x.rk}">${cur||''}</span></div></div>`;
+          return `<div class="tal ${cls}" data-id="${x.id}"><div class="frame"><img src="${I(x.ic)}" alt=""><span class="rank ${cur===x.rk?'max':''}" aria-label="${lang==='ru'?`Вложено очков: ${cur} из ${x.rk}`:`Points spent: ${cur} of ${x.rk}`}">${cur||''}</span></div></div>`;
         }).join('');
         rows.push(`<div class="t-row" data-r="${r}">${cells}</div>`);
       }
