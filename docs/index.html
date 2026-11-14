@@ -47,7 +47,6 @@
   .guide-wheel-panel{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(48vw,540px);height:min(62vh,520px);min-width:350px;min-height:350px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
   .map-guide-wheel:hover .guide-wheel-panel,.map-guide-wheel:focus-within .guide-wheel-panel,.map-guide-wheel.open .guide-wheel-panel{display:block}
   .guide-wheel-panel iframe{width:100%;height:100%;border:0;display:block}
-  .guide-full-link{position:absolute;right:12px;bottom:10px;z-index:2;padding:7px 11px;border:1px solid #b8994d;border-radius:999px;background:#111722ee;color:#ffe69a;text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 3px 12px #0009}
   .path-card b{display:block;color:var(--gold2);font-size:17px}.path-card small{display:block;color:#e2ded4;font-size:14px;margin-top:3px}
   .path-actions{display:none;align-items:center;gap:8px;flex-wrap:wrap}.path-actions.open{display:flex;animation:drop-in .2s ease-out}
   .path-actions a{font-size:13px;padding:8px 12px}
@@ -65,7 +64,7 @@
   .world-markers a::before{content:"";width:9px;height:9px;border-radius:50%;background:#e8c96a;box-shadow:0 0 12px #e8c96a;flex:0 0 auto}
   .world-markers a:hover,.world-markers a:focus-visible{transform:translateY(-2px) scale(1.04);background:#30291bd9;box-shadow:0 0 24px #e8c96a55;outline:2px solid #e8c96a}
   @media(max-width:700px){.hero-main{background:linear-gradient(90deg,rgba(10,12,18,.91),rgba(10,12,18,.73)),url('assets/icons/northrend-map.png') center/100% 100% no-repeat;gap:7px;padding:12px;justify-content:flex-start;overflow:hidden}.hero-main>*:not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.map-label):not(.krow):not(.map-guide-wheel){position:relative;max-width:100%}.hero-main h1,.hero-main>p,.hero-main>.path-title{position:relative!important;left:auto;top:auto;width:100%;max-width:100%;z-index:6}.hero-main h1{font-size:clamp(22px,7vw,28px);line-height:1.04}.world-markers{display:none}#app .hero-main>.path-picker{position:absolute;inset:0;z-index:4;display:block;width:100%;height:100%;pointer-events:auto}.map-zone{display:block;stroke-width:11}#app .hero-main>.map-label{position:absolute;left:auto;top:auto;transform:translate(-50%,-50%);z-index:5;padding:5px 7px;border-radius:10px;pointer-events:auto;max-width:min(44vw,190px);gap:5px}#app .hero-main>.map-label[data-spec="arms"]{left:23%;top:70%}#app .hero-main>.map-label[data-spec="fury"]{left:53%;top:58%}#app .hero-main>.map-label[data-spec="prot"]{left:81%;top:70%}.map-label img{width:27px;height:27px}.map-label b{font-size:10px}.map-label small{font-size:9px}.hero-main>.macro-dropdown{left:12px;transform:none}.hero-main>.path-title{display:block;max-width:100%;font-size:20px}}
-  @media(max-width:700px){.map-guide-wheel{top:48%}.map-guide-trigger{width:48px}.guide-wheel-panel{position:fixed;left:50vw;top:50dvh;width:min(94vw,540px);height:min(72dvh,560px);min-width:0;min-height:0;z-index:20}.guide-full-link{bottom:8px;right:8px}}
+  @media(max-width:700px){.map-guide-wheel{top:48%}.map-guide-trigger{width:48px}.guide-wheel-panel{position:fixed;left:50vw;top:50dvh;width:min(94vw,540px);height:min(72dvh,560px);min-width:0;min-height:0;z-index:20}}
   @media(max-width:860px){.hero-grid{grid-template-rows:1fr}.hero-main{min-height:0;padding:22px}#app .hero-main>.path-picker{position:absolute;inset:0;height:100%}#app .hero-main>.map-label{position:absolute;z-index:5;pointer-events:auto}.macro-dropdown{left:12px;bottom:12px;width:calc(100% - 24px);max-height:48%}}
   /* Narrow windows: keep both the path choices and quick macro buttons inside
      the visible card instead of positioning them below its viewport. */
@@ -113,7 +112,6 @@
         </button>
         <div class="guide-wheel-panel" id="guideWheelPanel" aria-label="Колесо гайда выбранной специализации">
           <iframe id="guideWheelFrame" aria-label="Колесо гайдов" src="guide.html?lang=ru&amp;spec=fury&amp;embed=1"></iframe>
-          <a class="guide-full-link" id="guideFullLink" href="guide.html?lang=ru&amp;spec=fury" data-ru="Открыть гайд целиком ↗" data-en="Open full guide ↗">Открыть гайд целиком ↗</a>
         </div>
       </div>
     </section>
@@ -135,8 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';if(!['arms','fury','prot'].includes(spec))spec='fury';
   let titles=[];
   const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>x.classList.toggle('selected',x.dataset.spec===value));document.querySelector('.hero-main h1').innerHTML=lang==='ru'?`Гайды и приёмы: <b>${paths[value][0]}</b>`:`Guides & abilities: <b>${paths[value][1]}</b>`;document.querySelector('.hero-main>p').textContent=`WotLK 3.3.5a · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
-    const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261114f');document.getElementById('guideWheelFrame').src=wheelUrl.href;
-    const fullGuide=new URL('guide.html',location.href);fullGuide.searchParams.set('lang',lang);fullGuide.searchParams.set('spec',value);fullGuide.searchParams.set('v','20261114f');document.getElementById('guideFullLink').href=fullGuide.href;
+    const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261114h');document.getElementById('guideWheelFrame').src=wheelUrl.href;
     const sets={
       arms:lang==='ru'?[['Зуботычина по фокусу','Прерывание; после смены стойки нажми повторно.','', 'inv_gauntlets_04'],['Смертельный удар','Главный удар Оружия; может потребоваться смена стойки.','','ability_warrior_savageblow'],['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','','ability_warrior_charge']]:[['Focus Pummel','Interrupt; press again after a stance change.','','inv_gauntlets_04'],['Mortal Strike','Arms core attack; may need a stance change.','','ability_warrior_savageblow'],['Charge and Intercept','Charge out of combat; Intercept in combat.','','ability_warrior_charge']],
       prot:lang==='ru'?[['Приоритет угрозы','Мощный удар щитом → Реванш → Сокрушение.','','ability_warrior_shieldslam'],['Угроза по площади','Удар грома и Ударная волна.','','ability_thunderclap'],['Провокация по наведению','Перехвати цель под курсором.','','spell_nature_reincarnation']]:[['Threat priority','Shield Slam → Revenge → Devastate.','','ability_warrior_shieldslam'],['Area threat','Thunder Clap and Shockwave.','','ability_thunderclap'],['Mouseover Taunt','Taunt the enemy under your cursor.','','spell_nature_reincarnation']]
@@ -148,7 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   document.querySelectorAll('.map-zone,.map-label').forEach(btn=>{btn.addEventListener('click',()=>setPath(btn.dataset.spec));btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setPath(btn.dataset.spec);}});});
   const guideWheel=document.getElementById('mapGuideWheel'),guideTrigger=document.getElementById('mapGuideTrigger');
-  guideTrigger.addEventListener('click',()=>{const open=guideWheel.classList.toggle('open');guideTrigger.setAttribute('aria-expanded',String(open));});
+  let guidePointerType='';
+  guideTrigger.addEventListener('pointerdown',event=>{guidePointerType=event.pointerType;});
+  guideTrigger.addEventListener('click',()=>{if(guidePointerType!=='touch'){const fullGuide=new URL('guide.html',location.href);fullGuide.searchParams.set('lang',lang);fullGuide.searchParams.set('spec',spec);location.href=fullGuide.href;return;}if(guideWheel.classList.contains('open')){const fullGuide=new URL('guide.html',location.href);fullGuide.searchParams.set('lang',lang);fullGuide.searchParams.set('spec',spec);location.href=fullGuide.href;return;}guideWheel.classList.add('open');guideTrigger.setAttribute('aria-expanded','true');guidePointerType='';});
   document.addEventListener('click',event=>{if(!guideWheel.contains(event.target)){guideWheel.classList.remove('open');guideTrigger.setAttribute('aria-expanded','false');}});
   titles=lang==='ru'?[
     ['Ротация одной цели','Кровожадность → Вихрь → Казнь','/startattack\n/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка\n/cast Победный раж\n/cast Кровожадность\n/cast Вихрь\n/cast Казнь','inv_axe_66'],

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Герой — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114f">
+<link rel="stylesheet" href="assets/css/app.css?v=20261114h">
 <style>
-  .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr);width:min(100%,1260px);margin-inline:auto; }
+  .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr);width:100%;margin-inline:auto; }
   #doll{display:flex;flex-direction:column;border:1px solid #927b49;background:radial-gradient(ellipse at 50% 35%,#252a37 0,transparent 55%),linear-gradient(145deg,#24242a,#11141c 62%,#181713);box-shadow:inset 0 0 0 1px #f0d58a18,inset 0 0 48px #a8833512,0 12px 40px #0009}
   #doll { overflow: hidden; }
   .char-head { display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;text-align:center;margin-bottom:8px; }
@@ -122,6 +122,7 @@
   }
   @media(max-height:620px) and (max-width:700px){.character-stage{height:clamp(185px,34vh,245px);min-height:185px;max-height:34vh}.step{font-size:9px}.import textarea{height:42px}.h-layout>.hero-panel{padding:6px}#doll{overflow-y:auto}.doll-col{gap:1px}.slot{width:23px;height:23px}.slot img{width:19px;height:19px}.hero-stats{max-height:26vh}}
   @media(max-height:560px) and (min-width:701px){.character-stage{height:clamp(250px,48vh,330px)}.slot{width:28px;height:28px}.slot img{width:23px;height:23px}.doll-col{gap:2px}.import textarea{height:48px}.steps{gap:3px}.step{font-size:10px}}
+  @media(min-width:981px){.h-layout{max-width:none;width:100%;margin:0}.doll-grid{grid-template-columns:clamp(38px,3.2vw,48px) minmax(0,1fr) clamp(38px,3.2vw,48px) minmax(280px,320px);gap:6px}.doll-center{height:100%;gap:5px}.character-stage{order:1;height:auto;min-height:0;flex:1 1 auto}.talents{order:2;flex:0 0 auto}.weapons{order:3;flex:0 0 auto;margin-top:0;padding-bottom:2px}.doll-col{justify-content:center;gap:clamp(3px,.65vh,8px)}.slot{width:clamp(34px,3vw,46px);height:clamp(34px,3vw,46px)}.slot img{width:84%;height:84%}}
 </style>
 </head>
 <body>
@@ -245,7 +246,7 @@
     const number = n => Number.isFinite(+n) ? Math.round(+n).toLocaleString(lang==='ru'?'ru-RU':'en-US') : '—';
     const decimal = n => Number.isFinite(+n) ? (+n).toLocaleString(lang==='ru'?'ru-RU':'en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
     const pct = n => Number.isFinite(+n) ? `${decimal(n)}%` : '—';
-    const row = (label,value,positive=false,title='') => `<div class="hero-stat-row"${title?` data-stat-tip="${encodeURIComponent(title)}" tabindex="0" aria-describedby="heroStatTooltip"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${value}</span></div>`;
+    const row = (label,value,positive=false,title='') => {const shown=String(value).trim();if(!shown||shown.includes('—'))return '';return `<div class="hero-stat-row"${title?` data-stat-tip="${encodeURIComponent(title)}" tabindex="0" aria-describedby="heroStatTooltip"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${shown}</span></div>`;};
     const cap = {
       strength:lang==='ru'?'Даёт воину силу атаки и немного блокирования щитом. Универсального капа нет.':'Adds warrior attack power and a small amount of shield block. No universal cap.',
       agility:lang==='ru'?'Даёт броню и критический удар; вклад зависит от класса. Капа нет.':'Adds armor and critical chance; effect depends on class. No cap.',
@@ -266,18 +267,17 @@
     const ratingNames=lang==='ru'
       ? ['Навык владения оружием','Защита','Уклонение','Парирование','Блок','Меткость ближнего боя','Меткость дальнего боя','Меткость заклинаний','Крит ближнего боя','Крит дальнего боя','Крит заклинаний','Избегание попаданий ближнего боя','Избегание попаданий дальнего боя','Избегание попаданий заклинаний','Сопротивление криту ближнего боя','Сопротивление криту дальнего боя','Сопротивление криту заклинаний','Скорость ближнего боя','Скорость дальнего боя','Скорость заклинаний','Навык оружия в правой руке','Навык оружия в левой руке','Навык дальнобойного оружия','Мастерство','Бронепробивание']
       : ['Weapon skill','Defense','Dodge','Parry','Block','Melee hit','Ranged hit','Spell hit','Melee crit','Ranged crit','Spell crit','Melee hit avoidance','Ranged hit avoidance','Spell hit avoidance','Melee crit resistance','Ranged crit resistance','Spell crit resistance','Melee haste','Ranged haste','Spell haste','Main-hand weapon skill','Off-hand weapon skill','Ranged weapon skill','Expertise','Armor penetration'];
-    const allRatings=ratingNames.map((name,index)=>row(name,`${ratingVal(index+1)} · ${ratingPct(index+1)}`,false,lang==='ru'?'Первое число — рейтинг из игры, второе — его текущий процентный эффект.':'First value is the in-game rating; second is its current percentage effect.')).join('');
-    const complete=Number.isFinite(+c.hp)&&Number.isFinite(+c.armor)&&Number.isFinite(+c.ap)&&Number.isFinite(+c.int)&&Number.isFinite(+c.spi)&&!!c.ratings&&Number.isFinite(+c.damageMin);
+    const warriorRatingIds=new Set([1,2,3,4,5,6,9,12,15,16,17,18,21,22,24,25]);
+    const allRatings=ratingNames.map((name,index)=>warriorRatingIds.has(index+1)?row(name,`${ratingVal(index+1)} · ${ratingPct(index+1)}`,false,lang==='ru'?'Первое число — рейтинг из игры, второе — его текущий процентный эффект.':'First value is the in-game rating; second is its current percentage effect.'):'').join('');
+    const complete=Number.isFinite(+c.hp)&&Number.isFinite(+c.armor)&&Number.isFinite(+c.ap)&&!!c.ratings&&Number.isFinite(+c.damageMin);
     const note=lang==='ru'
-      ? (complete?'Значения сняты из клиента игры. Капы указаны для ориентира на 80-м уровне и зависят от цели, талантов и группы.':'Показаны только данные, которые уже есть в экспорте. Чтобы заполнить серые поля, выполни команды 2–4 в настройках героя; сайт добавит ответы к сохранённому персонажу.')
-      : (complete?'Values are read from the game client. Level-80 caps are reference points and depend on target, talents, and group.':'Only data already in the export is shown. Run commands 2–4 in Hero settings; the site will merge their output into the saved character.');
-    pane.innerHTML = `<div class="hero-stats-title">${lang==='ru'?'Уровень предмета':'Item level'} <span class="value">${avg||'—'}</span></div>
+      ? (complete?'Значения сняты из клиента игры. Капы указаны для ориентира на 80-м уровне и зависят от цели, талантов и группы.':'Показываются только полученные данные. Запусти команды 2–4 в настройках героя, чтобы добавить боевые характеристики; пустые поля скрываются.')
+      : (complete?'Values are read from the game client. Level-80 caps are reference points and depend on target, talents, and group.':'Only received data is shown. Run commands 2–4 in Hero settings to add combat stats; empty fields stay hidden.');
+    pane.innerHTML = `${avg?`<div class="hero-stats-title">${lang==='ru'?'Уровень предмета':'Item level'} <span class="value">${avg}</span></div>`:''}
       <div class="hero-stats-section">${lang==='ru'?'Основные':'Basic'}</div>
       ${row(lang==='ru'?'Сила':'Strength',number(c.str),true,cap.strength)}
       ${row(lang==='ru'?'Ловкость':'Agility',number(c.agi),false,cap.agility)}
       ${row(lang==='ru'?'Выносливость':'Stamina',number(c.sta),true,cap.stamina)}
-      ${row(lang==='ru'?'Интеллект':'Intellect',number(c.int),false,lang==='ru'?'Увеличивает ману и магический крит; воину обычно второстепенен.':'Adds mana and spell crit; usually secondary for warriors.')}
-      ${row(lang==='ru'?'Дух':'Spirit',number(c.spi),false,lang==='ru'?'Влияет на восстановление здоровья вне боя и маны у классов с маной.':'Affects out-of-combat health regeneration and mana regeneration for mana classes.')}
       ${row(lang==='ru'?'Здоровье':'Health',number(c.hp),true,lang==='ru'?'Максимальный запас здоровья персонажа из клиента игры.':'Character maximum health reported by the game client.')}
       ${row(lang==='ru'?'Броня':'Armor',number(c.armor),false,lang==='ru'?'Снижает входящий физический урон; не защищает от магии.':'Reduces incoming physical damage, not magic damage.')}
       <div class="hero-stats-section">${lang==='ru'?'Ближний бой':'Melee'}</div>
@@ -290,28 +290,12 @@
       ${row(lang==='ru'?'Скорость':'Haste',`${ratingVal(18)} · ${ratingPct(18)}`,false,cap.noCap)}
       ${row(lang==='ru'?'Мастерство':'Expertise',`${number(c.expertise)} · ${pct(c.expertisePct)}`,false,cap.expertise)}
       ${row(lang==='ru'?'Бронепробивание':'Armor penetration',`${ratingVal(25)} · ${pct(c.armorPen)}`,false,cap.arp)}
-      <div class="hero-stats-section">${lang==='ru'?'Дальний бой':'Ranged'}</div>
-      ${row(lang==='ru'?'Урон':'Damage',`${decimal(c.rangedMin)}–${decimal(c.rangedMax)}`,false,lang==='ru'?'Диапазон урона дальнего оружия из игрового листа.':'Ranged weapon damage range from the character sheet.')}
-      ${row(lang==='ru'?'Сила атаки':'Attack power',number(c.rangedAP),false,lang==='ru'?'Сила атаки для дальнего оружия.':'Attack power for ranged attacks.')}
-      ${row(lang==='ru'?'Крит. удар':'Critical strike',pct(c.rangedCrit),false,cap.noCap)}
       <div class="hero-stats-section">${lang==='ru'?'Защита и сопротивления':'Defense & resistances'}</div>
       ${row(lang==='ru'?'Защита':'Defense',`${number(c.defense)} (+${number(c.defenseBonus||0)})`,false,cap.defense)}
       ${row(lang==='ru'?'Уклонение':'Dodge',`${pct(c.dodge)} · ${ratingVal(3)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
       ${row(lang==='ru'?'Парирование':'Parry',`${pct(c.parry)} · ${ratingVal(4)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
       ${row(lang==='ru'?'Блок':'Block',`${pct(c.block)} · ${ratingVal(5)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
       ${row(lang==='ru'?'Устойчивость':'Resilience',`${resilience} ${lang==='ru'?'рейтинга':'rating'}`,false,lang==='ru'?'Снижает входящий критический урон и шанс получить крит; игра сводит три рейтинга к минимальному значению. Универсального PvP-капа нет.':'Reduces incoming critical damage and chance to be critically hit; the game uses the lowest of three ratings. No universal PvP cap.')}
-      ${row(lang==='ru'?'Меткость дальнего боя':'Ranged hit',`${ratingVal(7)} · ${ratingPct(7)}`,false,lang==='ru'?'Уменьшает промахи дальних атак. Кап зависит от уровня противника и бонусов.':'Reduces ranged misses; the cap depends on target level and bonuses.')}
-      ${row(lang==='ru'?'Меткость заклинаний':'Spell hit',`${ratingVal(8)} · ${ratingPct(8)}`,false,lang==='ru'?'Уменьшает промахи заклинаний; для воина обычно не приоритет.':'Reduces spell misses; usually not a warrior priority.')}
-      ${row(lang==='ru'?'Крит дальнего боя':'Ranged critical rating',`${ratingVal(10)} · ${ratingPct(10)}`,false,cap.noCap)}
-      ${row(lang==='ru'?'Крит заклинаний':'Spell critical rating',`${ratingVal(11)} · ${ratingPct(11)}`,false,cap.noCap)}
-      ${row(lang==='ru'?'Получаемый крит. урон':'Melee crit reduction',`${ratingVal(12)} · ${ratingPct(12)}`,false,lang==='ru'?'Рейтинг устойчивости против критических ударов ближнего боя.':'Resilience rating against melee critical hits.')}
-      ${row(lang==='ru'?'Устойчивость к криту дальнего боя':'Ranged crit reduction',`${ratingVal(13)} · ${ratingPct(13)}`,false,lang==='ru'?'Рейтинг устойчивости против критических ударов дальнего боя.':'Resilience rating against ranged critical hits.')}
-      ${row(lang==='ru'?'Устойчивость к криту заклинаний':'Spell crit reduction',`${ratingVal(14)} · ${ratingPct(14)}`,false,lang==='ru'?'Рейтинг устойчивости против критических эффектов заклинаний.':'Resilience rating against spell critical hits.')}
-      ${row(lang==='ru'?'Скорость дальнего боя':'Ranged haste',`${ratingVal(19)} · ${ratingPct(19)}`,false,cap.noCap)}
-      ${row(lang==='ru'?'Скорость заклинаний':'Spell haste',`${ratingVal(20)} · ${ratingPct(20)}`,false,cap.noCap)}
-      ${row(lang==='ru'?'Пробивание заклинаний':'Spell penetration',number(c.spellPen),false,lang==='ru'?'Снижает сопротивление цели заклинаниям; у воина обычно не является целью экипировки.':'Reduces target resistance to spells; usually not a warrior gearing target.')}
-      ${row(lang==='ru'?'Снижение уклонения: левая рука':'Off-hand dodge reduction',pct(c.offhandExpertisePct),false,cap.expertise)}
-      ${row(lang==='ru'?'Снижение уклонения: дальний бой':'Ranged dodge reduction',pct(c.rangedExpertisePct),false,cap.expertise)}
       ${row(lang==='ru'?'Тайная магия':'Arcane resistance',getRes(7),false,cap.noCap)}
       ${row(lang==='ru'?'Огонь':'Fire resistance',getRes(3),false,cap.noCap)}
       ${row(lang==='ru'?'Природа':'Nature resistance',getRes(4),false,cap.noCap)}
@@ -331,11 +315,15 @@
     if (base.char.ap) c.ap = Math.max(0, Math.round(base.char.ap + delta * 5));
     if (base.char.hp) c.hp = Math.max(1, Math.round(base.char.hp + delta * 30));
     state.gear = { ...base.gear };
-    const showGearRoute = state.imported ? c.lvl !== base.char.lvl : c.lvl > 1;
-    if (showGearRoute) {
-      const spec = localStorage.getItem('warriorSpec') || 'fury';
-      const route = window.LEVELING_GEAR?.[spec]?.[String(c.lvl)] || window.LEVELING_GEAR?.arms?.[String(c.lvl)];
-      if (route) state.gear = { ...state.gear, ...route };
+    const spec = localStorage.getItem('warriorSpec') || 'fury';
+    const importedSpec = state.imported ? localStorage.getItem('wheroImportedSpec') : '';
+    const changedImportedSpec = !!importedSpec && spec !== importedSpec;
+    const showGearRoute = state.imported ? (c.lvl !== base.char.lvl || changedImportedSpec) : c.lvl > 1;
+    const route = window.LEVELING_GEAR?.[spec]?.[String(c.lvl)] || window.LEVELING_GEAR?.arms?.[String(c.lvl)];
+    if (route) {
+      state.gear = showGearRoute
+        ? { ...state.gear, ...route }
+        : { ...route, ...state.gear };
     }
     window.currentWowGear = state.gear;
     const liveItemIds=new Set(Object.values(state.gear).filter(Boolean).map(g=>+g.id).filter(Boolean));
@@ -364,10 +352,10 @@
   }
 
   function bindStatTooltips() {
-    const pane=$('hero-stats'),tip=$('heroStatTooltip');
-    if(!pane||!tip)return;
+    const tip=$('heroStatTooltip');
+    if(!tip)return;
     let active=null;
-    const rowFor=node=>node instanceof Element?node.closest('.hero-stat-row[data-stat-tip]'):null;
+    const rowFor=node=>node instanceof Element?node.closest('.hero-stats .hero-stat-row[data-stat-tip]'):null;
     const hide=()=>{tip.classList.remove('on');active=null;};
     const show=row=>{
       if(!row)return hide();
@@ -382,12 +370,11 @@
       let top=r.top;if(top+b.height>innerHeight-pad)top=innerHeight-b.height-pad;
       top=Math.max(pad,top);tip.style.left=`${left}px`;tip.style.top=`${top}px`;
     };
-    pane.addEventListener('pointerover',event=>{if(event.pointerType==='touch')return;const row=rowFor(event.target);if(row&&row!==active)show(row);});
-    pane.addEventListener('pointerout',event=>{if(event.pointerType==='touch')return;const row=rowFor(event.target);if(row===active&&!row.contains(event.relatedTarget))hide();});
-    pane.addEventListener('focusin',event=>{const row=rowFor(event.target);if(row)show(row);});
-    pane.addEventListener('focusout',event=>{const row=rowFor(event.target);if(row===active&&!row.contains(event.relatedTarget))hide();});
-    pane.addEventListener('pointerdown',event=>{if(event.pointerType==='touch'){const row=rowFor(event.target);if(row)show(active===row?null:row);}});
-    document.addEventListener('pointerdown',event=>{if(!event.target.closest('.hero-stat-row[data-stat-tip],#heroStatTooltip'))hide();});
+    document.addEventListener('pointerover',event=>{if(event.pointerType==='touch')return;const row=rowFor(event.target);if(row&&row!==active)show(row);});
+    document.addEventListener('pointerout',event=>{if(event.pointerType==='touch')return;const row=rowFor(event.target);if(row===active&&!row.contains(event.relatedTarget))hide();});
+    document.addEventListener('focusin',event=>{const row=rowFor(event.target);if(row)show(row);});
+    document.addEventListener('focusout',event=>{const row=rowFor(event.target);if(row===active&&!row.contains(event.relatedTarget))hide();});
+    document.addEventListener('pointerdown',event=>{const row=rowFor(event.target);if(event.pointerType==='touch'&&row){show(active===row?null:row);return;}if(!row&&!event.target.closest('#heroStatTooltip'))hide();});
     document.addEventListener('keydown',event=>{if(event.key==='Escape')hide();});
     window.addEventListener('resize',()=>{if(active)show(active);});
   }
@@ -421,7 +408,7 @@
     $('paste').addEventListener('input',()=>{clearTimeout(pasteTimer);pasteTimer=setTimeout(()=>mergeExportText($('paste').value),180);});
     $('pasteClipboard').onclick=async()=>{try{const text=await navigator.clipboard.readText();if(!/^\s*WEXP[0-5]\|/m.test(text)){ $('importProgress').textContent=lang==='ru'?'В буфере не найдены строки экспорта WEXP. Скопируй ответ игрового макроса.':'No WEXP export lines found in clipboard. Copy the output of an in-game macro.';return;}mergeExportText(text);const codes=new Set(($('paste').value.match(/^WEXP[0-5]\|/gm)||[]).map(line=>line.slice(4,5)));$('importProgress').textContent=lang==='ru'?`Данные добавлены (${codes.size}/5 команд). Ответы можно вставлять по одному.`:`Data merged (${codes.size}/5 command groups). Paste each response separately.`;}catch(_){document.querySelector('.import').classList.add('paste-fallback');$('importInstruction').textContent=lang==='ru'?'Вставляй ответы команд по одному в поле ниже — данные объединятся автоматически.':'Paste command responses one at a time below; they will merge automatically.';$('paste').focus();}};
     $('openHeroImport').onclick=()=>{ $('paste').value=localStorage.getItem('wheroData')||'';$('importProgress').textContent=lang==='ru'?'Шаг 1 из 4 · скопируй первую команду, запусти макрос в игре и добавь ответ.':'Step 1 of 4 · copy the first command, run it in game, and add its output.';$('heroImportDialog').showModal();};
-    $('resetHeroDemo').onclick=()=>{localStorage.removeItem('wheroData');localStorage.removeItem('wheroLevel');state.imported=false;$('paste').value=DEMO.join('\n');parse(true,true);$('paste').value='';$('heroImportDialog').close();};
+    $('resetHeroDemo').onclick=()=>{localStorage.removeItem('wheroData');localStorage.removeItem('wheroLevel');localStorage.removeItem('wheroImportedSpec');state.imported=false;$('paste').value=DEMO.join('\n');parse(true,true);$('paste').value='';$('heroImportDialog').close();};
     [['m1','1/4'],['mStats','2/4'],['mRatings','3/4'],['mWeapons','4/4']].forEach(([id,step])=>$(id).addEventListener('click',e=>{if(e.target.closest('.copy-btn')){$('importProgress').textContent=lang==='ru'?`Команда ${step} скопирована. Запусти её макросом в игре, скопируй ответ из чата и вставь сюда.`:`Command ${step} copied. Run it as a game macro, copy its chat output, and paste it here.`;}}));
     $('cname').onclick=()=>{if(!state.imported)$('openHeroImport').click();};
     $('closeHeroImport').onclick=()=>$('heroImportDialog').close();
@@ -510,7 +497,7 @@
     const hasDetailedStats=['3','4','5'].every(code=>lines.some(line=>line.startsWith(`WEXP${code}|`)));
     state.char = char; state.gear = gear; window.currentWowGear = state.gear; state.legacy = legacy;
     state.levelBase = { char:{...char}, gear:Object.fromEntries(Object.entries(gear).map(([slot,item])=>[slot,{...item}])) };
-    if(!isDemo){state.imported=true;localStorage.setItem('wheroData',lines.join('\n'));if(!preservePreviewLevel)localStorage.removeItem('wheroLevel');}
+    if(!isDemo){state.imported=true;const previousName=(localStorage.getItem('wheroData')||'').match(/^WEXP1\|([^|]+)/m)?.[1];if(!localStorage.getItem('wheroImportedSpec')||previousName&&previousName!==char.name)localStorage.setItem('wheroImportedSpec',localStorage.getItem('warriorSpec')||'fury');localStorage.setItem('wheroData',lines.join('\n'));if(!preservePreviewLevel)localStorage.removeItem('wheroLevel');}
     drawDoll();
     if(!isDemo){
       $('importProgress').textContent=partialImport
@@ -524,7 +511,7 @@
     loadItemTips();
     if(window.renderWowCharacter) window.renderWowCharacter(state.char,state.gear);
     else window.pendingWowCharacter={char:state.char,gear:state.gear};
-    if(isDemo||preservePreviewLevel){const savedLevel=Math.max(1,Math.min(80,+localStorage.getItem('wheroLevel')||char.lvl||1));if(savedLevel!==state.levelBase.char.lvl){char.lvl=savedLevel;refreshLevelPreview();}}
+    if(isDemo||preservePreviewLevel){const savedLevel=Math.max(1,Math.min(80,+localStorage.getItem('wheroLevel')||char.lvl||1));char.lvl=savedLevel;refreshLevelPreview();}
   }
 
   function drawDoll() {
@@ -743,16 +730,22 @@
         const lockVerticalOrbit=()=>{if(activeModel!==window.activeWowModel)return;if(Number.isFinite(fixedZenith)&&activeModel.renderer&&activeModel.renderer.zenith!==fixedZenith)activeModel.setZenith(fixedZenith);requestAnimationFrame(lockVerticalOrbit);};
         requestAnimationFrame(lockVerticalOrbit);
         window.activeWowModel=activeModel;
-        const attachGearItem=async(slot,g,model=activeModel)=>{
+        const displaySlotOf=(slot,item)=>({16:21,17:22,18:15}[+slot]||(+item?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[item?.id]||+slot));
+        const applyGearItem=(model,slot,item,displaySlot,displayId)=>{
+          if(!model||model!==activeModel||!model.renderer?.actors?.length||(+window.currentWowGear?.[slot]?.id||0)!==(+item?.id||0))return;
+          try{model.updateItemViewer(displaySlot,displayId,0);}catch(error){console.warn('Could not attach WoW item model:',displaySlot,displayId,error);}
+        };
+        const attachGearItem=(slot,g,model=activeModel)=>{
           if(!model)return;
-          const displaySlot=({16:21,17:22,18:15}[+slot]||(+g?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[g?.id]||+slot));
-          if(!g?.id){try{model.updateItemViewer(displaySlot,0,0);}catch(_){}return;}
+          const displaySlot=displaySlotOf(slot,g);
+          if(!g?.id){applyGearItem(model,slot,g,displaySlot,0);return;}
           const classicId=+g.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[g.id]||0;
           if(!classicId)return;
-          const displayId=await liveDisplayId(+g.id,classicId);
-          if(model!==activeModel||+window.currentWowGear?.[slot]?.id!==+g.id)return;
-          if(!model.renderer?.actors?.length){pendingGearItems.set(+slot,g);return;}
-          try{model.updateItemViewer(displaySlot,displayId,0);}catch(error){console.warn('Could not attach WoW item model:',displaySlot,displayId,error);}
+          // Show known WotLK appearance immediately; apply the converted ID later.
+          applyGearItem(model,slot,g,displaySlot,classicId);
+          void liveDisplayId(+g.id,classicId).then(displayId=>{
+            if(displayId!==classicId)applyGearItem(model,slot,g,displaySlot,displayId);
+          });
         };
         let gearSyncTimer=0,gearSyncRevision=0;
         window.updateWowGearItem=(slot,g)=>attachGearItem(slot,g);
@@ -762,19 +755,20 @@
           gearSyncTimer=setTimeout(async()=>{
             const model=activeModel;
             if(!model?.renderer?.actors?.length){for(const [slot,item] of Object.entries(gear||{}))if(item)pendingGearItems.set(+slot,item);return;}
-            const entries=[1,3,4,5,6,7,8,9,10,15,16,17,18,19].map(String);
-            const resolved=await Promise.all(entries.map(async slot=>{
-              const item=gear?.[slot]||null;
-              const displaySlot=({16:21,17:22,18:15}[+slot]||(+item?.inventoryType||+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[item?.id]||+slot));
-              if(!item?.id)return {slot,item,displaySlot,displayId:0};
-              const classicId=+item.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[item.id]||0;
-              return {slot,item,displaySlot,displayId:classicId?await liveDisplayId(+item.id,classicId):0};
-            }));
+            const entries=[...new Set([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,...Object.keys(gear||{}).map(Number)])].map(slot=>{
+              const item=gear?.[slot]||null,displaySlot=displaySlotOf(slot,item);
+              return {slot,item,displaySlot,classicId:+item?.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[item?.id]||0};
+            });
             if(revision!==gearSyncRevision||model!==activeModel)return;
-            for(const entry of resolved){
-              if((+window.currentWowGear?.[entry.slot]?.id||0)!==(+entry.item?.id||0))continue;
-              try{model.updateItemViewer(entry.displaySlot,entry.displayId,0);}catch(error){console.warn('Could not sync WoW gear:',entry.slot,error);}
-            }
+            // Attach every known appearance first; a slow conversion request for
+            // one item must not hold back the rest of the character's gear.
+            entries.forEach(entry=>applyGearItem(model,entry.slot,entry.item,entry.displaySlot,entry.item?.id?entry.classicId:0));
+            entries.filter(entry=>entry.item?.id&&entry.classicId).forEach(entry=>{
+              void liveDisplayId(+entry.item.id,entry.classicId).then(displayId=>{
+                if(revision===gearSyncRevision&&model===activeModel&&displayId!==entry.classicId)
+                  applyGearItem(model,entry.slot,entry.item,entry.displaySlot,displayId);
+              });
+            });
             pendingGearItems.clear();
           },90);
         };

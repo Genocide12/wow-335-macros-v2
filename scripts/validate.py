@@ -122,10 +122,36 @@ def main()->int:
         for i,body in enumerate(re.split(r"^MACRO .*?$",content,flags=re.M)[1:],1):
             text=body.split("\nEND",1)[0].strip()
             if len(text)>LIMIT: errors.append(f"Installer {path.name} macro {i} exceeds {LIMIT} chars ({len(text)})")
+    gear_path=ROOT/"docs/assets/js/leveling-gear.js"
+    if not gear_path.is_file():
+        errors.append("Missing generated hero gear routes")
+    else:
+        raw=gear_path.read_text(encoding="utf-8")
+        match=re.search(r"window\.LEVELING_GEAR=(\{.*\});\s*$",raw,re.S)
+        try:
+            routes=json.loads(match.group(1)) if match else None
+        except (json.JSONDecodeError,AttributeError) as error:
+            routes=None
+            errors.append(f"Invalid hero gear route data: {error}")
+        if routes is None:
+            errors.append("Could not read generated hero gear routes")
+        else:
+            for spec in ("arms","fury","prot"):
+                levels=routes.get(spec,{})
+                if set(levels)!={str(level) for level in range(1,81)}:
+                    errors.append(f"Hero gear route {spec} must cover levels 1–80")
+                    continue
+                for level,items in levels.items():
+                    for slot in ("1","7"):
+                        if slot not in items:
+                            errors.append(f"Hero gear route {spec}/{level} is missing head or legs")
+                    for slot,item in items.items():
+                        if not all(int(item.get(key) or 0)>0 for key in ("id","displayId","inventoryType")):
+                            errors.append(f"Hero gear route {spec}/{level}/{slot} has no item/display/slot data")
     if errors:
         print("Validation failed:\n- "+"\n- ".join(errors),file=sys.stderr)
         return 1
-    print(f"Validated {len(LANGUAGES)} RU/EN sets: combat macro syntax, 255-char limit, modifier policy, localized ability names, out-of-combat buff checker, and installer/site synchronization.")
+    print(f"Validated {len(LANGUAGES)} RU/EN sets plus 240 hero level routes: macro syntax, 255-char limit, modifier policy, localized ability names, installer sync, and item appearances.")
     return 0
 
 if __name__=="__main__": raise SystemExit(main())
