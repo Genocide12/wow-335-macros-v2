@@ -301,7 +301,7 @@
       ${row(lang==='ru'?'Мастерство':'Expertise',`${number(c.expertise)} · ${pct(c.expertisePct)}`,false,cap.expertise)}
       ${row(lang==='ru'?'Бронепробивание':'Armor penetration',`${ratingVal(25)} · ${pct(c.armorPen)}`,false,cap.arp)}
       <div class="hero-stats-section">${lang==='ru'?'Защита и сопротивления':'Defense & resistances'}</div>
-      ${row(lang==='ru'?'Защита':'Defense',`${number(c.defense)} (+${number(c.defenseBonus||0)})`,false,cap.defense)}
+      ${row(lang==='ru'?'Защита':'Defense',c.defense==null?'—':`${number(c.defense)} (+${number(c.defenseBonus||0)})`,false,cap.defense)}
       ${row(lang==='ru'?'Уклонение':'Dodge',`${pct(c.dodge)} · ${ratingVal(3)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
       ${row(lang==='ru'?'Парирование':'Parry',`${pct(c.parry)} · ${ratingVal(4)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
       ${row(lang==='ru'?'Блок':'Block',`${pct(c.block)} · ${ratingVal(5)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
