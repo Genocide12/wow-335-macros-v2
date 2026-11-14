@@ -581,6 +581,7 @@
     window.renderWowCharacter=async(char,gear)=>{
       const stage=document.getElementById('character-stage'),host=document.getElementById('wow-model'),status=document.getElementById('model-status');
       if(!char||!char.raceId)return;
+      const modelAspect=Math.max(.85,host.clientWidth/Math.max(1,host.clientHeight));
       lockModelInput(host);
       const request=++modelRequest;
       pendingGearItems.clear();
@@ -591,14 +592,14 @@
         // unavailable on some Pages visitors; never let optional gear block the model.
         const modelOptions={race:char.raceId,gender:char.gender,skin:0,face:0,hairStyle:0,hairColor:0,facialStyle:0,items:[],hideProgressBar:false};
         let nextModel;
-        try{nextModel=await generateModels(1.25,'#wow-model',modelOptions,'live');}
+        try{nextModel=await generateModels(modelAspect,'#wow-model',modelOptions,'live');}
         catch(proxyError){
           const direct='https://wow.zamimg.com/modelviewer/live/';
           if(window.CONTENT_PATH===direct)throw proxyError;
           console.warn('Model proxy failed; retrying against Wowhead CDN:',proxyError);
           host.replaceChildren();
           window.CONTENT_PATH=direct;
-          nextModel=await generateModels(1.25,'#wow-model',modelOptions,'live');
+          nextModel=await generateModels(modelAspect,'#wow-model',modelOptions,'live');
         }
         if(request!==modelRequest){nextModel?.destroy?.();return;}
         activeModel=nextModel;
