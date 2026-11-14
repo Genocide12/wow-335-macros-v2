@@ -1,9 +1,3 @@
 #showtooltip
-/cast [@mouseover,harm,nodead][]Pummel
 /cast [nostance:3]Berserker Stance
-/cast Berserker Rage
-/cast Every Man for Himself
-/cast Intimidating Shout
-/cast Defensive Stance
-/cast Disarm
-/cast Taunt
+/cast [@mouseover,harm,nodead][]Pummel

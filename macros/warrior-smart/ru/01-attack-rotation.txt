@@ -1,9 +1,6 @@
 /startattack
 /cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка
 /cast Победный раж
-/cast [combat]Кровавая ярость
-/cast [combat]Безрассудство
-/cast [combat]Жажда смерти
 /cast Кровожадность
 /cast Вихрь
 /cast Казнь

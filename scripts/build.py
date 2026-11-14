@@ -9,7 +9,7 @@ SPECS = {
     "en": [("Single", "INV_Axe_67", "01-attack-rotation.txt"), ("AoE + buff", "Ability_Whirlwind", "02-aoe-pack.txt"), ("Control", "Ability_Kick", "03-interrupt.txt")],
 }
 BUFF_CHECK = "04-buff-check.txt"
-EXPORTS = ("export-part1.txt", "export-part2.txt")
+EXPORTS = ("export-part1.txt", "export-part2.txt", "export-character.txt")
 COMBAT_MACRO_COUNT = sum(len(items) for items in SPECS.values()) // len(SPECS)
 
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Макросы — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/app.css?v=20261114d">
 <style>
   .macro-page{min-height:0;flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
   .m-tabs{display:none}
@@ -12,6 +12,7 @@
   .m-tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .m-tabs button.on{border-color:var(--gold);color:var(--gold2);background:linear-gradient(135deg,#3c3525,#211f20)}
   .m-grid { grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: minmax(0,1fr); overflow: hidden; gap:10px }
+  .m-grid.count-4{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
   .m-card { display:flex; flex-direction: column; gap: 8px; overflow: hidden; min-height:0; cursor:pointer }
   .m-card .macro-box{display:none}
   .m-card .m-extra{display:none}
@@ -34,6 +35,12 @@
   .tag { font-size: 11px; font-weight: 700; color: var(--dim); border: 1px solid var(--line);
     border-radius: 999px; padding: 3px 9px; }
   .m-feats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 10px; border-top: 1px dashed var(--line); padding-top: 7px; }
+  .m-cues{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;margin-top:auto;padding-top:8px;border-top:1px dashed #b99a5055}
+  .m-cue{display:flex;align-items:center;gap:7px;min-width:0;color:#c8c2b2;font-size:12px;line-height:1.25}
+  .m-cue img{width:26px;height:26px;flex:0 0 auto;border:1px solid #705e38;border-radius:6px}.m-cue span{min-width:0}
+  .m-card-context{font-size:12.5px;line-height:1.4;color:#aaa9a1;border-top:1px dashed #b99a5040;padding-top:7px}
+  .m-install-hint{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:9px 13px;border:1px solid #685535;border-radius:11px;background:linear-gradient(100deg,#211e18e8,#11141be8);color:#d9d1bd;font-size:13px;line-height:1.4}
+  .m-install-hint b{color:var(--gold2)}.m-install-hint img{width:30px;height:30px;border-radius:7px;flex:0 0 auto}
   .mf { display: flex; gap: 8px; align-items: center; }
   .mf img { width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; }
   .mf .t { font-size: 11.5px; line-height: 1.3; color: var(--dim); }
@@ -55,12 +62,15 @@
     border: 1px solid var(--gold); color: var(--gold2); align-items: center; justify-content: center;
     font-size: 11.5px; font-weight: 800; margin-left: auto; padding: 0 7px; flex: 0 0 auto; }
   @media (max-width: 860px) {
-    .macro-page{gap:5px}.m-tabs button{padding:6px 4px;font-size:11px}
+    .macro-page{gap:6px}.m-tabs button{padding:6px 4px;font-size:11px}
     .m-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:repeat(3,minmax(0,1fr));gap:6px}
+    .m-grid.count-4{grid-template-rows:repeat(4,minmax(0,1fr))}
     .m-card { grid-column: auto !important; }
-    .m-card{padding:7px 9px;gap:5px}.npc-dialog{padding:4px 7px;font-size:10px}.npc-dialog img{width:30px;height:30px}.npc-dialog b{font-size:11px}
+    .m-card{padding:8px 9px;gap:6px}.npc-dialog{padding:4px 7px;font-size:10px}.npc-dialog img{width:30px;height:30px}.npc-dialog b{font-size:11px}
     .m-head img{width:30px;height:30px}.m-head .t b{font-size:13px}.m-head .t span{font-size:10px}
     .m-feats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .m-cues{gap:4px;padding-top:5px}.m-cue{font-size:10px;gap:4px}.m-cue img{width:21px;height:21px}.m-install-hint{padding:6px 8px;font-size:10px;gap:7px}.m-install-hint img{width:24px;height:24px}
+    .m-card-context{font-size:10px;line-height:1.3;padding-top:4px}
     .m-card pre { max-height:min(130px,18vh); }
   }
   @media (min-width: 1200px) {
@@ -80,12 +90,14 @@
   <div class="macro-page">
     <div class="m-tabs" id="macroTabs"></div>
     <div class="grid m-grid" id="cards"></div>
+    <div class="m-install-hint"><img src="assets/icons/logo.jpg" alt=""><span><b data-ru="Как поставить:" data-en="How to add:">Как поставить:</b> <span data-ru="в игре открой Escape → Макросы, создай новый макрос, вставь текст из открытой карточки и назначь любую удобную кнопку." data-en="in game, press Escape → Macros, create a macro, paste the text from a card, and bind any button you prefer.">в игре открой Escape → Макросы, создай новый макрос, вставь текст из открытой карточки и назначь любую удобную кнопку.</span></span></div>
   </div>
 </main>
 </div>
 <dialog class="m-dialog" id="macroDetails"><div class="m-dialog-head"><span id="macroDetailsTitle"></span><button class="macro-close" id="closeMacroDetails" aria-label="Close">×</button></div><div class="m-dialog-body" id="macroDetailsBody"></div></dialog>
-<script src="assets/js/app.js"></script>
-<script src="assets/js/macros-data.js"></script>
+<script src="assets/js/app.js?v=20261114d"></script>
+<script src="assets/js/macros-data.js?v=20261114d"></script>
+<script src="assets/js/macro-bodies.js?v=20261114d"></script>
 <script>
 const L10N = { ru: { copy: 'копировать' }, en: { copy: 'copy' } };
 // macro bodies come from macros-data.js (embedded, no fetch)
@@ -98,24 +110,22 @@ let MACROS = [
             en: ['single target', 'no key modifiers', 'press repeatedly'] },
     feats: {
       ru: [
-        { i: 'ability_warrior_charge', t: 'Рывок сам', d: 'вне боя макрос встанет в боевую стойку и рванёт к цели; в бою вернёт стойку берсерка' },
-        { i: 'ability_warrior_devastate', t: 'Победный раж первым', d: 'доступен только 20 сек после убийства — макрос бьёт им первым, окно не сгорает зря' },
-        { i: 'ability_racial_bloodrage', t: 'Кровавая ярость по нажатию', d: 'макрос пытается применить её в бою; он не запускается сам по кулдауну' },
-        { i: 'ability_criticalstrike', t: 'Безрассудство по нажатию', d: 'макрос пытается применить готовый бурст только когда ты нажимаешь кнопку; момент выбирай перед боем' },
-        { i: 'spell_shadow_deathpact', t: 'Жажда смерти по нажатию', d: '+20% физического урона на 30 сек; для точного тайминга используй отдельно' },
+        { i: 'ability_warrior_charge', t: 'Рывок', d: 'вне боя макрос сначала пробует сменить стойку или применить Рывок; после смены стойки может понадобиться ещё одно нажатие' },
+        { i: 'ability_warrior_devastate', t: 'Победный раж первым', d: 'макрос пытается применить его первым; способность доступна ограниченное время после убийства' },
+        { i: 'spell_nature_bloodlust', t: 'Кровожадность → Вихрь', d: 'основа приоритета; жми повторно и следи за доступностью способностей' },
+        { i: 'ability_warrior_battleshout', t: 'Бурсты отдельно', d: 'Жажду смерти и Безрассудство нажимай вручную в выбранное окно боя' },
         { i: 'inv_sword_48', t: 'Казнь в конце списка', d: 'макрос пробует её после основных ударов; он не может проверять здоровье цели на 20%' },
       ],
       en: [
-        { i: 'ability_warrior_charge', t: 'Charge on its own', d: 'out of combat it charges from Battle Stance; in combat it returns you to Berserker Stance' },
-        { i: 'ability_warrior_devastate', t: 'Victory Rush first', d: 'available for 20 sec after a kill — the macro fires it immediately, before the window closes' },
-        { i: 'ability_racial_bloodrage', t: 'Bloodrage on press', d: 'the macro attempts it in combat; it does not run itself when the cooldown ends' },
-        { i: 'ability_criticalstrike', t: 'Recklessness on press', d: 'the macro attempts this burst only when you press the button; choose the timing before the fight' },
-        { i: 'spell_shadow_deathpact', t: 'Death Wish on press', d: '+20% physical damage for 30 sec; use it separately when you need precise timing' },
+        { i: 'ability_warrior_charge', t: 'Charge attempt', d: 'out of combat the macro tries the stance change or Charge; a second press may be needed after changing stance' },
+        { i: 'ability_warrior_devastate', t: 'Victory Rush first', d: 'the macro tries it first; the ability is available for a limited time after a kill' },
+        { i: 'spell_nature_bloodlust', t: 'Bloodthirst → Whirlwind', d: 'the core priority; repeat presses and watch ability availability' },
+        { i: 'ability_warrior_battleshout', t: 'Separate burst buttons', d: 'use Death Wish and Recklessness manually in the encounter window you choose' },
         { i: 'inv_sword_48', t: 'Execute at the end', d: 'the macro tries it after core attacks; it cannot test whether the target is below 20% health' },
       ],
     },
-    note: { ru: 'Каждое нажатие проходит список команд в заданном порядке; обычный макрос не проверяет кулдауны и не выбирает момент боя. Бурстовые умения вынеси отдельно, если хочешь придержать их для босса.',
-            en: 'Each press checks the listed commands in order; a normal macro cannot inspect cooldowns or choose encounter timing. Keep burst abilities separate if you need to save them for a boss.' },
+    note: { ru: 'Макрос не запускает ротацию сам и не проверяет тайминг боя. Он не расходует бурстовые кулдауны: Жажду смерти и Безрассудство нажимай отдельно, когда выберешь момент.',
+            en: 'The macro does not run the rotation or judge encounter timing. It does not spend burst cooldowns; use Death Wish and Recklessness separately when you choose.' },
   },
   {
     file: '02-aoe-pack', icon: 'ability_whirlwind',
@@ -126,7 +136,7 @@ let MACROS = [
     feats: {
       ru: [
         { i: 'inv_misc_key_02', t: 'Автотаргет', d: 'нет цели или цель мертва — макрос сам возьмёт ближайшего врага и начнёт атаку' },
-        { i: 'ability_rogue_sprint', t: 'Перехват сам', d: 'в бою макрос встанет в стойку берсерка и догонит убегающего моба' },
+        { i: 'ability_rogue_sprint', t: 'Перехват', d: 'макрос пытается сменить стойку и применить Перехват; после смены стойки может понадобиться повторное нажатие' },
         { i: 'ability_whirlwind', t: 'Вихрь первым', d: 'бьёт каждого моба пака обоими оружиями — с Хваткой титана очень больно' },
         { i: 'ability_warrior_cleave', t: 'Рассекающий удар', d: 'каждый белый свинг бьёт по площади — ярость в урон без GCD' },
         { i: 'ability_warrior_battleshout', t: 'Крик — отдельный макрос', d: 'проверка Боевого крика находится в отдельном внебоевом макросе, а не в этом AoE-наборе' },
@@ -134,7 +144,7 @@ let MACROS = [
       ],
       en: [
         { i: 'inv_misc_key_02', t: 'Auto-target', d: 'no target or a dead one — the macro grabs the nearest enemy and starts attacking' },
-        { i: 'ability_rogue_sprint', t: 'Intercept on its own', d: 'in combat the macro swaps to Berserker Stance and chases down runners' },
+        { i: 'ability_rogue_sprint', t: 'Intercept attempt', d: 'the macro attempts a stance change and Intercept; a second press may be needed after changing stance' },
         { i: 'ability_whirlwind', t: 'Whirlwind first', d: 'hits every mob in the pack with both weapons — a monster with Titan’s Grip' },
         { i: 'ability_warrior_cleave', t: 'Cleave', d: 'every white swing hits the whole pack — rage into damage, off the GCD' },
         { i: 'ability_warrior_battleshout', t: 'Separate shout macro', d: 'the Battle Shout check lives in its own out-of-combat macro, not in this AoE set' },
@@ -146,50 +156,61 @@ let MACROS = [
   },
   {
     file: '03-interrupt', icon: 'inv_gauntlets_04',
-    ru: ['Прерывание и защита', 'Зуботычина по наведению, стойка и все команды защитного макроса'],
-    en: ['Interrupt & defense', 'Mouseover Pummel, stance, and the full defensive sequence'],
+    ru: ['Прерывание', 'Зуботычина по наведению; после смены стойки нажми повторно'],
+    en: ['Interrupt', 'Mouseover Pummel; press again after a stance change'],
     tags: { ru: ['мышь', 'без смены цели', 'одна кнопка'],
             en: ['mouseover', 'no target switch', 'single button'] },
     feats: {
       ru: [
         { i: 'inv_gauntlets_04', t: 'Сбивай не меняя цель', d: 'Зуботычина летит в моба под курсором — твоя цель не переключается' },
         { i: 'ability_racial_avatar', t: 'Стойка сама', d: 'не в стойке берсерка — сначала встанет в неё, со второго нажатия бьёт' },
-        { i: 'spell_nature_ancestralguardian', t: 'Ярость берсерка сама', d: 'выходит с кулдауна при нажатии: ярость и иммунитет к страху — без отдельной кнопки' },
-        { i: 'ability_warrior_disarm', t: 'Полный набор действий', d: 'После прерывания макрос содержит команды для расовой способности, страха, защитной стойки, Разоружения и Провокации — без сочетаний клавиш' },
-        { i: 'ability_parry', t: 'Вернись в бой', d: 'выбрался из передряги — жми макрос ротации: макрос сам вернёт стойку берсерка' },
       ],
       en: [
         { i: 'inv_gauntlets_04', t: 'Interrupt without switching', d: 'Pummel goes into the mob under the cursor — your target stays' },
         { i: 'ability_racial_avatar', t: 'Stance on its own', d: 'not in Berserker Stance — it swaps first, interrupts from the second press' },
-        { i: 'spell_nature_ancestralguardian', t: 'Berserker Rage on its own', d: 'fires off cooldown on press: rage plus fear immunity — no extra button' },
-        { i: 'ability_warrior_disarm', t: 'Full action sequence', d: 'The macro retains its racial, fear, Defensive Stance, Disarm, and Taunt commands without modifier keys' },
-        { i: 'ability_parry', t: 'Back into the fight', d: 'survived the pinch — use the rotation macro: it swaps you back to Berserker Stance' },
       ],
     },
-    note: { ru: 'Команды выполняются в порядке списка. Стойка берсерка и Ярость берсерка могут занять нажатие до прерывания; защитные действия оставлены отдельными строками, чтобы их не потерять.',
-            en: 'Commands are checked in list order. Berserker Stance and Berserker Rage can take a press before Pummel; the defensive actions remain as separate lines so they are not lost.' },
+    note: { ru: 'Макрос не тратит защитные умения и не меняет текущую цель. Если нужна смена стойки, сначала нажми кнопку для стойки, затем повторно — для Зуботычины.',
+            en: 'This macro does not spend defensive cooldowns or change your target. If a stance swap is needed, press once to swap and again to use Pummel.' },
   },
 ];
 document.addEventListener('DOMContentLoaded', () => {
   const lang = window.W.lang;
   const I = window.W.icon;
   const L = L10N[lang] || L10N.ru;
-  const spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
+  const requestedSpec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
+  const spec=['arms','fury','prot'].includes(requestedSpec)?requestedSpec:'fury';
   const names={arms:lang==='ru'?'Arms PvP — макросы контроля':'Arms PvP — control macros',fury:lang==='ru'?'Fury PvE — макросы урона':'Fury PvE — damage macros',prot:lang==='ru'?'Protection PvE — макросы танка':'Protection PvE — tank macros'};
+  const quickFlows={
+    arms:{ru:[[['inv_gauntlets_04','Стойка берсерка → Зуботычина'],['inv_misc_key_02','Фокус / цель под курсором']], [['ability_warrior_savageblow','Боевая стойка → Смертельный удар']], [['ability_warrior_charge','Рывок вне боя'],['ability_rogue_sprint','Перехват в бою']], [['ability_warrior_disarm','Оборонительная стойка → Разоружение']]],en:[[['inv_gauntlets_04','Berserker Stance → Pummel'],['inv_misc_key_02','Focus / mouseover target']], [['ability_warrior_savageblow','Battle Stance → Mortal Strike']], [['ability_warrior_charge','Charge out of combat'],['ability_rogue_sprint','Intercept in combat']], [['ability_warrior_disarm','Defensive Stance → Disarm']]]},
+    prot:{ru:[[['ability_warrior_shieldslam','Мощный удар щитом → Реванш'],['ability_warrior_devastate','Сокрушение']], [['ability_thunderclap','Оборонительная стойка → Удар грома'],['ability_warrior_shockwave','Ударная волна']], [['spell_nature_reincarnation','Провокация под курсором']], [['inv_shield_05','Оборонительная стойка → Удар щитом']]],en:[[['ability_warrior_shieldslam','Shield Slam → Revenge'],['ability_warrior_devastate','Devastate']], [['ability_thunderclap','Defensive Stance → Thunder Clap'],['ability_warrior_shockwave','Shockwave']], [['spell_nature_reincarnation','Mouseover Taunt']], [['inv_shield_05','Defensive Stance → Shield Bash']]]}
+  };
   document.title = names[spec]+' — WoW 3.3.5';
   if(spec!=='fury'){
-    const rows=spec==='arms'?
+    const rows=spec==='arms'?(lang==='ru'?
       [
-        ['Сбить каст по фокусу или наведению','Сохраняет основную цель; при смене стойки может потребоваться повторное нажатие.','#showtooltip Зуботычина\n/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина','inv_gauntlets_04'],
-        ['Рывок из боевой стойки','Подходит для сближения вне боя; стойка меняется отдельной командой, иногда нужно нажать повторно.','#showtooltip Рывок\n/cast [nostance:1]Боевая стойка\n/cast [stance:1]Рывок','ability_warrior_charge'],
-        ['Снять разоружение по наведению','Утилитарная кнопка против вооружённой цели; не складывает смену стойки и способность в один гарантированный каст.','#showtooltip Разоружение\n/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение','ability_warrior_disarm']
-      ]:
+        ['Зуботычина по фокусу или наведению','Прерывание без смены основной цели.','#showtooltip Зуботычина\n/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина','inv_gauntlets_04'],
+        ['Смертельный удар','Главный удар Arms; при смене стойки нажми повторно.','#showtooltip Смертельный удар\n/cast [nostance:1]Боевая стойка\n/cast Смертельный удар','ability_warrior_savageblow'],
+        ['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','#showtooltip [combat]Перехват;Рывок\n/cast [combat,nostance:3]Стойка берсерка;[nocombat,nostance:1]Боевая стойка\n/cast [combat,stance:3]Перехват;[nocombat,stance:1]Рывок','ability_warrior_charge'],
+        ['Разоружение по наведению','Защитная стойка и разоружение выбранного противника.','#showtooltip Разоружение\n/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение','ability_warrior_disarm']
+      ]:[
+        ['Pummel focus or mouseover','Interrupt without changing your main target.','#showtooltip Pummel\n/cast [nostance:3]Berserker Stance\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Pummel','inv_gauntlets_04'],
+        ['Mortal Strike','Arms core attack; press again after a stance change.','#showtooltip Mortal Strike\n/cast [nostance:1]Battle Stance\n/cast Mortal Strike','ability_warrior_savageblow'],
+        ['Charge and Intercept','Charge out of combat; Intercept in combat.','#showtooltip [combat]Intercept;Charge\n/cast [combat,nostance:3]Berserker Stance;[nocombat,nostance:1]Battle Stance\n/cast [combat,stance:3]Intercept;[nocombat,stance:1]Charge','ability_warrior_charge'],
+        ['Mouseover Disarm','Defensive Stance, then disarm the selected enemy.','#showtooltip Disarm\n/cast [nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Disarm','ability_warrior_disarm']
+      ]) : (lang==='ru'?
       [
-        ['Приоритет угрозы по цели','Мощный удар щитом → Реванш → Сокрушение; нажимай повторно и следи за яростью.','#showtooltip Мощный удар щитом\n/startattack\n/cast Мощный удар щитом\n/cast Реванш\n/cast Сокрушение','ability_warrior_shieldslam'],
-        ['Провокация по наведению','Провоцирует врага под курсором, сохраняя текущую цель; подходит для быстрого перехвата адда.','#showtooltip Провокация\n/cast [@mouseover,harm,nodead][]Провокация','spell_nature_reincarnation'],
-        ['Прерывание по наведению','Удар щитом требует экипированный щит и боевую или защитную стойку; проверь экипировку перед боем.','#showtooltip Удар щитом\n/cast [nostance:1,nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Удар щитом','inv_shield_05']
-      ];
-    MACROS=rows.map(([title,sub,body,icon],i)=>({file:'custom-'+i,icon,body,[lang]:[title,sub],tags:{[lang]:i===0?(spec==='arms'?(lang==='ru'?['фокус','прерывание']:['focus','interrupt']):(lang==='ru'?['угроза','приоритет']:['threat','priority'])):(lang==='ru'?['ситуационно','без фиксированных клавиш']:['situational','no fixed binds'])},feats:{[lang]:[]},note:{[lang]:spec==='arms'?(lang==='ru'?'Макрос не выбирает момент для контроля: смотри на каст, стойку и перезарядку. После смены стойки может понадобиться повторное нажатие.':'The macro cannot choose when to interrupt: watch the cast, stance, and cooldown. A stance change may require another press.'):(lang==='ru'?'Это набор приоритетных попыток, а не автоматическая ротация. Следи за угрозой, стойкой, щитом и яростью.':'This is a priority attempt list, not an automatic rotation. Watch threat, stance, shield, and rage.')}}));
+        ['Приоритет угрозы','Мощный удар щитом → Реванш → Сокрушение; нажимай повторно.','#showtooltip Мощный удар щитом\n/startattack\n/cast Мощный удар щитом\n/cast Реванш\n/cast Сокрушение','ability_warrior_shieldslam'],
+        ['Угроза по площади','Удар грома и Ударная волна; стойка меняется отдельным нажатием.','#showtooltip Удар грома\n/cast [nostance:2]Оборонительная стойка\n/cast Удар грома\n/cast Ударная волна','ability_thunderclap'],
+        ['Провокация по наведению','Перехвати цель под курсором, не меняя текущую цель.','#showtooltip Провокация\n/cast [@mouseover,harm,nodead][]Провокация','spell_nature_reincarnation'],
+        ['Удар щитом по наведению','Прерывание; нужен щит и боевая или защитная стойка.','#showtooltip Удар щитом\n/cast [nostance:1,nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Удар щитом','inv_shield_05']
+      ]:[
+        ['Threat priority','Shield Slam → Revenge → Devastate; press repeatedly.','#showtooltip Shield Slam\n/startattack\n/cast Shield Slam\n/cast Revenge\n/cast Devastate','ability_warrior_shieldslam'],
+        ['Area threat','Thunder Clap and Shockwave; stance change may take a press.','#showtooltip Thunder Clap\n/cast [nostance:2]Defensive Stance\n/cast Thunder Clap\n/cast Shockwave','ability_thunderclap'],
+        ['Mouseover Taunt','Taunt the enemy under your cursor without changing target.','#showtooltip Taunt\n/cast [@mouseover,harm,nodead][]Taunt','spell_nature_reincarnation'],
+        ['Mouseover Shield Bash','Interrupt; requires a shield and Battle or Defensive Stance.','#showtooltip Shield Bash\n/cast [nostance:1,nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Shield Bash','inv_shield_05']
+      ]);
+    MACROS=rows.map(([title,sub,body,icon],i)=>({file:'custom-'+i,icon,body:window.WARRIOR_MACRO_BODIES?.[spec]?.[lang]?.[i]||body,index:i,[lang]:[title,sub],tags:{[lang]:i===0?(spec==='arms'?(lang==='ru'?['фокус','прерывание']:['focus','interrupt']):(lang==='ru'?['угроза','приоритет']:['threat','priority'])):(lang==='ru'?['ситуационно','без фиксированных клавиш']:['situational','no fixed binds'])},feats:{[lang]:(quickFlows[spec]?.[lang]?.[i]||[]).map(([iconName,label])=>({i:iconName,t:label,d:sub}))},note:{[lang]:spec==='arms'?(lang==='ru'?'Макрос проверяет команды при каждом нажатии, но не распознаёт нужный момент для контроля. Смена стойки может потребовать ещё одного нажатия.':'The macro checks commands only when pressed and cannot choose the right control timing. A stance change may require another press.'):(lang==='ru'?'Это список попыток, а не автоматическая ротация. Следи за угрозой, стойкой, щитом и яростью.':'This is an ordered attempt list, not an automatic rotation. Watch threat, stance, shield, and rage.')}}));
   }
   const wrap = document.getElementById('cards');
   const rows = [];
@@ -197,6 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = (m.body || (((window.MACRO_TXT || {})[lang] || {})[m.file] || '')).trim();
     const [name, sub] = m[lang];
     const tags = (m.tags[lang] || []).map(t => `<span class="tag">${t}</span>`).join('');
+    const cueSource=(m.feats[lang]||[]).slice(0,4);
+    const cues=cueSource.length?cueSource.map(f=>`<div class="m-cue"><img src="${I(f.i)}" alt=""><span>${f.t}</span></div>`).join(''):`<div class="m-cue"><img src="${I(m.icon)}" alt=""><span>${sub}</span></div>`;
     const feats = (m.feats[lang] || []).map(f =>
       `<div class="mf"><img src="${I(f.i)}" alt=""><div class="t"><b>${f.t}</b> — ${f.d}</div></div>`).join('');
     rows.push(`
@@ -206,19 +229,23 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="t"><b>${name}</b><span>${sub}</span></div>
 
       </div>
-      <div class="macro-box"><button class="copy-btn" data-copy="${encodeURIComponent(body)}">✓ ${L.copy}</button>
+      <div class="macro-box"><button class="copy-btn" data-copy="${encodeURIComponent(body)}">${L.copy}</button>
       <pre>${body.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</pre></div>
       <div class="m-meta">${tags}</div>
+      <p class="m-card-context">${m.note[lang]}</p>
+      <div class="m-cues">${cues}</div>
       <div class="m-extra" hidden><div class="m-feats">${feats}</div><div class="m-note">${m.note[lang]}</div></div>
     </section>`);
   }
   wrap.innerHTML = rows.join('');
+  wrap.classList.toggle('count-4',MACROS.length===4);
   const tabs=document.getElementById('macroTabs');
   tabs.innerHTML=MACROS.map((m,i)=>`<button class="${i===0?'on':''}" data-macro="${i}">${m[lang][0]}</button>`).join('');
   wrap.querySelectorAll('.m-card').forEach((card,i)=>{
     const openDetails=()=>{
       document.getElementById('macroDetailsTitle').textContent=MACROS[i][lang][0];
-      document.getElementById('macroDetailsBody').innerHTML=card.querySelector('.macro-box').outerHTML+card.querySelector('.m-extra').innerHTML+`<p class="m-note">${lang==='ru'?'В игре открой меню Escape → Макросы или введи /macro. Создай макрос, вставь текст, выбери значок и перетащи его на панель действий. Назначь ему любую удобную клавишу в настройках игры. Обычный макрос не выполняет всю ротацию одним нажатием.':'In game, press Escape → Macros or type /macro. Create a macro, paste the text, choose an icon, and drag it to your action bar. Bind any key you prefer in the game settings. A normal macro cannot run the full rotation with one press.'}</p>`;
+      const npc=`<div class="npc-dialog"><img src="${I(['npc_undead_male_warrior','npc_human_male_warrior','npc_orc_male_warrior'][i%3])}" onerror="this.src='${I('ability_warrior_battleshout')}'" alt=""><span><b>${lang==='ru'?'Наставник воинов':'Warrior Trainer'}</b>${lang==='ru'?'Скопируй текст ниже и создай макрос в игре.':'Copy the text below and create an in-game macro.'}</span></div>`;
+      document.getElementById('macroDetailsBody').innerHTML=npc+card.querySelector('.macro-box').outerHTML+card.querySelector('.m-extra').innerHTML+`<p class="m-note">${lang==='ru'?'В игре открой меню Escape → Макросы или введи /macro. Создай макрос, вставь текст, выбери значок и перетащи его на панель действий. Назначь ему любую удобную клавишу в настройках игры. Обычный макрос не выполняет всю ротацию одним нажатием.':'In game, press Escape → Macros or type /macro. Create a macro, paste the text, choose an icon, and drag it to your action bar. Bind any key you prefer in the game settings. A normal macro cannot run the full rotation with one press.'}</p>`;
       document.getElementById('macroDetails').showModal();
     };
     card.setAttribute('role','button');card.tabIndex=0;
@@ -226,9 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
     card.onkeydown=event=>{if((event.key==='Enter'||event.key===' ')&&!event.target.closest('[data-copy]')){event.preventDefault();openDetails();}};
   });
   document.getElementById('closeMacroDetails').onclick=()=>document.getElementById('macroDetails').close();
-  wrap.querySelectorAll('.m-card:not(.mod-card)').forEach((card,i)=>{
-    const q=document.createElement('div');q.className='npc-dialog';q.innerHTML=`<img src="${I(['npc_undead_male_warrior','npc_human_male_warrior','npc_orc_male_warrior'][i])}" onerror="this.src='${I('ability_warrior_battleshout')}'" alt=""><span><b>${lang==='ru'?'Наставник воинов':'Warrior Trainer'}</b>${lang==='ru'?'Тактика проста: выбери приём, изучи запись и забери её в книгу макросов.':'Choose an ability, review the inscription, and copy it into your macro book.'}</span>`;card.insertBefore(q,card.children[1]);
-  });
 });
 </script>
 </body>

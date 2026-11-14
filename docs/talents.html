@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Таланты — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/app.css?v=20261114d">
 <style>
-  .t-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: auto auto minmax(0,1fr); gap: 8px; }
-  .t-tabs { grid-column: 1; display: flex; gap: 8px; }
+  .t-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: auto minmax(0,1fr); gap: 8px; }
+  .t-tabs { display: none; grid-column: 1; gap: 8px; }
   .t-tabs{padding:5px;background:linear-gradient(90deg,#141720,#22212a);border:1px solid #655334;border-radius:12px;box-shadow:inset 0 1px #ffffff12,0 5px 20px #0006}
   .t-tab { flex: 1; display: flex; align-items: center; gap: 12px; background: var(--panel2); border: 1px solid var(--line);
     border-radius: 11px; padding: 7px 14px; cursor: pointer; font-weight: 700; font-size: 15px; color: var(--txt); }
@@ -31,11 +31,14 @@
     border: 1px solid #8a7140; overflow: hidden;box-shadow:inset 0 0 42px #0009,0 8px 25px #0005 }
   .t-tree::before { content:"";position:absolute;inset:-80% -20%;z-index:0;pointer-events:none;background:linear-gradient(115deg,transparent 42%,#f2d47b08 49%,#f2d47b20 50%,#f2d47b08 51%,transparent 58%);transform:translateX(-35%);animation:tree-glint 9s ease-in-out infinite alternate }
   @keyframes tree-glint { to { transform:translateX(35%); } }
-  .t-inner { position: relative;z-index:1; display:flex; flex-direction:column; width: 100%; min-width: 0; height:100%; margin: 0 auto; padding: clamp(8px,1.2vw,18px);
-    background: rgba(10, 12, 18, .68); }
-  .t-row { flex:1; min-height:0; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); justify-content:stretch; gap: clamp(3px,.7vw,12px); margin: 0; position: relative; z-index: 2; }
+  .t-inner { position: relative;z-index:1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; width:100%; min-width:0; height:100%; margin:0 auto; padding:8px; background:transparent; }
+  .tree-panel { position:relative; display:flex; flex-direction:column; min-width:0; min-height:0; overflow:hidden; border:1px solid #c5a75266; border-radius:11px; background:linear-gradient(180deg,#171a206b,#080b126b)!important; box-shadow:inset 0 0 18px #0006,0 4px 14px #0004; }
+  .tree-head { position:relative;display:flex; align-items:center; justify-content:center; flex:0 0 auto; padding:6px 9px; color:#f3eee3; background:transparent; border:0; font-weight:800; font-size:15px; letter-spacing:.04em;text-shadow:0 2px 4px #000; }
+  .tree-head .points { color:#fff; font-size:13px; }
+  .talent-rows { position:relative; isolation:isolate; flex:1; min-height:0; display:grid; grid-template-rows:repeat(11,minmax(0,1fr)); padding:5px 8px; background:transparent; }
+  .t-row { min-height:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); justify-content:stretch; gap:2px; margin:0; position:relative; z-index:2; }
   .tal { position: relative; width: 100%; height: 100%; display:grid; place-items:center; }
-  .tal .frame { width: clamp(30px, min(6.2vh, 6vw), 74px); height: clamp(30px, min(6.2vh, 6vw), 74px); margin: 0 auto; border: 2px solid #77706a; border-radius: 9px; overflow: hidden;
+  .tal .frame { width: clamp(28px, min(5.6vh, 4vw), 54px); height: clamp(28px, min(5.6vh, 4vw), 54px); margin: 0 auto; border: 2px solid #77706a; border-radius: 7px; overflow: hidden;
     background: #05070c; cursor: pointer; position: relative; touch-action:none; transition:transform .15s,border-color .18s,filter .18s,box-shadow .18s; }
   .tal .frame:hover { transform:scale(1.08);border-color:#d8bd6d;box-shadow:0 0 20px #e8c96a48;z-index:3 }
   .tal .frame img { width: 100%; height: 100%; display: block; opacity: .45; filter: grayscale(.8); }
@@ -45,7 +48,9 @@
   .tal .rank { position: absolute; right: 0; bottom: 0; background: #05070c; border: 1px solid #3a4258; border-radius: 5px;
     font-size: 9px; font-weight: 800; padding: 0 3px; color: #fff; z-index: 2; }
   .tal .rank.max { color: var(--gold2); }
-  .arrow { display:none; }
+  .arrow { position:absolute; inset:0; width:100%; height:100%; display:block; overflow:visible; pointer-events:none; z-index:1; }
+  .arrow path,.arrow line { stroke:#e8c43b; stroke-width:2.2; fill:none; opacity:.9; filter:drop-shadow(0 0 3px #e7c65a88); }
+  .preset-buttons{display:flex;flex:1;min-width:0;gap:8px}
   /* tooltip card */
   .t-info { position: sticky; top: 0; }
   .tipcard { position:fixed;background:#0b0d14;border:1px solid var(--gold);border-radius:12px;padding:12px 14px;z-index:80;pointer-events:none;box-shadow:0 12px 42px #000c;width:min(290px,calc(100vw - 20px)) }
@@ -57,24 +62,40 @@
   .tipcard .tip-hint{display:block;color:#8b93a7;font-size:10.5px;margin-top:8px;padding-top:6px;border-top:1px solid #ffffff16}
   @media (max-width: 900px) {
     .t-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: auto auto minmax(0,1fr); }
-    .t-tabs { grid-column: auto; gap:4px; }
+    .t-tabs { display:flex; grid-column: auto; gap:4px; }
     .t-tab { gap:6px; padding:5px; font-size:12px; }
     .t-tab img { width:32px; height:32px; }
-    .b-panel { padding:5px; gap:5px; }
-    .preset { gap:4px; }
-    .preset button { padding:5px 3px; font-size:10px; }
-    .preset b { display:block; white-space:nowrap; }
-    #reset { padding:6px 9px; }
-    .t-inner { padding:4px; }
-    .tal .frame { width:clamp(27px,min(6vh,12vw),58px); height:clamp(27px,min(6vh,12vw),58px); }
+    .b-panel { display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;padding:5px;gap:5px; }
+    .preset { display:contents; }
+    .preset>b { grid-column:1;grid-row:1;font-size:11px!important;white-space:nowrap; }
+    .preset-buttons { display:grid;grid-column:1/-1;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px; }
+    .preset-buttons button { min-width:0;padding:5px 3px;font-size:11px;line-height:1.1; }
+    .preset-buttons button small { display:none; }
+    #reset { grid-column:2;grid-row:1;padding:5px 9px; }
+    .t-inner { display:block; padding:4px; }
+    .tree-panel { display:none; height:100%; }
+    .tree-panel.active { display:flex; }
+    .talent-rows { padding:3px; }
+    .tal .frame { width:clamp(28px,min(6vh,10vw),48px); height:clamp(28px,min(6vh,10vw),48px); }
   }
-  @media (max-height:620px) {
+  @media (max-height:620px) and (max-width:900px) {
+    .t-layout { grid-template-rows:auto auto minmax(0,1fr); }
+    .b-panel { grid-template-rows:auto auto; }
+    .tal .frame { width:clamp(17px,min(4.5vh,7vw),36px); height:clamp(17px,min(4.5vh,7vw),36px); border-width:1px; }
+    .tal .rank { font-size:7px;line-height:1;padding:0 2px; }
+  }
+  @media (max-height:620px) and (min-width:901px) {
     .t-layout { gap:4px; }
-    .t-tabs { gap:4px; }
-    .t-tab { padding:3px 8px; }
-    .t-tab img { width:28px; height:28px; }
+    .t-tabs { display:none; }
     .b-panel { padding:3px 6px; }
-    .preset button { padding:4px; }
+    .preset-buttons button { padding:4px; }
+  }
+  @media(max-width:390px){
+    .t-tab{gap:3px;padding:3px;font-size:10px}.t-tab img{width:25px;height:25px}
+    .tree-head{font-size:13px}.talent-rows{padding:2px}.tal .rank{font-size:8px}
+  }
+  @media(pointer:coarse){
+    .tipcard{left:8px!important;right:8px;width:auto!important;top:60px!important;max-height:30dvh;overflow:auto}
   }
 </style>
 </head>
@@ -88,7 +109,7 @@
   </div>
 </main>
 </div>
-<script src="assets/js/app.js"></script>
+<script src="assets/js/app.js?v=20261114d"></script>
 <script src="assets/js/talents-data.js"></script>
 <script>
 (() => {
@@ -150,7 +171,7 @@
   const preferredTree={arms:'arms',fury:'fury',prot:'prot'}[new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury']||'fury';
   const state = { tree: preferredTree, pts: {}, tipTalent: null };
   let longPressTimer=0, suppressClickUntil=0;
-  const TREES = TALENTS.trees;
+  const TREES = window.TALENTS.trees;
   const byId = {};
   TREES.forEach(t => t.talents.forEach(x => byId[x.id] = { ...x, tree: t.key }));
 
@@ -183,32 +204,23 @@
     }).join('');
     document.querySelectorAll('.t-tab').forEach(el => el.onclick = () => { state.tree = el.dataset.tree; draw(); });
 
-    // tree grid
-    const t = TREES.find(t => t.key === state.tree);
-    document.getElementById('tree').style.backgroundImage = `url(assets/icons/bg/${t.bg}.jpg)`;
-    const rows = [];
-    for (let r = 0; r < 11; r++) {
-      const cells = [0, 1, 2, 3].map(c => {
-        const x = t.talents.find(v => v.r === r && v.c === c);
-        if (!x) return '<div class="tal"></div>';
-        const cur = state.pts[x.id] || 0;
-        const cls = cur > 0 ? (cur === x.rk ? 'ok max' : 'ok') : '';
-        return `<div class="tal ${cls}" data-id="${x.id}">
-          <div class="frame"><img src="${I(x.ic)}" alt=""></div>
-          <span class="rank ${cur === x.rk ? 'max' : ''}">${cur}/${x.rk}</span></div>`;
-      }).join('');
-      rows.unshift(`<div class="t-row" data-r="${r}">${cells}</div>`);
-    }
-    // arrows between rows
-    let arrows = '';
-    t.talents.forEach(x => {
-      x.req.forEach(([id]) => {
-        const p = byId[id];
-        if (p.tree !== t.key) return;
-        arrows += arrowSvg(p, x);
-      });
-    });
-    document.getElementById('inner').innerHTML = rows.join('') + arrows;
+    // Match the in-game talent frame: three full trees side by side on desktop.
+    const orderedTrees=['arms','fury','prot'],inner=document.getElementById('inner');
+    inner.innerHTML=orderedTrees.map(key=>{
+      const tree=TREES.find(x=>x.key===key),title=TREE_NAMES[key][lang==='ru'?0:1],rows=[];
+      for(let r=0;r<11;r++){
+        const cells=[0,1,2,3].map(c=>{
+          const x=tree.talents.find(v=>v.r===r&&v.c===c);
+          if(!x)return '<div class="tal"></div>';
+          const cur=state.pts[x.id]||0,cls=cur>0?(cur===x.rk?'ok max':'ok'):'';
+          return `<div class="tal ${cls}" data-id="${x.id}"><div class="frame"><img src="${I(x.ic)}" alt=""></div><span class="rank ${cur===x.rk?'max':''}">${cur}/${x.rk}</span></div>`;
+        }).join('');
+        rows.push(`<div class="t-row" data-r="${r}">${cells}</div>`);
+      }
+      // Game tree layout: starting tier at the top, capstone at the bottom.
+      return `<section class="tree-panel ${key===state.tree?'active':''}" data-tree="${key}"><header class="tree-head"><span>${title}</span><span class="points">${treePoints(key)}</span></header><div class="talent-rows">${rows.join('')}</div></section>`;
+    }).join('');
+    orderedTrees.forEach(key=>drawArrows(TREES.find(t=>t.key===key),inner.querySelector(`.tree-panel[data-tree="${key}"]`)));
     document.querySelectorAll('.tal[data-id]').forEach(el => {
       const x = byId[el.dataset.id];
       const removePoint=()=>{
@@ -218,15 +230,15 @@
         let changed=true;
         while(changed){
           changed=false;
-          for(const talent of [...t.talents].sort((a,b)=>b.r-a.r)){
+          for(const talent of [...TREES.find(t=>t.key===x.tree).talents].sort((a,b)=>b.r-a.r)){
             const ranks=state.pts[talent.id]||0;
             if(!ranks)continue;
-            const spent=treePoints(t.key)-ranks;
+            const spent=treePoints(x.tree)-ranks;
             const invalid=spent<talent.r*5||!talent.req.every(([id,qty])=>(state.pts[id]||0)>=qty);
             if(invalid){delete state.pts[talent.id];changed=true;}
           }
         }
-        state.tipTalent=x.id;draw();showTip(x);
+        state.tree=x.tree;state.tipTalent=x.id;draw();showTip(x);
       };
       el.oncontextmenu=e=>{e.preventDefault();e.stopPropagation();if(Date.now()<suppressClickUntil)return;removePoint();};
       el.onpointerdown=e=>{if(e.pointerType==='touch'){clearTimeout(longPressTimer);longPressTimer=setTimeout(()=>{suppressClickUntil=Date.now()+900;removePoint();},480);}};
@@ -236,10 +248,10 @@
         if(Date.now()<suppressClickUntil){e.preventDefault();e.stopPropagation();return;}
         if(e.button===2)return;
         if(e.shiftKey){removePoint();return;}
-        if(canLearn(x)){state.pts[x.id]=(state.pts[x.id]||0)+1;state.tipTalent=x.id;draw();showTip(x);}
+        if(canLearn(x)){state.tree=x.tree;state.pts[x.id]=(state.pts[x.id]||0)+1;state.tipTalent=x.id;draw();showTip(x);}
         else showTip(x);
       };
-      el.onmouseenter = e => showTip(x, true, e);
+      el.onmouseenter = e => { if(matchMedia('(hover:hover) and (pointer:fine)').matches)showTip(x, true, e); };
       el.onmouseleave = () => { const tip=document.querySelector('.tipcard'); if(tip?.dataset.pinned!=='true')tip.style.display='none'; };
     });
 
@@ -256,8 +268,8 @@
     b.innerHTML = `
       <div class="preset">
         <b style="font-size:13px;color:var(--gold2)">${L.presets}</b>
-        ${groups.map(g => `
-          ${g.items.map(({ p, i }) => `<button data-p="${i}">${TREE_NAMES[g.key][lang === 'ru' ? 0 : 1]} · ${lang === 'ru' ? p.ru : p.en}</button>`).join('')}`).join('')}
+        <span class="preset-buttons">${groups.map(g => `
+          ${g.items.map(({ p, i }) => `<button data-p="${i}"><span>${TREE_NAMES[g.key][lang === 'ru' ? 0 : 1]}</span><small>${p.lvl} · ${lang === 'ru' ? p.ru : p.en}</small></button>`).join('')}`).join('')}</span>
       </div>
       <button class="btn ghost" id="reset">${L.reset}</button>
       `;
@@ -269,15 +281,21 @@
     if (state.tipTalent) showTip(byId[state.tipTalent]);
   }
 
-  function arrowSvg(from, to) {
-    // vertical arrow from row of `from` to row of `to` (col centered)
-    const colX = c => 37 + c * 90; // 74px cell + 16 gap
-    const x1 = colX(from.c), y1 = from.r * 86 + 32;
-    const x2 = colX(to.c), y2 = to.r * 86 + 32;
-    const len = y2 - y1 - 24;
-    return `<svg class="arrow" style="left:${Math.min(x1, x2) - 6}px; top:${y1 + 12}px; width:${Math.abs(x2 - x1) + 20}px; height:${len + 14}px" viewBox="0 0 ${Math.abs(x2 - x1) + 20} ${len + 14}">
-      <line x1="10" y1="0" x2="10" x2="10" y2="${len}" stroke="#4d5a78" stroke-width="2"/>
-      <path d="M5 ${len} L15 ${len} L10 ${len + 9} Z" fill="#4d5a78"/></svg>`;
+  function drawArrows(tree,panel) {
+    if(!panel)return;
+    const inner=panel.querySelector('.talent-rows'),box=inner.getBoundingClientRect();
+    inner.querySelector('.arrow')?.remove();
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('class','arrow');svg.setAttribute('viewBox',`0 0 ${Math.max(1,box.width)} ${Math.max(1,box.height)}`);svg.setAttribute('aria-hidden','true');
+    tree.talents.forEach(target=>target.req.forEach(([id])=>{
+      const source=byId[id];if(!source||source.tree!==tree.key)return;
+      const from=panel.querySelector(`.tal[data-id="${source.id}"] .frame`),to=panel.querySelector(`.tal[data-id="${target.id}"] .frame`);if(!from||!to)return;
+      const a=from.getBoundingClientRect(),b=to.getBoundingClientRect();
+      const x1=a.left+a.width/2-box.left,y1=a.bottom-box.top-1,x2=b.left+b.width/2-box.left,y2=b.top-box.top+1;
+      const bend=(y1+y2)/2,el=document.createElementNS(svg.namespaceURI,'path');
+      el.setAttribute('d',`M ${x1} ${y1} C ${x1} ${bend}, ${x2} ${bend}, ${x2} ${y2}`);svg.appendChild(el);
+    }));
+    inner.prepend(svg);
   }
 
   function showTip(x, hover, event) {
@@ -313,6 +331,8 @@
 
   document.title = (lang === 'ru' ? 'Таланты' : 'Talents') + ' — WoW 3.3.5 Fury';
   draw();
+  let arrowResizeTimer;
+  window.addEventListener('resize',()=>{clearTimeout(arrowResizeTimer);arrowResizeTimer=setTimeout(()=>document.querySelectorAll('.tree-panel').forEach(panel=>drawArrows(TREES.find(t=>t.key===panel.dataset.tree),panel)),90);},{passive:true});
 })();
 </script>
 </body>

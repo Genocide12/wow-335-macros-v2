@@ -48,8 +48,6 @@ def main()->int:
                     if "UnitDebuff" in line and ("/stopmacro [combat]" not in body or filename!=BUFF_CHECK):
                         errors.append(f"{path.relative_to(ROOT)}:{no}: target debuff checker must be a pre-pull macro that stops in combat")
         joined="\n".join(sources[lang].values())
-        spell="Жажда смерти" if lang=="ru" else "Death Wish"
-        if spell not in joined: errors.append(f"Missing required translated spell: {lang}/{spell}")
         buff=sources[lang].get(Path(BUFF_CHECK).stem,"")
         if "/stopmacro [combat]" not in buff: errors.append(f"Buff checker must stop in combat: {lang}")
         if "UnitBuff" not in buff: errors.append(f"Buff checker must inspect own buff: {lang}")
@@ -59,9 +57,25 @@ def main()->int:
     for lang,items in sources.items():
         for key,body in items.items():
             if web.get(lang,{}).get(key)!=body: errors.append(f"Web catalog mismatch: {lang}/{key}")
-        for extra in ("04-buff-check","export-part1","export-part2"):
+        for extra in ("04-buff-check","export-part1","export-part2","export-character"):
             expected=(ROOT/"macros"/"warrior-smart"/lang/(extra+".txt")).read_text(encoding="utf-8-sig").strip()
             if web.get(lang,{}).get(extra)!=expected: errors.append(f"Web export macro mismatch: {lang}/{extra}")
+            if extra.startswith("export-"):
+                for line in expected.splitlines():
+                    if line.startswith("/run") and len(line)>LIMIT: errors.append(f"{lang}/{extra}: {len(line)} chars exceeds {LIMIT}")
+
+    sharedraw=(ROOT/"docs/assets/js/macro-bodies.js").read_text(encoding="utf-8-sig").strip()
+    sharedraw=re.sub(r"^(?://[^\n]*\n)+", "", sharedraw).removeprefix("window.WARRIOR_MACRO_BODIES = ").strip()
+    shared=json.loads(sharedraw[:-1] if sharedraw.endswith(";") else sharedraw)
+    for spec in ("arms","prot"):
+        for lang in LANGUAGES:
+            bodies=shared.get(spec,{}).get(lang,[])
+            if len(bodies)!=4: errors.append(f"Shared site catalog must contain 4 {spec}/{lang} macros")
+            for i,body in enumerate(bodies,1):
+                for no,line in enumerate(body.splitlines(),1):
+                    if len(line)>LIMIT: errors.append(f"Shared {spec}/{lang} macro {i}, line {no} exceeds {LIMIT} chars")
+                    if MODIFIER.search(line): errors.append(f"Shared {spec}/{lang} macro {i} contains an unsupported modifier")
+                    if not COMMAND.match(line): errors.append(f"Shared {spec}/{lang} macro {i} has unsupported command: {line}")
 
     installer_specs={lang:[item[2] for item in SPECS[lang]] for lang in LANGUAGES}
     for lang in LANGUAGES:

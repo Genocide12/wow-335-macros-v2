@@ -1,9 +1,6 @@
 /startattack
 /cast [stance:1,nocombat]Charge;[nocombat]Battle Stance;Berserker Stance
 /cast Victory Rush
-/cast [combat]Bloodrage
-/cast [combat]Recklessness
-/cast [combat]Death Wish
 /cast Bloodthirst
 /cast Whirlwind
 /cast Execute

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Fantasy map of a frozen northern continent">
+  <defs>
+    <linearGradient id="sea" x2="0" y2="1"><stop stop-color="#071725"/><stop offset="1" stop-color="#101d2b"/></linearGradient>
+    <linearGradient id="land" x2=".8" y2="1"><stop stop-color="#637478"/><stop offset=".45" stop-color="#38494c"/><stop offset="1" stop-color="#202d34"/></linearGradient>
+    <linearGradient id="ice" x2=".8" y2="1"><stop stop-color="#e2e4d7"/><stop offset=".55" stop-color="#aebfbd"/><stop offset="1" stop-color="#728c91"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="13"/></filter>
+    <pattern id="grain" width="37" height="37" patternUnits="userSpaceOnUse"><circle cx="7" cy="11" r="1" fill="#d9e5df" opacity=".16"/><circle cx="29" cy="28" r=".8" fill="#04131c" opacity=".35"/></pattern>
+  </defs>
+  <rect width="1200" height="800" fill="url(#sea)"/>
+  <path d="M68 206 178 116 297 94 364 58 476 78 556 41 649 93 734 74 816 120 924 106 1015 181 1110 211 1094 303 1142 376 1090 457 1110 547 1021 602 987 692 887 729 805 712 727 760 641 719 567 744 494 683 405 701 365 634 278 618 231 542 156 502 175 415 119 349Z" fill="#3a4c50" stroke="#b7c4bd" stroke-opacity=".42" stroke-width="7" filter="url(#glow)"/>
+  <path d="M68 206 178 116 297 94 364 58 476 78 556 41 649 93 734 74 816 120 924 106 1015 181 1110 211 1094 303 1142 376 1090 457 1110 547 1021 602 987 692 887 729 805 712 727 760 641 719 567 744 494 683 405 701 365 634 278 618 231 542 156 502 175 415 119 349Z" fill="url(#land)" stroke="#c6d2c9" stroke-opacity=".66" stroke-width="3"/>
+  <path d="M164 217 225 157 307 137 344 183 321 235 360 277 325 337 273 358 241 323 181 337 142 292Z" fill="url(#ice)" opacity=".87"/>
+  <path d="M375 121 456 102 508 136 487 184 532 214 499 260 440 248 412 205 363 183Z" fill="#809493" opacity=".88"/>
+  <path d="m541 128 58-40 68 33 14 58-42 43-67-10-36-39Z" fill="url(#ice)" opacity=".9"/>
+  <path d="m633 289 73-49 83 23 49 63-19 86-57 34-35 81-67-26-6-70-48-48Z" fill="#4f6567" stroke="#b7c9c6" stroke-opacity=".35" stroke-width="3"/>
+  <path d="m796 144 56-40 80 20 26 57-26 51-72 19-45-38Z" fill="url(#ice)" opacity=".78"/>
+  <path d="m925 278 69-31 72 36-11 72-64 32-66-34Z" fill="#819290" opacity=".85"/>
+  <path d="m784 485 51-47 77 15 48 59-25 55-66 17-65-36Z" fill="#718584" opacity=".84"/>
+  <path d="m412 494 55-61 89 20 30 65-36 55-87 13-47-37Z" fill="#829390" opacity=".87"/>
+  <path d="M198 410 250 371l55 24 29 55-43 52-69-14-31-37Z" fill="#aabbb8" opacity=".8"/>
+  <g fill="none" stroke="#d9dfd6" stroke-opacity=".26" stroke-width="3">
+    <path d="m238 199 73 57 83-18 60 51 74-15 52 58 80-22 48 67 81-16 46 66 67-7"/>
+    <path d="m206 435 92-27 89 37 86-24 83 39 91-28 86 42 97-27 88 39"/>
+    <path d="m340 117-24 57 39 47-31 56 44 52-49 57 30 48"/>
+  </g>
+  <g fill="#d9e0d8" opacity=".55"><path d="m439 286 18-25 18 25-18 25Z"/><path d="m488 309 15-21 15 21-15 21Z"/><path d="m710 192 18-24 18 24-18 24Z"/><path d="m875 360 17-23 17 23-17 23Z"/><path d="m957 507 16-21 16 21-16 21Z"/></g>
+  <path d="M0 0h1200v800H0Z" fill="url(#grain)" opacity=".54"/>
+  <path d="M24 24h1152v752H24Z" fill="none" stroke="#d5c07a" stroke-opacity=".45" stroke-width="2"/>
+  <g fill="#dcc87f" font-family="Georgia,serif" letter-spacing="5" opacity=".7"><text x="70" y="64" font-size="20">NORTHERN KINGDOMS</text><text x="870" y="760" font-size="16">FROST AND ASH</text></g>
+</svg>

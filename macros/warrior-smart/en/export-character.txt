@@ -1,0 +1,2 @@
+# One character export: create a macro, run it, then copy all chat output to the Hero page.
+/run u="player"n=UnitName(u)l=UnitLevel(u)s=UnitStat(u,1)a=UnitStat(u,2)v=UnitStat(u,3)r=UnitRace(u)g=UnitSex(u)print("WEXP1|"..table.concat({n,l,r,g,s,a,v},"|"))for i=1,19 do x=GetInventoryItemLink(u,i)if x then print("WEXP2|"..i.."|"..x)end end

@@ -15,6 +15,8 @@
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; }
+@view-transition { navigation: auto; }
+::view-transition-old(root),::view-transition-new(root){animation-duration:.12s}
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: linear-gradient(120deg, rgba(7,9,14,.9), rgba(8,10,15,.68)), url('../icons/bg/164.jpg') center 42% / cover fixed;
@@ -85,8 +87,8 @@ h2 img.ic { object-fit: cover; }
 .btn:hover { background: var(--gold2); }
 .btn.ghost { background: transparent; color: var(--gold2); border: 1px solid var(--gold); font-weight: 700; }
 .btn.ghost:hover { background: rgba(200,169,81,.12); }
-.ui-hit { animation: ui-impact .38s ease-out; }
-@keyframes ui-impact { 0%{filter:brightness(1.5)} 45%{filter:brightness(1.18);box-shadow:0 0 18px #e8c96a55} 100%{filter:none} }
+.ui-hit { animation: ui-impact .32s ease-out; }
+@keyframes ui-impact { 0%{filter:brightness(1.25);transform:scale(.98)} 45%{filter:brightness(1.12);box-shadow:0 0 15px #e8c96a44} 100%{filter:none;transform:none} }
 /* ===== info chip with hover tooltip (replaces Install/FAQ pages) ===== */
 .hint { position: relative; display: inline-flex; }
 .hint > .dot {

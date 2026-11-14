@@ -1,5 +1,5 @@
-# Экспорт персонажа без аддона — часть 1 из 2 (персонаж + таланты).
+# Экспорт персонажа без аддона — часть 1 из 2 (имя, уровень, основные характеристики, таланты).
 # Создай в игре НОВЫЙ макрос (/macro), вставь строку ниже в его тело и нажми кнопку макроса
 # (НЕ отправляй строку в чат!). В чат выйдет строка WEXP1|... — скопируй её на страницу «Герой».
 
-/run u="player"n=UnitName(u)_,c=UnitClass(u)l=UnitLevel(u)b,z,v=UnitAttackPower(u)h=UnitHealthMax(u)t={}for i=1,3 do _,_,q=GetTalentTabInfo(i) t[i]=q end print("WEXP1|"..n.."|"..c.."|"..l.."|"..b+z+v.."|"..h.."|"..table.concat(t,"/"))
+/run u="player"n=UnitName(u)_,c=UnitClass(u)l=UnitLevel(u)s=UnitStat(u,1)a=UnitStat(u,2)v=UnitStat(u,3)t={}for i=1,3 do _,_,q=GetTalentTabInfo(i)t[i]=q end print("WEXP1|"..n.."|"..c.."|"..l.."|"..s.."|"..a.."|"..v.."|"..table.concat(t,"/"))
