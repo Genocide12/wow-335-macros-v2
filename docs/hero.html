@@ -267,7 +267,8 @@
     if (base.char.ap) c.ap = Math.max(0, Math.round(base.char.ap + delta * 5));
     if (base.char.hp) c.hp = Math.max(1, Math.round(base.char.hp + delta * 30));
     state.gear = { ...base.gear };
-    if (!state.imported && c.lvl > 1) {
+    const showGearRoute = state.imported ? c.lvl !== base.char.lvl : c.lvl > 1;
+    if (showGearRoute) {
       const spec = localStorage.getItem('warriorSpec') || 'fury';
       const route = window.LEVELING_GEAR?.[spec]?.[String(c.lvl)] || window.LEVELING_GEAR?.arms?.[String(c.lvl)];
       if (route) state.gear = { ...state.gear, ...route };
@@ -288,7 +289,7 @@
       img.dataset.fallbackSrc=({11:'assets/icons/ring-slot-1.svg',12:'assets/icons/ring-slot-2.svg'})[index]||window.W.icon(SLOT_ICONS[index]||'inv_misc_questionmark');
       window.updateWowGearItem?.(index,item||null);
     });
-    if (c.lvl > 1 && !state.imported) {
+    if (showGearRoute) {
       $('csub').textContent += lang==='ru'?' · маршрут экипировки':' · gear route';
       loadItemTips();
     }
@@ -316,8 +317,8 @@
     $('cname').onclick=()=>{if(!state.imported)$('openHeroImport').click();};
     $('closeHeroImport').onclick=()=>$('heroImportDialog').close();
     $('heroImportDialog').addEventListener('click',e=>{if(e.target===$('heroImportDialog'))$('heroImportDialog').close();});
-    $('levelNext').title=lang==='ru'?'ЛКМ: следующий уровень · ПКМ или удержание: предыдущий. Предпросмотр обновляет статы и оружие на этапах прокачки.':'Left click: next level · right click or hold: previous. Preview updates stats and weapons at leveling milestones.';
-    const changeLevel=delta=>{if(!state.char)return;state.char.lvl=Math.max(1,Math.min(80,state.char.lvl+delta));if(!state.imported)localStorage.setItem('wheroLevel',String(state.char.lvl));refreshLevelPreview();window.W.sound(delta>0?'success':'click');};
+    $('levelNext').title=lang==='ru'?'ЛКМ: следующий уровень · ПКМ или удержание: предыдущий. На каждом уровне обновляются характеристики и рекомендованная экипировка.':'Left click: next level · right click or hold: previous. Stats and recommended gear update at every level.';
+    const changeLevel=delta=>{if(!state.char)return;state.char.lvl=Math.max(1,Math.min(80,state.char.lvl+delta));localStorage.setItem('wheroLevel',String(state.char.lvl));refreshLevelPreview();window.W.sound(delta>0?'success':'click');};
     let suppressLevelClick=false;
     $('levelNext').onclick=()=>{if(suppressLevelClick){suppressLevelClick=false;return;}changeLevel(1);};
     $('levelNext').oncontextmenu=e=>{e.preventDefault();changeLevel(-1);};
@@ -327,12 +328,12 @@
     // Restore the last imported character; otherwise show the sample character.
     const saved=localStorage.getItem('wheroData');
     $('paste').value = saved || DEMO.join('\n');
-    parse(true, !saved);
+    parse(true, !saved, !!saved);
     $('paste').value = '';
   }
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-  function parse(silent = false, isDemo = false) {
+  function parse(silent = false, isDemo = false, preservePreviewLevel = false) {
     const lines = $('paste').value.split(/\n+/).map(s => s.trim()).filter(Boolean);
     const char = { name: '?', cls: 'WARRIOR', lvl: 0, race: '', raceId: 1, gender: 1, str: 0, agi: 0, sta: 0, tal: [0, 0, 0] };
     const gear = {};
@@ -389,7 +390,7 @@
     const partialImport=!hasGear;
     state.char = char; state.gear = gear; window.currentWowGear = state.gear; state.legacy = legacy;
     state.levelBase = { char:{...char}, gear:Object.fromEntries(Object.entries(gear).map(([slot,item])=>[slot,{...item}])) };
-    if(!isDemo){state.imported=true;localStorage.setItem('wheroData',lines.join('\n'));localStorage.removeItem('wheroLevel');}
+    if(!isDemo){state.imported=true;localStorage.setItem('wheroData',lines.join('\n'));if(!preservePreviewLevel)localStorage.removeItem('wheroLevel');}
     drawDoll();
     if(!isDemo){
       $('importProgress').textContent=partialImport
@@ -401,7 +402,7 @@
     loadItemTips();
     if(window.renderWowCharacter) window.renderWowCharacter(state.char,state.gear);
     else window.pendingWowCharacter={char:state.char,gear:state.gear};
-    if(isDemo){const savedLevel=Math.max(1,Math.min(80,+localStorage.getItem('wheroLevel')||1));if(savedLevel>1){char.lvl=savedLevel;refreshLevelPreview();}}
+    if(isDemo||preservePreviewLevel){const savedLevel=Math.max(1,Math.min(80,+localStorage.getItem('wheroLevel')||char.lvl||1));if(savedLevel!==state.levelBase.char.lvl){char.lvl=savedLevel;refreshLevelPreview();}}
   }
 
   function drawDoll() {
