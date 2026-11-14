@@ -618,7 +618,7 @@
         activeModel=nextModel;
         // The previous tight framing cropped the character below the waist.
         // Keep the full body visible, including in the short mobile stage.
-        activeModel.setDistance(innerWidth>700?60:40);
+        activeModel.setDistance(innerWidth>700?54:36);
         const fixedZenith=activeModel.getZenith?.()??activeModel.renderer?.zenith;
         const lockVerticalOrbit=()=>{if(activeModel!==window.activeWowModel)return;if(Number.isFinite(fixedZenith)&&activeModel.renderer&&activeModel.renderer.zenith!==fixedZenith)activeModel.setZenith(fixedZenith);requestAnimationFrame(lockVerticalOrbit);};
         requestAnimationFrame(lockVerticalOrbit);
