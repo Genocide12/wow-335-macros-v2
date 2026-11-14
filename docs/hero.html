@@ -602,7 +602,9 @@
         }
         if(request!==modelRequest){nextModel?.destroy?.();return;}
         activeModel=nextModel;
-        activeModel.setDistance(innerWidth>700?36:30);
+        // The previous tight framing cropped the character below the waist.
+        // Keep the full body visible, including in the short mobile stage.
+        activeModel.setDistance(innerWidth>700?60:70);
         const fixedZenith=activeModel.getZenith?.()??activeModel.renderer?.zenith;
         const lockVerticalOrbit=()=>{if(activeModel!==window.activeWowModel)return;if(Number.isFinite(fixedZenith)&&activeModel.renderer&&activeModel.renderer.zenith!==fixedZenith)activeModel.setZenith(fixedZenith);requestAnimationFrame(lockVerticalOrbit);};
         requestAnimationFrame(lockVerticalOrbit);
