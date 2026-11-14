@@ -113,7 +113,7 @@
     .export-copy{padding:4px 6px;font-size:10px}
     .import>.btn,.import button{font-size:11px;padding:7px 9px}
   }
-  @media(max-height:620px) and (max-width:700px){.character-stage{height:clamp(125px,24vh,190px);min-height:125px;max-height:24vh}.step{font-size:9px}.import textarea{height:42px}.h-layout>.hero-panel{padding:6px}#doll{overflow-y:auto}.doll-col{gap:1px}.slot{width:23px;height:23px}.slot img{width:19px;height:19px}.hero-stats{max-height:26vh}}
+  @media(max-height:620px) and (max-width:700px){.character-stage{height:clamp(185px,34vh,245px);min-height:185px;max-height:34vh}.step{font-size:9px}.import textarea{height:42px}.h-layout>.hero-panel{padding:6px}#doll{overflow-y:auto}.doll-col{gap:1px}.slot{width:23px;height:23px}.slot img{width:19px;height:19px}.hero-stats{max-height:26vh}}
   @media(max-height:560px) and (min-width:701px){.character-stage{height:clamp(250px,48vh,330px)}.slot{width:28px;height:28px}.slot img{width:23px;height:23px}.doll-col{gap:2px}.import textarea{height:48px}.steps{gap:3px}.step{font-size:10px}}
 </style>
 </head>
@@ -289,6 +289,7 @@
     if (upgrade) state.gear[16] = { id:upgrade.id, name:upgrade.name, q:3,
       displayId:+(window.WOTLK_ITEM_DISPLAY_IDS||{})[upgrade.id]||0,
       inventoryType:+(window.WOTLK_ITEM_INVENTORY_TYPES||{})[upgrade.id]||0 };
+    window.currentWowGear = state.gear;
     const race = c.race ? (lang==='en' ? (L.en.raceEn[c.race]||c.race) : c.race) : '';
     const cls = L[lang].clsRu[c.cls] || c.cls || 'Warrior';
     $('csub').textContent = `${L[lang].lvl} ${c.lvl} ${race ? race + ', ' : ''}${cls}${lang==='ru'?' · предпросмотр':''}`;
@@ -395,7 +396,7 @@
       return;
     }
     const partialImport=!hasGear;
-    state.char = char; state.gear = gear; state.legacy = legacy;
+    state.char = char; state.gear = gear; window.currentWowGear = state.gear; state.legacy = legacy;
     state.levelBase = { char:{...char}, gear:Object.fromEntries(Object.entries(gear).map(([slot,item])=>[slot,{...item}])) };
     if(!isDemo){state.imported=true;localStorage.setItem('wheroData',lines.join('\n'));}
     drawDoll();
@@ -605,7 +606,7 @@
         activeModel=nextModel;
         // The previous tight framing cropped the character below the waist.
         // Keep the full body visible, including in the short mobile stage.
-        activeModel.setDistance(innerWidth>700?60:70);
+        activeModel.setDistance(innerWidth>700?60:40);
         const fixedZenith=activeModel.getZenith?.()??activeModel.renderer?.zenith;
         const lockVerticalOrbit=()=>{if(activeModel!==window.activeWowModel)return;if(Number.isFinite(fixedZenith)&&activeModel.renderer&&activeModel.renderer.zenith!==fixedZenith)activeModel.setZenith(fixedZenith);requestAnimationFrame(lockVerticalOrbit);};
         requestAnimationFrame(lockVerticalOrbit);
@@ -617,7 +618,7 @@
           const classicId=+g.displayId||+(window.WOTLK_ITEM_DISPLAY_IDS||{})[g.id]||0;
           if(!classicId)return;
           const displayId=await liveDisplayId(+g.id,classicId);
-          if(model!==activeModel||+state.gear[slot]?.id!==+g.id)return;
+          if(model!==activeModel||+window.currentWowGear?.[slot]?.id!==+g.id)return;
           if(!model.renderer?.actors?.length){pendingGearItems.set(+slot,g);return;}
           try{model.updateItemViewer(displaySlot,displayId,0);}catch(error){console.warn('Could not attach WoW item model:',displaySlot,displayId,error);}
         };
