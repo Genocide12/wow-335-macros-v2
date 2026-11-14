@@ -64,9 +64,26 @@ def main()->int:
                 for line in expected.splitlines():
                     if line.startswith("/run") and len(line)>LIMIT: errors.append(f"{lang}/{extra}: {len(line)} chars exceeds {LIMIT}")
 
-    sharedraw=(ROOT/"docs/assets/js/macro-bodies.js").read_text(encoding="utf-8-sig").strip()
-    sharedraw=re.sub(r"^(?://[^\n]*\n)+", "", sharedraw).removeprefix("window.WARRIOR_MACRO_BODIES = ").strip()
-    shared=json.loads(sharedraw[:-1] if sharedraw.endswith(";") else sharedraw)
+    sharedraw=(ROOT/"docs/assets/js/macro-bodies.js").read_text(encoding="utf-8-sig")
+    sharedmatch=re.search(r"window\.WARRIOR_MACRO_BODIES\s*=\s*(\{[\s\S]*?\})\s*;",sharedraw)
+    if not sharedmatch:
+        errors.append("Missing shared macro bodies")
+        shared={}
+    else:
+        shared=json.loads(sharedmatch.group(1))
+    labelraw=re.search(r"window\.WARRIOR_MACRO_LABELS\s*=\s*(\{[\s\S]*\})\s*;?\s*$",sharedraw)
+    if not labelraw:
+        errors.append("Missing shared homepage/macro-page labels")
+        labels={}
+    else:
+        labels=json.loads(labelraw.group(1))
+    for spec in ("arms","fury","prot"):
+        for lang in LANGUAGES:
+            entries=labels.get(spec,{}).get(lang,[])
+            if len(entries)!=3: errors.append(f"Homepage and macro page must share 3 ordered labels for {spec}/{lang}")
+            for i,entry in enumerate(entries,1):
+                if len(entry)!=3 or not all(isinstance(x,str) and x.strip() for x in entry):
+                    errors.append(f"Incomplete shared macro label {spec}/{lang}/{i}")
     for spec in ("arms","prot"):
         for lang in LANGUAGES:
             bodies=shared.get(spec,{}).get(lang,[])

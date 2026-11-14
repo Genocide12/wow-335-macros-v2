@@ -97,7 +97,7 @@
 <dialog class="m-dialog" id="macroDetails"><div class="m-dialog-head"><span id="macroDetailsTitle"></span><button class="macro-close" id="closeMacroDetails" aria-label="Close">×</button></div><div class="m-dialog-body" id="macroDetailsBody"></div></dialog>
 <script src="assets/js/app.js?v=20261114d"></script>
 <script src="assets/js/macros-data.js?v=20261114d"></script>
-<script src="assets/js/macro-bodies.js?v=20261114d"></script>
+<script src="assets/js/macro-bodies.js?v=20261114e"></script>
 <script>
 const L10N = { ru: { copy: 'копировать' }, en: { copy: 'copy' } };
 // macro bodies come from macros-data.js (embedded, no fetch)
@@ -212,6 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
     MACROS=rows.map(([title,sub,body,icon],i)=>({file:'custom-'+i,icon,body:window.WARRIOR_MACRO_BODIES?.[spec]?.[lang]?.[i]||body,index:i,[lang]:[title,sub],tags:{[lang]:i===0?(spec==='arms'?(lang==='ru'?['фокус','прерывание']:['focus','interrupt']):(lang==='ru'?['угроза','приоритет']:['threat','priority'])):(lang==='ru'?['ситуационно','без фиксированных клавиш']:['situational','no fixed binds'])},feats:{[lang]:(quickFlows[spec]?.[lang]?.[i]||[]).map(([iconName,label])=>({i:iconName,t:label,d:sub}))},note:{[lang]:spec==='arms'?(lang==='ru'?'Макрос проверяет команды при каждом нажатии, но не распознаёт нужный момент для контроля. Смена стойки может потребовать ещё одного нажатия.':'The macro checks commands only when pressed and cannot choose the right control timing. A stance change may require another press.'):(lang==='ru'?'Это список попыток, а не автоматическая ротация. Следи за угрозой, стойкой, щитом и яростью.':'This is an ordered attempt list, not an automatic rotation. Watch threat, stance, shield, and rage.')}}));
   }
+  const sharedLabels=window.WARRIOR_MACRO_LABELS?.[spec]?.[lang]||[];
+  MACROS=MACROS.map((m,i)=>{const label=sharedLabels[i];return label?{...m,icon:label[2],[lang]:[label[0],label[1]]}:m;});
   const wrap = document.getElementById('cards');
   const rows = [];
   for (const m of MACROS) {

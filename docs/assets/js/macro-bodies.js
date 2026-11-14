@@ -30,3 +30,17 @@ window.WARRIOR_MACRO_BODIES = {
     ]
   }
 };
+window.WARRIOR_MACRO_LABELS = {
+  "arms": {
+    "ru": [["Зуботычина по фокусу","Прерывание; после смены стойки нажми повторно.","inv_gauntlets_04"],["Смертельный удар","Главный удар Оружия; при смене стойки нажми повторно.","ability_warrior_savageblow"],["Рывок и Перехват","Вне боя — Рывок; в бою — Перехват.","ability_warrior_charge"]],
+    "en": [["Focus Pummel","Interrupt; press again after a stance change.","inv_gauntlets_04"],["Mortal Strike","Arms core attack; press again after a stance change.","ability_warrior_savageblow"],["Charge and Intercept","Charge out of combat; Intercept in combat.","ability_warrior_charge"]]
+  },
+  "fury": {
+    "ru": [["Ротация одной цели","Кровожадность → Вихрь → Казнь","inv_axe_66"],["Бой с группой","Вихрь и Рассекающий удар","ability_whirlwind"],["Прерывание","Зуботычина по наведению","inv_gauntlets_04"]],
+    "en": [["Single-target rotation","Bloodthirst → Whirlwind → Execute","inv_axe_66"],["Area damage","Whirlwind and Cleave","ability_whirlwind"],["Interrupt","Mouseover Pummel","inv_gauntlets_04"]]
+  },
+  "prot": {
+    "ru": [["Приоритет угрозы","Мощный удар щитом → Реванш → Сокрушение.","ability_warrior_shieldslam"],["Угроза по площади","Удар грома и Ударная волна.","ability_thunderclap"],["Провокация по наведению","Перехвати цель под курсором.","spell_nature_reincarnation"]],
+    "en": [["Threat priority","Shield Slam → Revenge → Devastate.","ability_warrior_shieldslam"],["Area threat","Thunder Clap and Shockwave.","ability_thunderclap"],["Mouseover Taunt","Taunt the enemy under your cursor.","spell_nature_reincarnation"]]
+  }
+};
