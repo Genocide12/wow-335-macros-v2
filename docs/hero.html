@@ -6,8 +6,8 @@
 <title>Герой — WoW 3.3.5 Fury</title>
 <link rel="stylesheet" href="assets/css/app.css?v=20261114d">
 <style>
-  .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr); }
-  #doll{display:flex;flex-direction:column;border:1px solid #77633a;background:linear-gradient(145deg,#20222a,#10131b);box-shadow:inset 0 0 0 2px #ffffff08,0 10px 35px #0008}
+  .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr);width:min(100%,1260px);margin-inline:auto; }
+  #doll{display:flex;flex-direction:column;border:1px solid #927b49;background:radial-gradient(ellipse at 50% 35%,#252a37 0,transparent 55%),linear-gradient(145deg,#24242a,#11141c 62%,#181713);box-shadow:inset 0 0 0 1px #f0d58a18,inset 0 0 48px #a8833512,0 12px 40px #0009}
   #doll { overflow: hidden; }
   .char-head { display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;text-align:center;margin-bottom:8px; }
   .char-head .nm { font-size: 21px; font-weight: 800; color: #fff; }
@@ -19,7 +19,7 @@
   #levelNext{border-color:#9e3e39;background:linear-gradient(145deg,#8e2c27,#431a1c);color:#ff6158}
   #levelNext:hover{box-shadow:0 0 16px #e6473d77;filter:brightness(1.18)}
   .hero-util svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .doll-grid { flex:1;min-height:0;display: grid; grid-template-columns: 42px minmax(250px,1fr) 42px minmax(245px,30%); gap: 10px; justify-items: stretch; align-items: stretch; }
+  .doll-grid { flex:1;min-height:0;display: grid; grid-template-columns: 38px minmax(250px,1fr) 38px minmax(220px,270px); gap: 8px; justify-items: stretch; align-items: stretch; }
   .doll-col { display: flex; flex-direction: column; gap: 3px; }
   .slot { width: 36px; height: 36px; border-radius: 4px; background: #05070c;
     border: 1px solid #4a4436; display: flex; align-items: center; justify-content: center;
@@ -94,6 +94,7 @@
     .hero-stat-row{font-size:12px}
   }
   @media(max-width:700px){
+    .h-layout{width:100%;margin:0}
     main.hero-main-container{gap:6px;padding:7px}
     .hero-mobile-tabs{display:flex}
     .h-layout{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)}
@@ -542,18 +543,13 @@
   }
   function hideTip() { $('itemtip').style.display = 'none'; }
 
+  // Authentic level-one Human Warrior starter outfit from the WotLK 3.3.5 data.
   const DEMO = [
     'WEXP1|Ратник|1|Human|0|23|20|22',
-    ...[
-      [1,4,277,51227,'inv_helmet_158','Шлем властителя йормунгаров'],[2,4,277,54581,'inv_jewelry_necklace_48','Подвеска полутени'],
-      [3,4,277,51229,'inv_shoulder_129','Наплечье властителя йормунгаров'],[15,4,277,50653,'item_icecrowncloak','Плащ убийцы из Цитадели'],
-      [5,4,277,51225,'inv_chest_plate_25','Боевой доспех властителя йормунгаров'],[9,4,284,54580,'inv_bracer_41','Наручи умбры'],
-      [10,4,277,50675,'inv_gauntlets_79','Перчатки тайны Альдрианы'],[6,4,277,50620,'inv_belt_63','Пояс ледяной погибели'],
-      [7,4,277,51228,'inv_pants_plate_32','Набедренники властителя йормунгаров'],[8,4,284,54578,'inv_boots_plate_12','Апокалиптический поступь'],
-      [11,4,277,50618,'item_icecrownringa','Кольцо ледяного выводка'],[12,4,277,50402,'inv_jewelry_ring_81','Пепельное кольцо бесконечной мести'],
-      [13,4,277,50363,'inv_jewelry_trinket_04','Воля Смертоносного'],[14,4,284,54590,'inv_misc_rubysanctum4','Отточенная сумеречная чешуя'],
-      [16,5,284,49623,'inv_axe_113','Shadowmourne'],[17,4,277,50730,'inv_sword_153','Глорензельг'],[18,4,277,50733,'inv_weapon_crossbow_38','Фалинраш']
-    ].map(([slot,quality,ilvl,id,icon,name])=>`WEXP2|${slot}|${quality}|${ilvl}|${id}|icons/${icon}.jpg|${name}`)
+    "WEXP2|4|item:38|[Recruit's Shirt]",
+    "WEXP2|7|item:39|[Recruit's Pants]",
+    "WEXP2|8|item:40|[Recruit's Boots]",
+    'WEXP2|16|item:49778|[Worn Greatsword]'
   ];
 
   init();
