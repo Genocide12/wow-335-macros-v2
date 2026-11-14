@@ -12,9 +12,10 @@
   .g-head p{font-size:11px;color:var(--dim);margin-top:3px}
   .g-items{position:relative;isolation:isolate;flex:1;min-height:0;overflow:hidden;border:1px solid #5b4a2b;border-radius:14px;background:radial-gradient(circle at center,#252331 0,#141720 34%,#0c0f17 75%);box-shadow:inset 0 0 42px #000a,0 8px 25px #0006}
   .g-orbit{position:absolute;z-index:-1;left:50%;top:50%;width:min(72%,min(58vh,520px));aspect-ratio:1;transform:translate(-50%,-50%);border:1px solid #c8a95145;border-radius:50%;box-shadow:0 0 28px #c8a95112,inset 0 0 22px #c8a9510c}
-  .g-center{position:absolute;left:50%;top:50%;width:clamp(74px,11vw,120px);aspect-ratio:1;transform:translate(-50%,-50%);display:grid;place-items:center;border:2px solid #9b7d40;border-radius:50%;background:radial-gradient(circle at 40% 30%,#403b31,#11141d 70%);box-shadow:0 0 24px #c8a95135,inset 0 0 16px #000b;color:#e8c96a;font:900 10px/1.2 Georgia,serif;text-align:center;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:8px}
+  .g-flow{position:absolute;z-index:0;left:4%;top:4%;width:92%;height:92%;pointer-events:none;opacity:.58}.g-flow path{fill:none;stroke:#d6b861;stroke-width:.55;stroke-dasharray:1.3 1.6;marker-end:url(#wheelArrow)}
+  .g-center{position:absolute;z-index:2;left:50%;top:50%;width:clamp(74px,11vw,120px);aspect-ratio:1;transform:translate(-50%,-50%);display:grid;place-items:center;border:2px solid #9b7d40;border-radius:50%;background:radial-gradient(circle at 40% 30%,#403b31,#11141d 70%);box-shadow:0 0 24px #c8a95135,inset 0 0 16px #000b;color:#e8c96a;font:900 10px/1.2 Georgia,serif;text-align:center;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:8px}
   .g-center img{width:48%;height:48%;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 9px #e8c96a66)}
-  .g-item{position:absolute;display:flex;align-items:center;justify-content:center;width:clamp(82px,8.4vw,112px);aspect-ratio:1;transform:translate(-50%,-50%);padding:10px;background:linear-gradient(145deg,#292b35,#10131b);color:var(--txt);border:1px solid #817044;border-radius:50%;cursor:pointer;overflow:hidden;box-shadow:0 5px 18px #0009,inset 0 0 0 2px #ffffff07;transition:transform .18s,border-color .18s,box-shadow .18s}
+  .g-item{position:absolute;z-index:1;display:flex;align-items:center;justify-content:center;width:clamp(82px,8.4vw,112px);aspect-ratio:1;transform:translate(-50%,-50%);padding:10px;background:linear-gradient(145deg,#292b35,#10131b);color:var(--txt);border:1px solid #817044;border-radius:50%;cursor:pointer;overflow:hidden;box-shadow:0 5px 18px #0009,inset 0 0 0 2px #ffffff07;transition:transform .18s,border-color .18s,box-shadow .18s}
   .g-item:hover,.g-item:focus-visible{transform:translate(-50%,-50%) scale(1.09);border-color:var(--gold2);box-shadow:0 0 23px #d6b86166,inset 0 0 0 2px #ffffff12;outline:none}
   .g-item img{width:100%;aspect-ratio:1;border:1px solid #c8a951;border-radius:50%;flex:0 0 auto;box-shadow:0 0 10px #000b}
   .g-tooltip{display:none;position:fixed;z-index:110;width:min(330px,calc(100vw - 20px));max-height:min(60dvh,390px);overflow:auto;padding:12px;background:#10131beF;border:1px solid var(--gold);border-radius:11px;box-shadow:0 14px 45px #000d;color:#ddd8cc;font-size:12px;line-height:1.45;pointer-events:none}
@@ -309,14 +310,14 @@
     dialog.showModal();
   };
   const showGuideWheel=()=>{
-    items.innerHTML=`<div class="g-orbit"></div><button class="g-center" type="button" aria-label="${lang==='ru'?'Сменить путь воина':'Change warrior path'}" title="${lang==='ru'?'Сменить путь воина':'Change warrior path'}"><img src="${I('ability_racial_avatar')}" alt=""></button>`+guideEntries.map((p,i)=>`<button class="g-item" data-entry="${i}" aria-label="${p.name}"><img src="${I(p.icon)}" alt=""></button>`).join('');
+    items.innerHTML=`<div class="g-orbit"></div><svg class="g-flow" viewBox="0 0 100 100" aria-hidden="true"><defs><marker id="wheelArrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0L5 2.5L0 5Z" fill="#d6b861"/></marker></defs><path d="M50 7 A43 43 0 0 1 93 50"/><path d="M93 50 A43 43 0 0 1 50 93"/><path d="M50 93 A43 43 0 0 1 7 50"/><path d="M7 50 A43 43 0 0 1 50 7"/></svg><button class="g-center" type="button" aria-label="${lang==='ru'?'Сменить путь воина':'Change warrior path'}" title="${lang==='ru'?'Сменить путь воина':'Change warrior path'}"><img src="${I('ability_racial_avatar')}" alt=""></button>`+guideEntries.map((p,i)=>`<button class="g-item" data-entry="${i}" aria-label="${p.name}"><img src="${I(p.icon)}" alt=""></button>`).join('');
     items.querySelector('.g-center').onclick=()=>{
       const modes=['arms','fury','prot'];
       const next=modes[(modes.indexOf(requestedMode)+1)%modes.length];
       const url=new URL(location.href);url.searchParams.set('spec',next);
       localStorage.setItem('warriorSpec',next);
       window.W.sound('select');
-      setTimeout(()=>location.assign(url.href),140);
+      setTimeout(()=>location.replace(url.href),140);
     };
     layoutWheel();
     items.querySelectorAll('[data-entry]').forEach(btn=>{

@@ -87,7 +87,7 @@ def main()->int:
     for spec in ("arms","prot"):
         for lang in LANGUAGES:
             bodies=shared.get(spec,{}).get(lang,[])
-            if len(bodies)!=4: errors.append(f"Shared site catalog must contain 4 {spec}/{lang} macros")
+            if len(bodies)!=5: errors.append(f"Shared site catalog must contain 5 {spec}/{lang} macros")
             for i,body in enumerate(bodies,1):
                 for no,line in enumerate(body.splitlines(),1):
                     if len(line)>LIMIT: errors.append(f"Shared {spec}/{lang} macro {i}, line {no} exceeds {LIMIT} chars")

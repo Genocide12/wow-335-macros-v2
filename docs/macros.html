@@ -12,7 +12,7 @@
   .m-tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .m-tabs button.on{border-color:var(--gold);color:var(--gold2);background:linear-gradient(135deg,#3c3525,#211f20)}
   .m-grid { grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: minmax(0,1fr); overflow: hidden; gap:10px }
-  .m-grid.count-4{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+  .m-grid.count-4,.m-grid.count-5{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto}
   .m-card { display:flex; flex-direction: column; gap: 8px; overflow: hidden; min-height:0; cursor:pointer }
   .m-card .macro-box{display:none}
   .m-card .m-extra{display:none}
@@ -64,7 +64,7 @@
   @media (max-width: 860px) {
     .macro-page{gap:6px}.m-tabs button{padding:6px 4px;font-size:11px}
     .m-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:repeat(3,minmax(0,1fr));gap:6px}
-    .m-grid.count-4{grid-template-rows:repeat(4,minmax(0,1fr))}
+    .m-grid.count-4,.m-grid.count-5{grid-template-columns:minmax(0,1fr);grid-template-rows:auto}
     .m-card { grid-column: auto !important; }
     .m-card{padding:8px 9px;gap:6px}.npc-dialog{padding:4px 7px;font-size:10px}.npc-dialog img{width:30px;height:30px}.npc-dialog b{font-size:11px}
     .m-head img{width:30px;height:30px}.m-head .t b{font-size:13px}.m-head .t span{font-size:10px}
@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const spec=['arms','fury','prot'].includes(requestedSpec)?requestedSpec:'fury';
   const names={arms:lang==='ru'?'Arms PvP — макросы контроля':'Arms PvP — control macros',fury:lang==='ru'?'Fury PvE — макросы урона':'Fury PvE — damage macros',prot:lang==='ru'?'Protection PvE — макросы танка':'Protection PvE — tank macros'};
   const quickFlows={
-    arms:{ru:[[['inv_gauntlets_04','Стойка берсерка → Зуботычина'],['inv_misc_key_02','Фокус / цель под курсором']], [['ability_warrior_savageblow','Боевая стойка → Смертельный удар']], [['ability_warrior_charge','Рывок вне боя'],['ability_rogue_sprint','Перехват в бою']], [['ability_warrior_disarm','Оборонительная стойка → Разоружение']]],en:[[['inv_gauntlets_04','Berserker Stance → Pummel'],['inv_misc_key_02','Focus / mouseover target']], [['ability_warrior_savageblow','Battle Stance → Mortal Strike']], [['ability_warrior_charge','Charge out of combat'],['ability_rogue_sprint','Intercept in combat']], [['ability_warrior_disarm','Defensive Stance → Disarm']]]},
-    prot:{ru:[[['ability_warrior_shieldslam','Мощный удар щитом → Реванш'],['ability_warrior_devastate','Сокрушение']], [['ability_thunderclap','Оборонительная стойка → Удар грома'],['ability_warrior_shockwave','Ударная волна']], [['spell_nature_reincarnation','Провокация под курсором']], [['inv_shield_05','Оборонительная стойка → Удар щитом']]],en:[[['ability_warrior_shieldslam','Shield Slam → Revenge'],['ability_warrior_devastate','Devastate']], [['ability_thunderclap','Defensive Stance → Thunder Clap'],['ability_warrior_shockwave','Shockwave']], [['spell_nature_reincarnation','Mouseover Taunt']], [['inv_shield_05','Defensive Stance → Shield Bash']]]}
+    arms:{ru:[[['inv_gauntlets_04','Стойка берсерка → Зуботычина'],['inv_misc_key_02','Фокус / цель под курсором']], [['ability_warrior_savageblow','Боевая стойка → Смертельный удар']], [['ability_warrior_charge','Рывок вне боя'],['ability_rogue_sprint','Перехват в бою']], [['ability_warrior_disarm','Оборонительная стойка → Разоружение']], [['ability_racial_avatar','Каждый за себя → Неистовство героя → Ярость берсерка']]],en:[[['inv_gauntlets_04','Berserker Stance → Pummel'],['inv_misc_key_02','Focus / mouseover target']], [['ability_warrior_savageblow','Battle Stance → Mortal Strike']], [['ability_warrior_charge','Charge out of combat'],['ability_rogue_sprint','Intercept in combat']], [['ability_warrior_disarm','Defensive Stance → Disarm']], [['ability_racial_avatar','Every Man for Himself → Heroic Fury → Berserker Rage']]]},
+    prot:{ru:[[['ability_warrior_shieldslam','Мощный удар щитом → Реванш'],['ability_warrior_devastate','Сокрушение']], [['ability_thunderclap','Оборонительная стойка → Удар грома'],['ability_warrior_shockwave','Ударная волна']], [['spell_nature_reincarnation','Провокация под курсором']], [['inv_shield_05','Оборонительная стойка → Удар щитом']], [['ability_racial_avatar','Каждый за себя → Неистовство героя → Ярость берсерка']]],en:[[['ability_warrior_shieldslam','Shield Slam → Revenge'],['ability_warrior_devastate','Devastate']], [['ability_thunderclap','Defensive Stance → Thunder Clap'],['ability_warrior_shockwave','Shockwave']], [['spell_nature_reincarnation','Mouseover Taunt']], [['inv_shield_05','Defensive Stance → Shield Bash']], [['ability_racial_avatar','Every Man for Himself → Heroic Fury → Berserker Rage']]]}
   };
   document.title = names[spec]+' — WoW 3.3.5';
   if(spec!=='fury'){
@@ -192,25 +192,33 @@ document.addEventListener('DOMContentLoaded', () => {
         ['Зуботычина по фокусу или наведению','Прерывание без смены основной цели.','#showtooltip Зуботычина\n/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина','inv_gauntlets_04'],
         ['Смертельный удар','Главный удар Arms; при смене стойки нажми повторно.','#showtooltip Смертельный удар\n/cast [nostance:1]Боевая стойка\n/cast Смертельный удар','ability_warrior_savageblow'],
         ['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','#showtooltip [combat]Перехват;Рывок\n/cast [combat,nostance:3]Стойка берсерка;[nocombat,nostance:1]Боевая стойка\n/cast [combat,stance:3]Перехват;[nocombat,stance:1]Рывок','ability_warrior_charge'],
-        ['Разоружение по наведению','Защитная стойка и разоружение выбранного противника.','#showtooltip Разоружение\n/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение','ability_warrior_disarm']
+        ['Разоружение по наведению','Защитная стойка и разоружение выбранного противника.','#showtooltip Разоружение\n/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение','ability_warrior_disarm'],
+        ['Снять контроль','Человек: оглушение/обездвиживание; Неистовство героя: корни; Ярость берсерка: страх.','#showtooltip Каждый за себя\n/cast Каждый за себя\n/cast Неистовство героя\n/cast Ярость берсерка','ability_racial_avatar']
       ]:[
         ['Pummel focus or mouseover','Interrupt without changing your main target.','#showtooltip Pummel\n/cast [nostance:3]Berserker Stance\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Pummel','inv_gauntlets_04'],
         ['Mortal Strike','Arms core attack; press again after a stance change.','#showtooltip Mortal Strike\n/cast [nostance:1]Battle Stance\n/cast Mortal Strike','ability_warrior_savageblow'],
         ['Charge and Intercept','Charge out of combat; Intercept in combat.','#showtooltip [combat]Intercept;Charge\n/cast [combat,nostance:3]Berserker Stance;[nocombat,nostance:1]Battle Stance\n/cast [combat,stance:3]Intercept;[nocombat,stance:1]Charge','ability_warrior_charge'],
-        ['Mouseover Disarm','Defensive Stance, then disarm the selected enemy.','#showtooltip Disarm\n/cast [nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Disarm','ability_warrior_disarm']
+        ['Mouseover Disarm','Defensive Stance, then disarm the selected enemy.','#showtooltip Disarm\n/cast [nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Disarm','ability_warrior_disarm'],
+        ['Break control','Human racial: stun/root; Heroic Fury: roots; Berserker Rage: fear.','#showtooltip Every Man for Himself\n/cast Every Man for Himself\n/cast Heroic Fury\n/cast Berserker Rage','ability_racial_avatar']
       ]) : (lang==='ru'?
       [
         ['Приоритет угрозы','Мощный удар щитом → Реванш → Сокрушение; нажимай повторно.','#showtooltip Мощный удар щитом\n/startattack\n/cast Мощный удар щитом\n/cast Реванш\n/cast Сокрушение','ability_warrior_shieldslam'],
         ['Угроза по площади','Удар грома и Ударная волна; стойка меняется отдельным нажатием.','#showtooltip Удар грома\n/cast [nostance:2]Оборонительная стойка\n/cast Удар грома\n/cast Ударная волна','ability_thunderclap'],
         ['Провокация по наведению','Перехвати цель под курсором, не меняя текущую цель.','#showtooltip Провокация\n/cast [@mouseover,harm,nodead][]Провокация','spell_nature_reincarnation'],
-        ['Удар щитом по наведению','Прерывание; нужен щит и боевая или защитная стойка.','#showtooltip Удар щитом\n/cast [nostance:1,nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Удар щитом','inv_shield_05']
+        ['Удар щитом по наведению','Прерывание; нужен щит и боевая или защитная стойка.','#showtooltip Удар щитом\n/cast [nostance:1,nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Удар щитом','inv_shield_05'],
+        ['Снять контроль','Человек: оглушение/обездвиживание; Неистовство героя: корни; Ярость берсерка: страх.','#showtooltip Каждый за себя\n/cast Каждый за себя\n/cast Неистовство героя\n/cast Ярость берсерка','ability_racial_avatar']
       ]:[
         ['Threat priority','Shield Slam → Revenge → Devastate; press repeatedly.','#showtooltip Shield Slam\n/startattack\n/cast Shield Slam\n/cast Revenge\n/cast Devastate','ability_warrior_shieldslam'],
         ['Area threat','Thunder Clap and Shockwave; stance change may take a press.','#showtooltip Thunder Clap\n/cast [nostance:2]Defensive Stance\n/cast Thunder Clap\n/cast Shockwave','ability_thunderclap'],
         ['Mouseover Taunt','Taunt the enemy under your cursor without changing target.','#showtooltip Taunt\n/cast [@mouseover,harm,nodead][]Taunt','spell_nature_reincarnation'],
-        ['Mouseover Shield Bash','Interrupt; requires a shield and Battle or Defensive Stance.','#showtooltip Shield Bash\n/cast [nostance:1,nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Shield Bash','inv_shield_05']
+        ['Mouseover Shield Bash','Interrupt; requires a shield and Battle or Defensive Stance.','#showtooltip Shield Bash\n/cast [nostance:1,nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Shield Bash','inv_shield_05'],
+        ['Break control','Human racial: stun/root; Heroic Fury: roots; Berserker Rage: fear.','#showtooltip Every Man for Himself\n/cast Every Man for Himself\n/cast Heroic Fury\n/cast Berserker Rage','ability_racial_avatar']
       ]);
     MACROS=rows.map(([title,sub,body,icon],i)=>({file:'custom-'+i,icon,body:window.WARRIOR_MACRO_BODIES?.[spec]?.[lang]?.[i]||body,index:i,[lang]:[title,sub],tags:{[lang]:i===0?(spec==='arms'?(lang==='ru'?['фокус','прерывание']:['focus','interrupt']):(lang==='ru'?['угроза','приоритет']:['threat','priority'])):(lang==='ru'?['ситуационно','без фиксированных клавиш']:['situational','no fixed binds'])},feats:{[lang]:(quickFlows[spec]?.[lang]?.[i]||[]).map(([iconName,label])=>({i:iconName,t:label,d:sub}))},note:{[lang]:spec==='arms'?(lang==='ru'?'Макрос проверяет команды при каждом нажатии, но не распознаёт нужный момент для контроля. Смена стойки может потребовать ещё одного нажатия.':'The macro checks commands only when pressed and cannot choose the right control timing. A stance change may require another press.'):(lang==='ru'?'Это список попыток, а не автоматическая ротация. Следи за угрозой, стойкой, щитом и яростью.':'This is an ordered attempt list, not an automatic rotation. Watch threat, stance, shield, and rage.')}}));
+  }
+  if(spec==='fury'){
+    MACROS.push({file:'custom-control-break',icon:'ability_racial_avatar',body:lang==='ru'?'#showtooltip Каждый за себя\n/cast Каждый за себя\n/cast Неистовство героя\n/cast Ярость берсерка':'#showtooltip Every Man for Himself\n/cast Every Man for Himself\n/cast Heroic Fury\n/cast Berserker Rage',ru:['Снять контроль','Человек: оглушение/корни; Неистовство героя: корни; Ярость берсерка: страх.'],en:['Break control','Human racial: stun/root; Heroic Fury: roots; Berserker Rage: fear.'],tags:{ru:['ситуативно','человек'],en:['situational','human']},feats:{ru:[{i:'ability_racial_avatar',t:'Каждый за себя',d:'только для человека; снимет ряд эффектов контроля'},{i:'ability_heroicleap',t:'Неистовство героя',d:'снимает обездвиживание, не страх или тишину'},{i:'spell_nature_ancestralguardian',t:'Ярость берсерка',d:'снимает страх; нажми повторно, если не сработало'}],en:[{i:'ability_racial_avatar',t:'Every Man for Himself',d:'human racial; removes several control effects'},{i:'ability_heroicleap',t:'Heroic Fury',d:'removes roots, not fear or silence'},{i:'spell_nature_ancestralguardian',t:'Berserker Rage',d:'breaks fear; press again if needed'}]},note:{ru:'Не снимает тишину или разоружение. Макрос не умеет определять, какой эффект висит, и может потребовать повторного нажатия.',en:'Does not remove silence or disarm. The macro cannot detect which effect is active and may need another press.'}});
+    MACROS.push({file:'custom-burst',icon:'ability_criticalstrike',body:lang==='ru'?'#showtooltip Жажда смерти\n/cast Жажда смерти\n/cast Безрассудство':'#showtooltip Death Wish\n/cast Death Wish\n/cast Recklessness',ru:['Бурст по команде','Жажда смерти и Безрассудство — только когда сам выбрал момент.'],en:['Manual burst','Use Death Wish and Recklessness when you choose the timing.'],tags:{ru:['кулдауны','ручной запуск'],en:['cooldowns','manual']},feats:{ru:[{i:'spell_shadow_deathpact',t:'Жажда смерти',d:'повышает физический урон; используй в подходящее окно'},{i:'ability_criticalstrike',t:'Безрассудство',d:'сильный короткий бурст; не расходуй автоматически'}],en:[{i:'spell_shadow_deathpact',t:'Death Wish',d:'increases physical damage; use in the right window'},{i:'ability_criticalstrike',t:'Recklessness',d:'short burst window; do not spend it automatically'}]},note:{ru:'Макрос не проверяет баффы и кулдауны. Каждое умение запускается только если ты нажал кнопку; возможны повторные нажатия после смены GCD.',en:'The macro cannot inspect buffs or cooldowns. It only attempts spells when pressed; a second press may be needed after the global cooldown.'}});
   }
   const sharedLabels=window.WARRIOR_MACRO_LABELS?.[spec]?.[lang]||[];
   MACROS=MACROS.map((m,i)=>{const label=sharedLabels[i];return label?{...m,icon:label[2],[lang]:[label[0],label[1]]}:m;});
@@ -241,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   wrap.innerHTML = rows.join('');
   wrap.classList.toggle('count-4',MACROS.length===4);
+  wrap.classList.toggle('count-5',MACROS.length===5);
   const tabs=document.getElementById('macroTabs');
   tabs.innerHTML=MACROS.map((m,i)=>`<button class="${i===0?'on':''}" data-macro="${i}">${m[lang][0]}</button>`).join('');
   wrap.querySelectorAll('.m-card').forEach((card,i)=>{
