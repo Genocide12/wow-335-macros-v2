@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WoW 3.3.5 · Fury Warrior — умные макросы</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261116j">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116k">
 <style>
   .hero-grid { grid-template-columns: 1fr; grid-template-rows: 1fr; overflow:hidden; }
   .hero-main { position:relative; display:flex; flex-direction:column; justify-content:center; gap:14px; overflow:hidden;
@@ -207,6 +207,19 @@
     #app .hero-main>.world-markers .map-destination span{font-size:clamp(9px,2.5vw,11px);padding:2px 6px}
   }
   @media(prefers-reduced-motion:reduce){#app .hero-main>.map-label,#app .hero-main>.world-markers .map-destination{transition:none!important}}
+  /* The map landmasses themselves are the path buttons; names are hover/focus hints. */
+  #app .hero-main>.path-picker{z-index:4!important;pointer-events:auto!important}
+  #app .hero-main .map-zone{pointer-events:all!important;cursor:pointer!important;fill:#00000000;stroke:none!important;transition:filter .2s,transform .2s,fill .2s}
+  #app .hero-main .map-zone:hover,#app .hero-main .map-zone:focus-visible{fill:#f4d47a14;filter:drop-shadow(0 12px 12px #080604aa) brightness(1.14) saturate(1.15);transform:scale(1.025);outline:none}
+  #app .hero-main .map-zone.selected{fill:#f4d47a0b;filter:drop-shadow(0 7px 8px #08060488) brightness(1.06)}
+  #app .hero-main>.map-label,#app .hero-main>.world-markers .map-destination[data-destination="hero"],#app .hero-main>.world-markers .map-destination[data-destination="talents"]{display:none!important}
+  #app .hero-main>.zone-caption{position:absolute;z-index:1201;display:block;max-width:min(86vw,250px);padding:5px 10px;border:1px solid #d7bd6d;border-radius:5px;background:#15120eeF;box-shadow:0 5px 16px #000b;color:#f6e4ac;font:700 clamp(11px,1vw,14px)/1.2 Georgia,serif;white-space:nowrap;text-shadow:0 1px 2px #000;transform:translate(-50%,-50%);pointer-events:none}
+  #app .hero-main>.zone-caption[hidden]{display:none!important}
+  #app .hero-main>.map-guide-wheel{z-index:11;pointer-events:none}
+  #app .hero-main>.map-guide-wheel .map-guide-trigger{display:none!important}
+  #app .hero-main>.map-guide-wheel.open{pointer-events:auto}
+  #app .hero-main>.map-guide-wheel .guide-wheel-panel{pointer-events:auto}
+  @media(max-width:860px){#app .hero-main>.zone-caption{font-size:12px;padding:4px 8px}}
 </style>
 </head>
 <body>
@@ -216,9 +229,7 @@
 
     <section class="card hero-main">
       <canvas class="map-shader" id="worldMapShader" aria-hidden="true"></canvas>
-      <nav class="world-markers" aria-label="Разделы сайта на карте">
-        <a class="map-destination" data-destination="hero" href="hero.html?lang=ru&amp;spec=fury"><img src="assets/icons/talents/inv_helmet_21.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Мой воин" data-en="My Warrior">Мой воин</span></a>
-        <a class="map-destination" data-destination="talents" href="talents.html?lang=ru&amp;spec=fury"><img src="assets/icons/talents/ability_warrior_weaponmastery.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Ветка развития" data-en="Talent Path">Ветка развития</span></a>
+      <nav class="world-markers" aria-label="Быстрые макросы на карте">
         <button class="map-destination macro-marker" data-destination="macro-single" data-macro-index="0" type="button" aria-label="Показать макрос для одной цели" aria-haspopup="dialog" aria-controls="macroDropdown"><img src="assets/icons/talents/ability_warrior_savageblow.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Одна цель" data-en="Single target">Одна цель</span></button>
         <button class="map-destination macro-marker" data-destination="macro-pack" data-macro-index="1" type="button" aria-label="Показать макрос для группы целей" aria-haspopup="dialog" aria-controls="macroDropdown"><img src="assets/icons/talents/ability_whirlwind.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Группа" data-en="Group">Группа</span></button>
         <button class="map-destination macro-marker" data-destination="macro-control" data-macro-index="2" type="button" aria-label="Показать макрос для контроля" aria-haspopup="dialog" aria-controls="macroDropdown"><img src="assets/icons/talents/ability_warrior_shieldbash.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Контроль" data-en="Control">Контроль</span></button>
@@ -227,18 +238,14 @@
       <p data-ru="WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку."
          data-en="WotLK 3.3.5a · Fury Warrior · Russian client. Macros check commands in order; one press cannot run a full rotation. Open an ability card and bind it to any button in game.">WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку.</p>
       <h2 class="path-title" data-ru="Выбери путь воина" data-en="Choose your warrior path">Выбери путь воина</h2>
-      <svg class="path-picker" id="pathPicker" viewBox="0 0 1536 1024" preserveAspectRatio="none" aria-hidden="true">
-        <path class="map-zone" data-spec="arms" d="M184 621 166 580 180 540 165 503 183 462 202 438 219 398 225 353 254 322 287 306 320 313 352 291 380 302 410 301 437 323 452 351 453 377 477 389 510 413 520 438 500 455 475 464 466 490 482 516 468 540 468 575 452 604 443 651 454 681 438 711 445 741 430 776 436 811 416 840 406 875 389 905 361 926 333 941 303 939 277 922 246 929 218 905 202 872 189 842 174 808 166 780 173 742 162 707 169 670 156 642Z" />
-        <path class="map-zone" data-spec="fury" d="M626 270 595 246 573 215 589 183 615 159 626 122 651 91 684 66 725 45 761 38 795 55 829 54 856 77 893 88 922 116 949 145 972 176 1002 205 1009 240 1000 269 1009 300 997 331 980 366 955 388 937 365 916 347 908 319 884 303 871 273 842 260 809 274 777 260 746 277 713 270 684 286 653 278Z" />
-        <path class="map-zone" data-spec="prot" d="M1100 409 1091 380 1104 350 1128 332 1150 305 1174 280 1188 248 1212 218 1238 194 1265 178 1290 192 1314 222 1339 248 1360 281 1374 313 1391 345 1390 382 1374 412 1355 435 1333 458 1307 475 1280 478 1257 466 1235 486 1213 514 1197 540 1174 560 1149 554 1132 533 1115 511 1100 488 1089 461Z M1169 583 1194 560 1224 568 1249 581 1271 565 1303 568 1327 591 1341 624 1352 660 1367 691 1360 727 1371 758 1353 788 1344 821 1324 849 1300 869 1273 873 1246 861 1223 845 1200 826 1178 809 1157 787 1147 758 1153 727 1143 694 1150 662 1142 633 1153 604Z M1170 873 1192 850 1223 856 1249 879 1265 913 1256 947 1234 969 1206 956 1185 931 1166 905Z" />
+      <svg class="path-picker" id="pathPicker" viewBox="0 0 1536 1024" preserveAspectRatio="none">
+        <path class="map-zone" data-spec="arms" data-name-ru="Калимдор · Arms" data-name-en="Kalimdor · Arms" data-label-x="23" data-label-y="60" role="button" tabindex="0" aria-label="Калимдор, Arms" aria-pressed="false" d="M184 621 166 580 180 540 165 503 183 462 202 438 219 398 225 353 254 322 287 306 320 313 352 291 380 302 410 301 437 323 452 351 453 377 477 389 510 413 520 438 500 455 475 464 466 490 482 516 468 540 468 575 452 604 443 651 454 681 438 711 445 741 430 776 436 811 416 840 406 875 389 905 361 926 333 941 303 939 277 922 246 929 218 905 202 872 189 842 174 808 166 780 173 742 162 707 169 670 156 642Z" />
+        <path class="map-zone" data-spec="fury" data-name-ru="Нордскол · Fury" data-name-en="Northrend · Fury" data-label-x="55" data-label-y="27" role="button" tabindex="0" aria-label="Нордскол, Fury" aria-pressed="true" d="M626 270 595 246 573 215 589 183 615 159 626 122 651 91 684 66 725 45 761 38 795 55 829 54 856 77 893 88 922 116 949 145 972 176 1002 205 1009 240 1000 269 1009 300 997 331 980 366 955 388 937 365 916 347 908 319 884 303 871 273 842 260 809 274 777 260 746 277 713 270 684 286 653 278Z" />
+        <path class="map-zone" data-spec="prot" data-name-ru="Восточные Королевства · Защита" data-name-en="Eastern Kingdoms · Protection" data-label-x="80" data-label-y="62" role="button" tabindex="0" aria-label="Восточные Королевства, Защита" aria-pressed="false" d="M1100 409 1091 380 1104 350 1128 332 1150 305 1174 280 1188 248 1212 218 1238 194 1265 178 1290 192 1314 222 1339 248 1360 281 1374 313 1391 345 1390 382 1374 412 1355 435 1333 458 1307 475 1280 478 1257 466 1235 486 1213 514 1197 540 1174 560 1149 554 1132 533 1115 511 1100 488 1089 461Z M1169 583 1194 560 1224 568 1249 581 1271 565 1303 568 1327 591 1341 624 1352 660 1367 691 1360 727 1371 758 1353 788 1344 821 1324 849 1300 869 1273 873 1246 861 1223 845 1200 826 1178 809 1157 787 1147 758 1153 727 1143 694 1150 662 1142 633 1153 604Z M1170 873 1192 850 1223 856 1249 879 1265 913 1256 947 1234 969 1206 956 1185 931 1166 905Z" />
+        <path class="map-zone guide-zone" data-zone="guide" data-name-ru="Водоворот · Гайды" data-name-en="Maelstrom · Guides" data-label-x="50" data-label-y="49" role="button" tabindex="0" aria-label="Водоворот, открыть гайды" aria-expanded="false" d="M856 461 841 430 811 413 779 410 746 420 719 441 701 471 698 504 710 536 735 561 766 575 801 574 831 560 854 536 865 506 864 480Z" />
       </svg>
-      <button class="map-label" data-spec="arms" aria-label="Выбрать Arms" aria-pressed="false"><img src="assets/icons/talents/ability_warrior_savageblow.jpg" width="64" height="64" decoding="async" alt=""><span><b>Arms</b></span></button>
-      <button class="map-label selected" data-spec="fury" aria-label="Выбрать Fury" aria-pressed="true"><img src="assets/icons/talents/ability_warrior_rampage.jpg" width="64" height="64" decoding="async" alt=""><span><b>Fury</b></span></button>
-      <button class="map-label" data-spec="prot" aria-label="Выбрать специализацию защиты" aria-pressed="false"><img src="assets/icons/talents/ability_warrior_defensivestance.jpg" width="64" height="64" decoding="async" alt=""><span><b data-ru="Защита" data-en="Protection">Защита</b></span></button>
+      <div class="zone-caption" id="zoneCaption" role="tooltip" hidden></div>
       <div class="map-guide-wheel" id="mapGuideWheel">
-        <button class="map-guide-trigger" id="mapGuideTrigger" type="button" data-sound-kind="open" aria-expanded="false" aria-label="Гайд по выбранному пути">
-          <img src="assets/icons/talents/ability_warrior_warcry.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Гайд" data-en="Guide">Гайд</span>
-        </button>
         <div class="guide-wheel-panel" id="guideWheelPanel" aria-label="Колесо гайда выбранной специализации">
           <iframe id="guideWheelFrame" aria-label="Колесо гайдов" src="guide.html?lang=ru&amp;spec=fury&amp;embed=1"></iframe>
         </div>
@@ -251,10 +258,10 @@
   </div>
 </main>
 </div>
-<script src="assets/js/app.js?v=20261116j"></script>
+<script src="assets/js/app.js?v=20261116k"></script>
 <script src="assets/js/macros-data.js?v=20261116g"></script>
 <script src="assets/js/macro-bodies.js?v=20261116g"></script>
-<script src="assets/js/world-map.js?v=20261116f"></script>
+<script src="assets/js/world-map.js?v=20261116g"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const lang = window.W.lang;
@@ -265,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const paths={arms:['Воин Оружия · PvE ДД','Arms Warrior · PvE DPS','Приоритеты урона по одной и нескольким целям · таланты Arms · гайд по PvE.','Single- and multi-target damage priorities · Arms talents · PvE guide.'],fury:['Воин Неистовства · PvE ДД','Fury Warrior · PvE DPS','Приоритеты урона · таланты Fury · гайд по PvE.','Damage priorities · Fury talents · PvE guide.'],prot:['Воин Защиты · PvE танк','Protection Warrior · PvE tank','Угроза и защита · таланты Protection · гайд танка.','Threat and mitigation · Protection talents · tank guide.']};
   let spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';if(!['arms','fury','prot'].includes(spec))spec='fury';
   let titles=[];
-  const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);window.WorldMap?.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>{const selected=x.dataset.spec===value;x.classList.toggle('selected',selected);if(x.matches('.map-label'))x.setAttribute('aria-pressed',String(selected));});document.querySelectorAll('.map-destination[href]').forEach(link=>{const target=new URL(link.href,location.href);target.searchParams.set('lang',lang);target.searchParams.set('spec',value);link.href=target.href;});document.querySelector('.hero-main h1').innerHTML=lang==='ru'?'<b>Путь воина</b>':'<b>Warrior paths</b>';document.querySelector('.hero-main>p').textContent=`${paths[value][0]} · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
+  const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);window.WorldMap?.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone[data-spec]').forEach(x=>{const selected=x.dataset.spec===value;x.classList.toggle('selected',selected);x.setAttribute('aria-pressed',String(selected));});document.querySelectorAll('.map-destination[href]').forEach(link=>{const target=new URL(link.href,location.href);target.searchParams.set('lang',lang);target.searchParams.set('spec',value);link.href=target.href;});document.querySelector('.hero-main h1').innerHTML=lang==='ru'?'<b>Путь воина</b>':'<b>Warrior paths</b>';document.querySelector('.hero-main>p').textContent=`${paths[value][0]} · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
     const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261116d');document.getElementById('guideWheelFrame').src=wheelUrl.href;
     const sets={
       arms:lang==='ru'?[['Зуботычина по фокусу','Прерывание; после смены стойки нажми повторно.','', 'inv_gauntlets_04'],['Смертельный удар','Главный удар Оружия; может потребоваться смена стойки.','','ability_warrior_savageblow'],['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','','ability_warrior_charge']]:[['Focus Pummel','Interrupt; press again after a stance change.','','inv_gauntlets_04'],['Mortal Strike','Arms core attack; may need a stance change.','','ability_warrior_savageblow'],['Charge and Intercept','Charge out of combat; Intercept in combat.','','ability_warrior_charge']],
@@ -276,8 +283,17 @@ document.addEventListener('DOMContentLoaded', () => {
     titles=titles.map((item,i)=>sharedLabels[i]?[sharedLabels[i][0],sharedLabels[i][1],item[2],sharedLabels[i][2]]:item);
     document.querySelectorAll('.krow a').forEach((link,i)=>{link.querySelector('span').textContent=titles[i][0];link.querySelector('img').src=`https://wow.zamimg.com/images/wow/icons/large/${titles[i][3]}.jpg`;});
   };
-  document.querySelectorAll('.map-label').forEach(btn=>btn.addEventListener('click',()=>setPath(btn.dataset.spec)));
-  const guideWheel=document.getElementById('mapGuideWheel'),guideTrigger=document.getElementById('mapGuideTrigger'),guidePanel=document.getElementById('guideWheelPanel'),guidePanelHome=guidePanel.parentElement;
+  const guideWheel=document.getElementById('mapGuideWheel'),guideTrigger=document.querySelector('.guide-zone'),guidePanel=document.getElementById('guideWheelPanel'),guidePanelHome=guidePanel.parentElement,zoneCaption=document.getElementById('zoneCaption');
+  const placeZoneCaption=zone=>{zoneCaption.textContent=lang==='ru'?zone.dataset.nameRu:zone.dataset.nameEn;zoneCaption.style.left=`${zone.dataset.labelX}%`;zoneCaption.style.top=`${zone.dataset.labelY}%`;zoneCaption.hidden=false;};
+  const hideZoneCaption=()=>{zoneCaption.hidden=true;};
+  document.querySelectorAll('.map-zone').forEach(zone=>{
+    zone.addEventListener('pointerenter',()=>{placeZoneCaption(zone);if(zone===guideTrigger)openGuideWheel();});
+    zone.addEventListener('pointerleave',()=>{hideZoneCaption();if(zone===guideTrigger&&!compactGuide())guideCloseTimer=setTimeout(closeGuideWheel,180);});
+    zone.addEventListener('focus',()=>placeZoneCaption(zone));
+    zone.addEventListener('blur',hideZoneCaption);
+    if(zone.dataset.spec){zone.addEventListener('click',()=>setPath(zone.dataset.spec));zone.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();setPath(zone.dataset.spec);}});}
+    else{zone.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openGuideWheel();}});}
+  });
   let guidePointerType='',guideCloseTimer=0;
   const compactGuide=()=>matchMedia('(max-width: 860px)').matches;
   const openGuideWheel=()=>{clearTimeout(guideCloseTimer);guideWheel.classList.add('open');if(compactGuide()){guidePanel.classList.add('floating');document.body.appendChild(guidePanel);}guideTrigger.setAttribute('aria-expanded','true');};
@@ -288,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
   guidePanel.addEventListener('pointerenter',()=>clearTimeout(guideCloseTimer));
   guidePanel.addEventListener('pointerleave',()=>{if(!compactGuide())guideCloseTimer=setTimeout(closeGuideWheel,180);});
   guideWheel.addEventListener('pointerleave',()=>{if(!compactGuide()&&guideWheel.classList.contains('open'))guideCloseTimer=setTimeout(closeGuideWheel,180);});
-  document.addEventListener('click',event=>{if(!guideWheel.contains(event.target)&&!guidePanel.contains(event.target))closeGuideWheel();});
+  document.addEventListener('click',event=>{if(!guideWheel.contains(event.target)&&!guidePanel.contains(event.target)&&!guideTrigger.contains(event.target))closeGuideWheel();});
   window.addEventListener('resize',()=>{if(guideWheel.classList.contains('open')){guidePanel.classList.toggle('floating',compactGuide());if(compactGuide()&&guidePanel.parentElement!==document.body)document.body.appendChild(guidePanel);else if(!compactGuide()&&guidePanel.parentElement!==guidePanelHome)guidePanelHome.appendChild(guidePanel);}});
   titles=lang==='ru'?[
     ['Ротация одной цели','Кровожадность → Вихрь → Казнь','/startattack\n/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка\n/cast Победный раж\n/cast Кровожадность\n/cast Вихрь\n/cast Казнь','inv_axe_66'],

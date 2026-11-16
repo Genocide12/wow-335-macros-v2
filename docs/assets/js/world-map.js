@@ -8,7 +8,7 @@
     image.src = 'assets/icons/northrend-map.png';
 
     const zones = [...picker.querySelectorAll('.map-zone')];
-    const zoneIndex = { arms: 0, fury: 1, prot: 2 };
+    const zoneIndex = { arms: 0, fury: 1, prot: 2, guide: 3 };
     const state = { selected: 1, hovered: -1, ripple: [0.5, 0.5], rippleAt: -10, gl: null, raf: 0, lastFrame: 0 };
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let resizeObserver;
@@ -26,7 +26,7 @@
       mask.width = 1536; mask.height = 1024;
       const ctx = mask.getContext('2d');
       zones.forEach((zone, index) => {
-        ctx.fillStyle = ['#ff0000', '#00ff00', '#0000ff'][index];
+        ctx.fillStyle = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'][index];
         ctx.fill(new Path2D(zone.getAttribute('d')));
       });
       return mask;
@@ -42,7 +42,7 @@
         uniform sampler2D uMap; uniform sampler2D uMask;
         uniform vec2 uResolution; uniform vec2 uRipple;
         uniform float uTime; uniform float uRippleAge; uniform float uSelected; uniform float uHovered;
-        float zoneAt(vec2 p,float i){vec3 m=texture2D(uMask,p).rgb;return i<0.5?m.r:(i<1.5?m.g:m.b);}
+        float zoneAt(vec2 p,float i){vec3 m=texture2D(uMask,p).rgb;return i<0.5?m.r:(i<1.5?m.g:(i<2.5?m.b:min(m.r,m.g)));}
         void main(){
           vec2 uv=vUV;
           vec3 base=texture2D(uMap,uv).rgb;
@@ -137,8 +137,8 @@
       state.rippleAt = performance.now();
       if (reduceMotion) state.raf = requestAnimationFrame(render);
     };
-    const zoneFrom = target => target instanceof Element ? target.closest('.map-label,.map-destination') : null;
-    card.addEventListener('pointerover', event => { const zone = zoneFrom(event.target); if (zone) { state.hovered = zoneIndex[zone.dataset.spec] ?? -1; if (reduceMotion) state.raf = requestAnimationFrame(render); } });
+    const zoneFrom = target => target instanceof Element ? target.closest('.map-zone') : null;
+    card.addEventListener('pointerover', event => { const zone = zoneFrom(event.target); if (zone) { state.hovered = zoneIndex[zone.dataset.spec || zone.dataset.zone] ?? -1; if (reduceMotion) state.raf = requestAnimationFrame(render); } });
     card.addEventListener('pointerout', event => { const zone = zoneFrom(event.target); if (zone && !zone.contains(event.relatedTarget)) { state.hovered = -1; if (reduceMotion) state.raf = requestAnimationFrame(render); } });
     card.addEventListener('pointerdown', event => { if (zoneFrom(event.target)) ripple(event); });
     zones.forEach(zone => { zone.setAttribute('aria-pressed', 'false'); zone.setAttribute('aria-label', zone.getAttribute('aria-label') || zone.dataset.spec); });
