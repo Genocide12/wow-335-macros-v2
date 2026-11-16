@@ -4,16 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WoW 3.3.5 · Fury Warrior — умные макросы</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261116b">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116d">
 <style>
   .hero-grid { grid-template-columns: 1fr; grid-template-rows: 1fr; overflow:hidden; }
   .hero-main { position:relative; display:flex; flex-direction:column; justify-content:center; gap:14px; overflow:hidden;
     max-width:none; width:100%; height:100%; margin:0 auto; padding:clamp(24px,5vw,62px); min-height:0;
     background:linear-gradient(90deg,rgba(10,12,18,.83),rgba(10,12,18,.50) 32%,rgba(10,12,18,.08) 72%),url('assets/icons/northrend-map.png') center/100% 100% no-repeat; border-color:#75602e; }
+  .hero-main.map-live{background-image:none;background-color:#11140f}
+  .map-shader{position:absolute;inset:0;z-index:1;width:100%;height:100%;opacity:0;pointer-events:none;transition:opacity .5s ease}
+  .hero-main.map-live::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 48%,#100d08aa 100%),linear-gradient(180deg,#07090b22,transparent 24%,transparent 78%,#090b0eb0)}
   .hero-main h1 { font-size: clamp(28px, 4.6vw, 48px); line-height: 1.08; color: #fff; }
   .hero-main h1 b { color: var(--gold2); }
   .hero-main p { color:#c7c4bd; font-size:15px; max-width:58ch; line-height:1.55; }
-  @media(min-width:701px){.hero-main h1{position:absolute!important;left:3%;top:3%;width:30%;max-width:30%;z-index:5;text-shadow:0 3px 10px #000}.hero-main>p{position:absolute!important;left:3%;top:16%;width:29%;max-width:29%;z-index:5;text-shadow:0 2px 6px #000}.hero-main>.path-title{display:none}}
+  @media(min-width:701px){.hero-main h1{position:absolute!important;left:3%;top:3%;width:32%;max-width:32%;font-size:clamp(22px,2.7vw,36px);line-height:1.04;z-index:5;text-shadow:0 3px 10px #000}.hero-main>p{position:absolute!important;left:3%;top:9.5%;width:30%;max-width:30%;font-size:clamp(12px,1.15vw,16px);z-index:5;text-shadow:0 2px 6px #000}.hero-main>.path-title{display:none}}
   .cta { display: flex; gap: 10px; flex-wrap: wrap; }
   .krow { display: flex; gap: 8px; flex-wrap: wrap; }
   .krow a { display: flex; align-items: center; gap: 8px; background: var(--panel2); border: 1px solid var(--line);
@@ -32,18 +35,20 @@
   .macro-dropdown .copy-btn{position:static;float:right}
   .macro-close{float:right;background:none;border:0;color:var(--dim);font-size:21px;cursor:pointer}
   .path-picker{position:absolute;inset:0;z-index:4;width:100%;height:100%;margin:0;overflow:visible}
-  .map-zone{fill:#e8c96a00;stroke:none;vector-effect:non-scaling-stroke;cursor:pointer;pointer-events:all;transform-box:fill-box;transform-origin:center;transition:fill .2s,filter .2s,transform .2s}
-  .map-zone:hover,.map-zone:focus-visible{fill:#f7d96d0a;filter:drop-shadow(0 9px 8px #000b) brightness(1.08);transform:scale(1.018);outline:none}
-  .map-zone.selected{fill:#e8c96a08;filter:drop-shadow(0 5px 5px #0008) brightness(1.035);transform:scale(1.008)}
-  .map-zone.selected:hover,.map-zone.selected:focus-visible{fill:#f7d96d10;filter:drop-shadow(0 9px 8px #000b) brightness(1.08);transform:scale(1.018)}
-  .map-label{position:absolute;z-index:4;display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #c5a752;border-radius:13px;color:var(--txt);background:linear-gradient(145deg,#24201adf,#10131be8);backdrop-filter:blur(5px);box-shadow:0 5px 18px #0009,inset 0 0 0 1px #f4d98318;transform:translate(-50%,-50%);pointer-events:none;font:inherit}
+  .map-zone{fill:#e8c96a00;stroke:none;vector-effect:non-scaling-stroke;cursor:pointer;pointer-events:all;transform-box:fill-box;transform-origin:center;transition:fill .25s,filter .25s,transform .25s}
+  .map-zone:hover,.map-zone:focus-visible{fill:#ffd45b18;filter:drop-shadow(0 15px 14px #090704dd) brightness(1.15) saturate(1.18);transform:scale(1.035);outline:none}
+  .map-zone.selected{fill:#e8c96a10;filter:drop-shadow(0 8px 8px #090704aa) brightness(1.075) saturate(1.08);transform:scale(1.018)}
+  .map-zone.selected:hover,.map-zone.selected:focus-visible{fill:#ffd45b20;filter:drop-shadow(0 16px 14px #090704ee) brightness(1.17) saturate(1.2);transform:scale(1.04)}
+  .map-label{position:absolute;z-index:5;display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid #c5a752bb;border-radius:13px;color:var(--txt);background:linear-gradient(145deg,#24201ad9,#10131bdc);backdrop-filter:blur(4px);box-shadow:0 5px 18px #0009,inset 0 0 0 1px #f4d98318;transform:translate(-50%,-50%);pointer-events:auto;font:inherit;cursor:pointer;transition:transform .24s,filter .24s,background .24s,box-shadow .24s}
+  .map-label:hover,.map-label:focus-visible,.map-label.selected{transform:translate(-50%,-58%) scale(1.1);filter:brightness(1.18);background:linear-gradient(145deg,#44371bdc,#13151beF);box-shadow:0 11px 26px #000d,0 0 22px #efc85e55;outline:none}
   .map-label[data-spec="arms"]{left:23%;top:60%}.map-label[data-spec="fury"]{left:53%;top:20%}.map-label[data-spec="prot"]{left:81%;top:59%}
   .map-label img{width:42px;height:42px;border-radius:8px;border:1px solid var(--gold);box-shadow:0 3px 12px #000b}
   .map-label b{display:block;color:var(--gold2);font-size:16px}.map-label small{display:block;color:#e2ded4;font-size:13px;margin-top:3px}
   .map-guide-wheel{position:absolute;z-index:9;left:50%;top:48%;transform:translate(-50%,-50%);max-width:none!important}
-  .map-guide-trigger{width:clamp(48px,5vw,66px);aspect-ratio:1;display:grid;place-items:center;padding:5px;border:2px solid #d7b85e;border-radius:50%;background:radial-gradient(circle at 35% 25%,#4b4025,#11141bea 70%);color:#ffe69a;box-shadow:0 0 18px #e8c96a66,inset 0 0 12px #000b;cursor:pointer;transition:transform .18s,box-shadow .18s}
-  .map-guide-trigger:hover,.map-guide-trigger:focus-visible{transform:scale(1.08);box-shadow:0 0 27px #f5d77eaa,inset 0 0 12px #000b;outline:none}
-  .map-guide-wheel.open .map-guide-trigger{visibility:hidden}
+  .map-guide-trigger{position:relative;z-index:2;width:clamp(54px,6vw,76px);aspect-ratio:1;display:grid;place-items:center;padding:5px;border:1px solid #f3d979aa;border-radius:50%;background:radial-gradient(circle,#f3d97922 0 34%,#11141b66 72%,transparent 74%);color:#ffe69a;box-shadow:0 0 26px #e8c96a55,inset 0 0 14px #0008;cursor:pointer;transition:transform .22s,box-shadow .22s,filter .22s;animation:guide-star-pulse 3s ease-in-out infinite}
+  .map-guide-trigger:hover,.map-guide-trigger:focus-visible{transform:scale(1.18);filter:brightness(1.25);box-shadow:0 0 38px #f5d77ecc,inset 0 0 18px #000b;outline:2px solid #f0d47b66;outline-offset:4px}
+  @keyframes guide-star-pulse{50%{box-shadow:0 0 36px #e8c96a99,inset 0 0 16px #000b}}
+  .map-guide-wheel.open .map-guide-trigger{filter:brightness(1.3);box-shadow:0 0 38px #ffe58acc,inset 0 0 18px #000b}
   .map-guide-trigger img{width:75%;height:75%;border-radius:50%;object-fit:cover}
   .map-guide-trigger span{position:absolute;top:calc(100% + 3px);padding:2px 6px;border:1px solid #8b7544;border-radius:8px;background:#12151deF;color:#f3df9f;font-size:11px;font-weight:800;white-space:nowrap}
   .guide-wheel-panel{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(48vw,540px);height:min(62vh,520px);min-width:350px;min-height:350px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
@@ -53,7 +58,7 @@
   .path-card b{display:block;color:var(--gold2);font-size:17px}.path-card small{display:block;color:#e2ded4;font-size:14px;margin-top:3px}
   .path-actions{display:none;align-items:center;gap:8px;flex-wrap:wrap}.path-actions.open{display:flex;animation:drop-in .2s ease-out}
   .path-actions a{font-size:13px;padding:8px 12px}
-  .hero-main>*:not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.krow):not(.map-label):not(.map-guide-wheel){position:relative;z-index:5;max-width:48%}
+  .hero-main>*:not(.map-shader):not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.krow):not(.map-label):not(.map-guide-wheel){position:relative;z-index:5;max-width:48%}
   .hero-main>.map-label{position:absolute;max-width:none}
   .hero-main>.cta,.hero-main>#pathActions{display:none}
   .hero-main>.path-title{font-size:clamp(21px,3vw,32px);max-width:48%;margin:0}
@@ -66,19 +71,21 @@
   .world-markers a{pointer-events:auto;position:absolute;display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #e6cf86a8;border-radius:999px;background:#101722d9;color:#f1e6c3;text-decoration:none;font-size:14px;font-weight:700;box-shadow:0 0 18px #aebfc033;backdrop-filter:blur(7px);transition:transform .18s,background .18s,box-shadow .18s}
   .world-markers a::before{content:"";width:9px;height:9px;border-radius:50%;background:#e8c96a;box-shadow:0 0 12px #e8c96a;flex:0 0 auto}
   .world-markers a:hover,.world-markers a:focus-visible{transform:translateY(-2px) scale(1.04);background:#30291bd9;box-shadow:0 0 24px #e8c96a55;outline:2px solid #e8c96a}
-  @media(max-width:700px){.hero-main{background:linear-gradient(90deg,rgba(10,12,18,.91),rgba(10,12,18,.73)),url('assets/icons/northrend-map.png') center/100% 100% no-repeat;gap:7px;padding:12px;justify-content:flex-start;overflow:hidden}.hero-main>*:not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.map-label):not(.krow):not(.map-guide-wheel){position:relative;max-width:100%}.hero-main h1,.hero-main>p,.hero-main>.path-title{position:relative!important;left:auto;top:auto;width:100%;max-width:100%;z-index:6}.hero-main h1{font-size:clamp(22px,7vw,28px);line-height:1.04}.world-markers{display:none}#app .hero-main>.path-picker{position:absolute;inset:0;z-index:4;display:block;width:100%;height:100%;pointer-events:auto}.map-zone{display:block;stroke-width:11}#app .hero-main>.map-label{position:absolute;left:auto;top:auto;transform:translate(-50%,-50%);z-index:5;padding:5px 7px;border-radius:10px;pointer-events:auto;max-width:min(44vw,190px);gap:5px}#app .hero-main>.map-label[data-spec="arms"]{left:23%;top:70%}#app .hero-main>.map-label[data-spec="fury"]{left:53%;top:58%}#app .hero-main>.map-label[data-spec="prot"]{left:81%;top:70%}.map-label img{width:27px;height:27px}.map-label b{font-size:10px}.map-label small{font-size:9px}.hero-main>.macro-dropdown{left:12px;transform:none}.hero-main>.path-title{display:block;max-width:100%;font-size:20px}}
+  @media(max-width:700px){.hero-main{background:linear-gradient(90deg,rgba(10,12,18,.91),rgba(10,12,18,.73)),url('assets/icons/northrend-map.png') center/100% 100% no-repeat;gap:7px;padding:12px;justify-content:flex-start;overflow:hidden}.hero-main>*:not(.map-shader):not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.map-label):not(.krow):not(.map-guide-wheel){position:relative;max-width:100%}.hero-main h1,.hero-main>p,.hero-main>.path-title{position:relative!important;left:auto;top:auto;width:100%;max-width:100%;z-index:6}.hero-main h1{font-size:clamp(22px,7vw,28px);line-height:1.04}.world-markers{display:none}#app .hero-main>.path-picker{position:absolute;inset:0;z-index:4;display:block;width:100%;height:100%;pointer-events:auto}.map-zone{display:block;stroke-width:11}#app .hero-main>.map-label{position:absolute;left:auto;top:auto;transform:translate(-50%,-50%);z-index:5;padding:5px 7px;border-radius:10px;pointer-events:auto;max-width:min(44vw,190px);gap:5px}#app .hero-main>.map-label[data-spec="arms"]{left:23%;top:70%}#app .hero-main>.map-label[data-spec="fury"]{left:53%;top:58%}#app .hero-main>.map-label[data-spec="prot"]{left:81%;top:70%}.map-label img{width:27px;height:27px}.map-label b{font-size:10px}.map-label small{font-size:9px}.hero-main>.macro-dropdown{left:12px;transform:none}.hero-main>.path-title{display:block;max-width:100%;font-size:20px}}
   @media(max-width:700px){.map-guide-wheel{top:48%}.map-guide-trigger{width:48px}.guide-wheel-panel.floating{width:min(82vw,430px);height:min(42dvh,390px)}}
   @media(max-width:860px){.hero-grid{grid-template-rows:1fr}.hero-main{min-height:0;padding:22px}#app .hero-main>.path-picker{position:absolute;inset:0;height:100%}#app .hero-main>.map-label{position:absolute;z-index:5;pointer-events:auto}.macro-dropdown{left:12px;bottom:12px;width:calc(100% - 24px);max-height:48%}}
   /* Narrow windows: keep both the path choices and quick macro buttons inside
      the visible card instead of positioning them below its viewport. */
   @media(max-width:860px){
+    .hero-grid{width:calc(100vw - 14px)!important;min-width:0;grid-template-columns:minmax(0,1fr)!important}
+    .hero-main{width:100%!important;min-width:0;max-width:100%}
     .hero-main{justify-content:flex-start!important;gap:6px!important;padding:12px!important}
     #app .hero-main>.path-picker{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;pointer-events:auto}
     .hero-main>.path-title{display:none!important}
     .hero-main>.map-label{position:absolute!important;left:auto;right:auto;top:auto;bottom:auto;transform:translate(-50%,-50%)!important;display:flex;align-items:center;justify-content:center;gap:4px;flex:0 0 auto;width:max-content;max-width:min(34vw,150px)!important;min-height:30px;padding:4px 7px!important;border-radius:9px;z-index:6;background:#111722df;backdrop-filter:blur(3px)}
     #app .hero-main>.map-label[data-spec="arms"]{left:23%!important;top:61%!important}
     #app .hero-main>.map-label[data-spec="fury"]{left:53%!important;top:27%!important}
-    #app .hero-main>.map-label[data-spec="prot"]{left:81%!important;top:61%!important}
+    #app .hero-main>.map-label[data-spec="prot"]{left:68%!important;top:61%!important;max-width:70px!important}
     .map-label img{width:22px!important;height:22px!important}
     .map-label b{font-size:11px!important;line-height:1.1!important}.map-label small{display:none!important}
     .hero-main>.krow{position:relative!important;inset:auto!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;width:100%;margin-top:auto;z-index:7}
@@ -86,6 +93,8 @@
     .hero-main>.krow a img{width:24px;height:24px}
   }
   @media(max-width:700px){.hero-main{background:linear-gradient(90deg,rgba(10,12,18,.72),rgba(10,12,18,.42)),url('assets/icons/northrend-map.png') center/100% 100% no-repeat}}
+  @media(max-width:860px){#app .hero-main>.map-label:hover,#app .hero-main>.map-label:focus-visible,#app .hero-main>.map-label.selected{transform:translate(-50%,-50%) scale(1.12)!important;filter:brightness(1.2);box-shadow:0 8px 22px #000c,0 0 19px #efc85e66}}
+  @media(prefers-reduced-motion:reduce){.map-shader,.map-label,.map-zone,.map-guide-trigger{transition:none!important;animation:none!important}}
   @media(max-width:860px) and (max-height:560px){.hero-main h1{font-size:21px!important;line-height:1.02!important}.hero-main>p{display:none!important}.hero-main>.map-label{min-height:32px}.hero-main>.krow a{min-height:38px}}
   @media(min-width:1200px){.hero-main p{font-size:18px}.hero-main h2{font-size:20px}.cta a,.path-actions a{font-size:16px;padding:12px 18px}.path-card{min-height:86px}.krow a{font-size:15px;padding:9px 13px}.krow img{width:32px;height:32px}}
 </style>
@@ -96,6 +105,7 @@
   <div class="grid hero-grid">
 
     <section class="card hero-main">
+      <canvas class="map-shader" id="worldMapShader" aria-hidden="true"></canvas>
       <nav class="world-markers" aria-label="Выбор пути воина на карте"></nav>
       <h1 data-ru="Умные макросы для <b>воина-неистовства</b>" data-en="Smart macros for the <b>Fury Warrior</b>">Умные макросы для <b>воина-неистовства</b></h1>
       <p data-ru="WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку."
@@ -106,9 +116,9 @@
         <path class="map-zone" data-spec="fury" role="button" tabindex="0" aria-label="Fury PvE DPS" d="M626 270 595 246 573 215 589 183 615 159 626 122 651 91 684 66 725 45 761 38 795 55 829 54 856 77 893 88 922 116 949 145 972 176 1002 205 1009 240 1000 269 1009 300 997 331 980 366 955 388 937 365 916 347 908 319 884 303 871 273 842 260 809 274 777 260 746 277 713 270 684 286 653 278Z" />
         <path class="map-zone" data-spec="prot" role="button" tabindex="0" aria-label="Protection PvE tank" d="M1100 409 1091 380 1104 350 1128 332 1150 305 1174 280 1188 248 1212 218 1238 194 1265 178 1290 192 1314 222 1339 248 1360 281 1374 313 1391 345 1390 382 1374 412 1355 435 1333 458 1307 475 1280 478 1257 466 1235 486 1213 514 1197 540 1174 560 1149 554 1132 533 1115 511 1100 488 1089 461Z M1169 583 1194 560 1224 568 1249 581 1271 565 1303 568 1327 591 1341 624 1352 660 1367 691 1360 727 1371 758 1353 788 1344 821 1324 849 1300 869 1273 873 1246 861 1223 845 1200 826 1178 809 1157 787 1147 758 1153 727 1143 694 1150 662 1142 633 1153 604Z M1170 873 1192 850 1223 856 1249 879 1265 913 1256 947 1234 969 1206 956 1185 931 1166 905Z" />
       </svg>
-      <button class="map-label" data-spec="arms" aria-label="Выбрать Arms PvP"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_rogue_eviscerate.jpg" alt=""><span><b>Arms · PvP</b><small data-ru="Давление и контроль" data-en="Pressure & control">Давление и контроль</small></span></button>
-      <button class="map-label selected" data-spec="fury" aria-label="Выбрать Fury PvE"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_racial_avatar.jpg" alt=""><span><b data-ru="Fury · PvE" data-en="Fury · PvE">Fury · PvE ДД</b><small data-ru="Урон по приоритету" data-en="Priority damage">Урон по приоритету</small></span></button>
-      <button class="map-label" data-spec="prot" aria-label="Выбрать Protection PvE"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_defensivestance.jpg" alt=""><span><b data-ru="Защита · PvE" data-en="Protection">Protection · PvE танк</b><small data-ru="Угроза и выживаемость" data-en="Threat & survival">Угроза и выживаемость</small></span></button>
+      <button class="map-label" data-spec="arms" aria-label="Выбрать Arms" aria-pressed="false"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_rogue_eviscerate.jpg" alt=""><span><b>Arms</b></span></button>
+      <button class="map-label selected" data-spec="fury" aria-label="Выбрать Fury" aria-pressed="true"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_racial_avatar.jpg" alt=""><span><b>Fury</b></span></button>
+      <button class="map-label" data-spec="prot" aria-label="Выбрать специализацию защиты" aria-pressed="false"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_defensivestance.jpg" alt=""><span><b data-ru="Защита" data-en="Protection">Защита</b></span></button>
       <div class="map-guide-wheel" id="mapGuideWheel">
         <button class="map-guide-trigger" id="mapGuideTrigger" type="button" data-sound-kind="open" aria-expanded="false" aria-label="Гайд по выбранному пути">
           <img src="https://wow.zamimg.com/images/wow/icons/large/inv_scroll_03.jpg" alt=""><span data-ru="Гайд" data-en="Guide">Гайд</span>
@@ -122,9 +132,10 @@
   </div>
 </main>
 </div>
-<script src="assets/js/app.js?v=20261116b"></script>
-<script src="assets/js/macros-data.js?v=20261116b"></script>
-<script src="assets/js/macro-bodies.js?v=20261116b"></script>
+<script src="assets/js/app.js?v=20261116d"></script>
+<script src="assets/js/macros-data.js?v=20261116d"></script>
+<script src="assets/js/macro-bodies.js?v=20261116d"></script>
+<script src="assets/js/world-map.js?v=20261116d"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const lang = window.W.lang;
@@ -135,8 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const paths={arms:['Воин Оружия · PvP','Arms Warrior · PvP','Макросы контроля и прерываний · таланты Arms · гайд по арене.','Control and interrupt macros · Arms talents · arena guide.'],fury:['Воин Неистовства · PvE ДД','Fury Warrior · PvE DPS','Приоритеты урона · таланты Fury · гайд по PvE.','Damage priorities · Fury talents · PvE guide.'],prot:['Воин Защиты · PvE танк','Protection Warrior · PvE tank','Угроза и защита · таланты Protection · гайд танка.','Threat and mitigation · Protection talents · tank guide.']};
   let spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';if(!['arms','fury','prot'].includes(spec))spec='fury';
   let titles=[];
-  const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>x.classList.toggle('selected',x.dataset.spec===value));document.querySelector('.hero-main h1').innerHTML=lang==='ru'?`Гайды и приёмы: <b>${paths[value][0]}</b>`:`Guides & abilities: <b>${paths[value][1]}</b>`;document.querySelector('.hero-main>p').textContent=`WotLK 3.3.5a · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
-    const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261116b');document.getElementById('guideWheelFrame').src=wheelUrl.href;
+  const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);window.WorldMap?.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>{const selected=x.dataset.spec===value;x.classList.toggle('selected',selected);if(x.matches('.map-zone,.map-label'))x.setAttribute('aria-pressed',String(selected));});document.querySelector('.hero-main h1').innerHTML=lang==='ru'?'<b>Путь воина</b>':'<b>Warrior paths</b>';document.querySelector('.hero-main>p').textContent=`${paths[value][0]} · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
+    const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261116d');document.getElementById('guideWheelFrame').src=wheelUrl.href;
     const sets={
       arms:lang==='ru'?[['Зуботычина по фокусу','Прерывание; после смены стойки нажми повторно.','', 'inv_gauntlets_04'],['Смертельный удар','Главный удар Оружия; может потребоваться смена стойки.','','ability_warrior_savageblow'],['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','','ability_warrior_charge']]:[['Focus Pummel','Interrupt; press again after a stance change.','','inv_gauntlets_04'],['Mortal Strike','Arms core attack; may need a stance change.','','ability_warrior_savageblow'],['Charge and Intercept','Charge out of combat; Intercept in combat.','','ability_warrior_charge']],
       prot:lang==='ru'?[['Приоритет угрозы','Мощный удар щитом → Реванш → Сокрушение.','','ability_warrior_shieldslam'],['Угроза по площади','Удар грома и Ударная волна.','','ability_thunderclap'],['Провокация по наведению','Перехвати цель под курсором.','','spell_nature_reincarnation']]:[['Threat priority','Shield Slam → Revenge → Devastate.','','ability_warrior_shieldslam'],['Area threat','Thunder Clap and Shockwave.','','ability_thunderclap'],['Mouseover Taunt','Taunt the enemy under your cursor.','','spell_nature_reincarnation']]
@@ -152,10 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const compactGuide=()=>matchMedia('(max-width: 860px)').matches;
   const openGuideWheel=()=>{clearTimeout(guideCloseTimer);guideWheel.classList.add('open');if(compactGuide()){guidePanel.classList.add('floating');document.body.appendChild(guidePanel);}guideTrigger.setAttribute('aria-expanded','true');};
   const closeGuideWheel=()=>{clearTimeout(guideCloseTimer);guideWheel.classList.remove('open');guidePanel.classList.remove('floating');if(guidePanel.parentElement!==guidePanelHome)guidePanelHome.appendChild(guidePanel);guideTrigger.setAttribute('aria-expanded','false');};
-  const fullGuide=()=>{const url=new URL('guide.html',location.href);url.searchParams.set('lang',lang);url.searchParams.set('spec',spec);location.href=url.href;};
   guideTrigger.addEventListener('pointerdown',event=>{guidePointerType=event.pointerType;});
-  guideTrigger.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'&&compactGuide())openGuideWheel();});
-  guideTrigger.addEventListener('click',()=>{if(guidePointerType!=='touch'){if(guideWheel.classList.contains('open'))fullGuide();else if(compactGuide())openGuideWheel();else fullGuide();return;}if(guideWheel.classList.contains('open')){fullGuide();return;}openGuideWheel();guidePointerType='';});
+  guideTrigger.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse')openGuideWheel();});
+  guideTrigger.addEventListener('click',()=>{if(guidePointerType==='touch'&&guideWheel.classList.contains('open'))closeGuideWheel();else openGuideWheel();guidePointerType='';});
   guidePanel.addEventListener('pointerenter',()=>clearTimeout(guideCloseTimer));
   guidePanel.addEventListener('pointerleave',()=>{if(!compactGuide())guideCloseTimer=setTimeout(closeGuideWheel,180);});
   guideWheel.addEventListener('pointerleave',()=>{if(!compactGuide()&&guideWheel.classList.contains('open'))guideCloseTimer=setTimeout(closeGuideWheel,180);});
