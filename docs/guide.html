@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>if(new URLSearchParams(location.search).get('embed')==='1')document.documentElement.classList.add('guide-embed')</script>
 <title>Гайд — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114f">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116b">
 <style>
   .g-shell{min-height:0;flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden}
   .g-head{display:flex;align-items:center;gap:12px;flex:0 0 auto}
@@ -20,6 +20,11 @@
   .g-item:hover,.g-item:focus-visible{transform:translate(-50%,-50%) scale(1.09);border-color:var(--gold2);box-shadow:0 0 23px #d6b86166,inset 0 0 0 2px #ffffff12;outline:none}
   .g-item img{width:100%;aspect-ratio:1;border:1px solid #c8a951;border-radius:50%;flex:0 0 auto;box-shadow:0 0 10px #000b}
   .g-tooltip{display:none;position:fixed;z-index:110;width:min(330px,calc(100vw - 20px));max-height:min(60dvh,390px);overflow:auto;padding:12px;background:#10131beF;border:1px solid var(--gold);border-radius:11px;box-shadow:0 14px 45px #000d;color:#ddd8cc;font-size:12px;line-height:1.45;pointer-events:none}
+  .g-tooltip.detail{pointer-events:auto}
+  html.guide-embed .g-tooltip.detail{left:50%!important;top:50%!important;transform:translate(-50%,-50%);width:min(34vw,320px);min-width:min(230px,82vw);max-height:42dvh;padding:8px;background:#11151b20;border:0;border-radius:0;box-shadow:none;text-shadow:0 2px 5px #000;color:#f4eddd;font-size:12px;line-height:1.35;backdrop-filter:none}
+  html.guide-embed .g-tooltip.detail strong{color:#ffe59a;font-size:14px;text-shadow:0 2px 6px #000}
+  html.guide-embed .g-tooltip.detail .g-spells img{width:26px;height:26px}
+  html.guide-embed .g-tooltip.detail p{margin-top:5px}
   .g-tooltip.on{display:block;animation:tip-in .12s ease-out}@keyframes tip-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
   .g-tooltip strong{display:block;color:var(--gold2);font-size:13px;margin-bottom:6px}.g-tooltip p{margin:0}.g-tooltip .g-spells{margin:6px 0}
   .g-bottom{display:flex;justify-content:flex-end}
@@ -56,7 +61,7 @@
 </div>
 <div class="g-tooltip" id="guideTooltip" role="status"></div>
 <dialog class="g-dialog" id="guideDialog"><div class="g-dialog-head"><span id="guideDialogTitle"></span><button class="macro-close" id="closeGuideDialog" aria-label="Close">×</button></div><div class="g-dialog-body" id="guideDialogBody"></div></dialog>
-<script src="assets/js/app.js?v=20261114f"></script>
+<script src="assets/js/app.js?v=20261116b"></script>
 <script>
 (() => {
   const lang = window.W.lang;
@@ -284,7 +289,14 @@
   const dialog=document.getElementById('guideDialog');
   const guideTooltip=document.getElementById('guideTooltip');
   const guideEntries=(mode==='arms'||mode==='prot')?categories[0][2]:[D.fight[0],D.rot[0],D.rot[1],D.rot[2],D.surv[0],D.tg[0],D.learn[4]];
-  const openEntry=(p)=>{
+  const openEntry=(p,btn)=>{
+    if(document.documentElement.classList.contains('guide-embed')){
+      const spells=p.spells?`<div class="g-spells">${p.spells.map(s=>`<img src="${I(s)}" alt="">`).join('')}</div>`:'';
+      guideTooltip.innerHTML=`<strong>${p.name}</strong>${spells}<p>${p.text||p.why||''}</p>`;
+      guideTooltip.classList.add('detail','on');
+      guideTooltip.style.left='50%';guideTooltip.style.top='50%';
+      return;
+    }
     document.getElementById('guideDialogTitle').textContent=p.name;
     const description=p.text||p.why||'';
     const spells=p.spells?`<div class="g-spells">${p.spells.map(s=>`<img src="${I(s)}" alt="">`).join('')}</div>`:'';
@@ -294,7 +306,7 @@
   const showTooltip=(p,btn)=>{
     const spells=p.spells?`<div class="g-spells">${p.spells.map(s=>`<img src="${I(s)}" alt="">`).join('')}</div>`:'';
     guideTooltip.innerHTML=`<strong>${p.name}</strong>${spells}`;
-    guideTooltip.classList.add('on');
+    guideTooltip.classList.remove('detail');guideTooltip.classList.add('on');
     const r=btn.getBoundingClientRect(),w=guideTooltip.offsetWidth,h=guideTooltip.offsetHeight;
     let left=r.right+12;if(left+w>innerWidth-8)left=r.left-w-12;
     let top=Math.max(8,Math.min(innerHeight-h-8,r.top+(r.height-h)/2));
@@ -334,7 +346,7 @@
       btn.onpointerenter=e=>{if(e.pointerType==='mouse')showTooltip(entry,btn);};
       btn.onpointerleave=e=>{if(e.pointerType==='mouse')guideTooltip.classList.remove('on');};
       let lastPointer='mouse';btn.onpointerdown=e=>{lastPointer=e.pointerType;};
-      btn.onclick=()=>openEntry(entry);
+      btn.onclick=()=>openEntry(entry,btn);
     });
   };
   new ResizeObserver(layoutWheel).observe(items);

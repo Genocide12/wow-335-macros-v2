@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WoW 3.3.5 · Fury Warrior — умные макросы</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114g">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116b">
 <style>
   .hero-grid { grid-template-columns: 1fr; grid-template-rows: 1fr; overflow:hidden; }
   .hero-main { position:relative; display:flex; flex-direction:column; justify-content:center; gap:14px; overflow:hidden;
@@ -32,9 +32,10 @@
   .macro-dropdown .copy-btn{position:static;float:right}
   .macro-close{float:right;background:none;border:0;color:var(--dim);font-size:21px;cursor:pointer}
   .path-picker{position:absolute;inset:0;z-index:4;width:100%;height:100%;margin:0;overflow:visible}
-  .map-zone{fill:#e8c96a00;stroke:#f7d96d00;stroke-width:8;stroke-linejoin:round;vector-effect:non-scaling-stroke;cursor:pointer;pointer-events:all;transition:fill .18s,stroke .18s,filter .18s}
-  .map-zone:hover,.map-zone:focus-visible{fill:#f7d96d18;stroke:#ffe58a;filter:drop-shadow(0 0 7px #ffdc6c);outline:none}
-  .map-zone.selected{stroke:#e8c96a85;stroke-width:5;fill:#e8c96a08}
+  .map-zone{fill:#e8c96a00;stroke:none;vector-effect:non-scaling-stroke;cursor:pointer;pointer-events:all;transform-box:fill-box;transform-origin:center;transition:fill .2s,filter .2s,transform .2s}
+  .map-zone:hover,.map-zone:focus-visible{fill:#f7d96d0a;filter:drop-shadow(0 9px 8px #000b) brightness(1.08);transform:scale(1.018);outline:none}
+  .map-zone.selected{fill:#e8c96a08;filter:drop-shadow(0 5px 5px #0008) brightness(1.035);transform:scale(1.008)}
+  .map-zone.selected:hover,.map-zone.selected:focus-visible{fill:#f7d96d10;filter:drop-shadow(0 9px 8px #000b) brightness(1.08);transform:scale(1.018)}
   .map-label{position:absolute;z-index:4;display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #c5a752;border-radius:13px;color:var(--txt);background:linear-gradient(145deg,#24201adf,#10131be8);backdrop-filter:blur(5px);box-shadow:0 5px 18px #0009,inset 0 0 0 1px #f4d98318;transform:translate(-50%,-50%);pointer-events:none;font:inherit}
   .map-label[data-spec="arms"]{left:23%;top:60%}.map-label[data-spec="fury"]{left:53%;top:20%}.map-label[data-spec="prot"]{left:81%;top:59%}
   .map-label img{width:42px;height:42px;border-radius:8px;border:1px solid var(--gold);box-shadow:0 3px 12px #000b}
@@ -42,9 +43,11 @@
   .map-guide-wheel{position:absolute;z-index:9;left:50%;top:48%;transform:translate(-50%,-50%);max-width:none!important}
   .map-guide-trigger{width:clamp(48px,5vw,66px);aspect-ratio:1;display:grid;place-items:center;padding:5px;border:2px solid #d7b85e;border-radius:50%;background:radial-gradient(circle at 35% 25%,#4b4025,#11141bea 70%);color:#ffe69a;box-shadow:0 0 18px #e8c96a66,inset 0 0 12px #000b;cursor:pointer;transition:transform .18s,box-shadow .18s}
   .map-guide-trigger:hover,.map-guide-trigger:focus-visible{transform:scale(1.08);box-shadow:0 0 27px #f5d77eaa,inset 0 0 12px #000b;outline:none}
+  .map-guide-wheel.open .map-guide-trigger{visibility:hidden}
   .map-guide-trigger img{width:75%;height:75%;border-radius:50%;object-fit:cover}
   .map-guide-trigger span{position:absolute;top:calc(100% + 3px);padding:2px 6px;border:1px solid #8b7544;border-radius:8px;background:#12151deF;color:#f3df9f;font-size:11px;font-weight:800;white-space:nowrap}
   .guide-wheel-panel{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(48vw,540px);height:min(62vh,520px);min-width:350px;min-height:350px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .guide-wheel-panel.floating{position:fixed;left:50vw;top:50dvh;transform:translate(-50%,-50%);width:min(82vw,430px);height:min(42dvh,390px);min-width:0;min-height:0;z-index:1000}
   .map-guide-wheel:hover .guide-wheel-panel,.map-guide-wheel:focus-within .guide-wheel-panel,.map-guide-wheel.open .guide-wheel-panel{display:block}
   .guide-wheel-panel iframe{width:100%;height:100%;border:0;display:block}
   .path-card b{display:block;color:var(--gold2);font-size:17px}.path-card small{display:block;color:#e2ded4;font-size:14px;margin-top:3px}
@@ -64,7 +67,7 @@
   .world-markers a::before{content:"";width:9px;height:9px;border-radius:50%;background:#e8c96a;box-shadow:0 0 12px #e8c96a;flex:0 0 auto}
   .world-markers a:hover,.world-markers a:focus-visible{transform:translateY(-2px) scale(1.04);background:#30291bd9;box-shadow:0 0 24px #e8c96a55;outline:2px solid #e8c96a}
   @media(max-width:700px){.hero-main{background:linear-gradient(90deg,rgba(10,12,18,.91),rgba(10,12,18,.73)),url('assets/icons/northrend-map.png') center/100% 100% no-repeat;gap:7px;padding:12px;justify-content:flex-start;overflow:hidden}.hero-main>*:not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.map-label):not(.krow):not(.map-guide-wheel){position:relative;max-width:100%}.hero-main h1,.hero-main>p,.hero-main>.path-title{position:relative!important;left:auto;top:auto;width:100%;max-width:100%;z-index:6}.hero-main h1{font-size:clamp(22px,7vw,28px);line-height:1.04}.world-markers{display:none}#app .hero-main>.path-picker{position:absolute;inset:0;z-index:4;display:block;width:100%;height:100%;pointer-events:auto}.map-zone{display:block;stroke-width:11}#app .hero-main>.map-label{position:absolute;left:auto;top:auto;transform:translate(-50%,-50%);z-index:5;padding:5px 7px;border-radius:10px;pointer-events:auto;max-width:min(44vw,190px);gap:5px}#app .hero-main>.map-label[data-spec="arms"]{left:23%;top:70%}#app .hero-main>.map-label[data-spec="fury"]{left:53%;top:58%}#app .hero-main>.map-label[data-spec="prot"]{left:81%;top:70%}.map-label img{width:27px;height:27px}.map-label b{font-size:10px}.map-label small{font-size:9px}.hero-main>.macro-dropdown{left:12px;transform:none}.hero-main>.path-title{display:block;max-width:100%;font-size:20px}}
-  @media(max-width:700px){.map-guide-wheel{top:48%}.map-guide-trigger{width:48px}.guide-wheel-panel{position:fixed;left:50vw;top:50dvh;width:min(94vw,540px);height:min(72dvh,560px);min-width:0;min-height:0;z-index:20}}
+  @media(max-width:700px){.map-guide-wheel{top:48%}.map-guide-trigger{width:48px}.guide-wheel-panel.floating{width:min(82vw,430px);height:min(42dvh,390px)}}
   @media(max-width:860px){.hero-grid{grid-template-rows:1fr}.hero-main{min-height:0;padding:22px}#app .hero-main>.path-picker{position:absolute;inset:0;height:100%}#app .hero-main>.map-label{position:absolute;z-index:5;pointer-events:auto}.macro-dropdown{left:12px;bottom:12px;width:calc(100% - 24px);max-height:48%}}
   /* Narrow windows: keep both the path choices and quick macro buttons inside
      the visible card instead of positioning them below its viewport. */
@@ -119,9 +122,9 @@
   </div>
 </main>
 </div>
-<script src="assets/js/app.js?v=20261114f"></script>
-<script src="assets/js/macros-data.js?v=20261114f"></script>
-<script src="assets/js/macro-bodies.js?v=20261114e"></script>
+<script src="assets/js/app.js?v=20261116b"></script>
+<script src="assets/js/macros-data.js?v=20261116b"></script>
+<script src="assets/js/macro-bodies.js?v=20261116b"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const lang = window.W.lang;
@@ -133,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';if(!['arms','fury','prot'].includes(spec))spec='fury';
   let titles=[];
   const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>x.classList.toggle('selected',x.dataset.spec===value));document.querySelector('.hero-main h1').innerHTML=lang==='ru'?`Гайды и приёмы: <b>${paths[value][0]}</b>`:`Guides & abilities: <b>${paths[value][1]}</b>`;document.querySelector('.hero-main>p').textContent=`WotLK 3.3.5a · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
-    const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261114h');document.getElementById('guideWheelFrame').src=wheelUrl.href;
+    const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261116b');document.getElementById('guideWheelFrame').src=wheelUrl.href;
     const sets={
       arms:lang==='ru'?[['Зуботычина по фокусу','Прерывание; после смены стойки нажми повторно.','', 'inv_gauntlets_04'],['Смертельный удар','Главный удар Оружия; может потребоваться смена стойки.','','ability_warrior_savageblow'],['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','','ability_warrior_charge']]:[['Focus Pummel','Interrupt; press again after a stance change.','','inv_gauntlets_04'],['Mortal Strike','Arms core attack; may need a stance change.','','ability_warrior_savageblow'],['Charge and Intercept','Charge out of combat; Intercept in combat.','','ability_warrior_charge']],
       prot:lang==='ru'?[['Приоритет угрозы','Мощный удар щитом → Реванш → Сокрушение.','','ability_warrior_shieldslam'],['Угроза по площади','Удар грома и Ударная волна.','','ability_thunderclap'],['Провокация по наведению','Перехвати цель под курсором.','','spell_nature_reincarnation']]:[['Threat priority','Shield Slam → Revenge → Devastate.','','ability_warrior_shieldslam'],['Area threat','Thunder Clap and Shockwave.','','ability_thunderclap'],['Mouseover Taunt','Taunt the enemy under your cursor.','','spell_nature_reincarnation']]
@@ -144,11 +147,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.krow a').forEach((link,i)=>{link.querySelector('span').textContent=titles[i][0];link.querySelector('img').src=`https://wow.zamimg.com/images/wow/icons/large/${titles[i][3]}.jpg`;});
   };
   document.querySelectorAll('.map-zone,.map-label').forEach(btn=>{btn.addEventListener('click',()=>setPath(btn.dataset.spec));btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setPath(btn.dataset.spec);}});});
-  const guideWheel=document.getElementById('mapGuideWheel'),guideTrigger=document.getElementById('mapGuideTrigger');
-  let guidePointerType='';
+  const guideWheel=document.getElementById('mapGuideWheel'),guideTrigger=document.getElementById('mapGuideTrigger'),guidePanel=document.getElementById('guideWheelPanel'),guidePanelHome=guidePanel.parentElement;
+  let guidePointerType='',guideCloseTimer=0;
+  const compactGuide=()=>matchMedia('(max-width: 860px)').matches;
+  const openGuideWheel=()=>{clearTimeout(guideCloseTimer);guideWheel.classList.add('open');if(compactGuide()){guidePanel.classList.add('floating');document.body.appendChild(guidePanel);}guideTrigger.setAttribute('aria-expanded','true');};
+  const closeGuideWheel=()=>{clearTimeout(guideCloseTimer);guideWheel.classList.remove('open');guidePanel.classList.remove('floating');if(guidePanel.parentElement!==guidePanelHome)guidePanelHome.appendChild(guidePanel);guideTrigger.setAttribute('aria-expanded','false');};
+  const fullGuide=()=>{const url=new URL('guide.html',location.href);url.searchParams.set('lang',lang);url.searchParams.set('spec',spec);location.href=url.href;};
   guideTrigger.addEventListener('pointerdown',event=>{guidePointerType=event.pointerType;});
-  guideTrigger.addEventListener('click',()=>{if(guidePointerType!=='touch'){const fullGuide=new URL('guide.html',location.href);fullGuide.searchParams.set('lang',lang);fullGuide.searchParams.set('spec',spec);location.href=fullGuide.href;return;}if(guideWheel.classList.contains('open')){const fullGuide=new URL('guide.html',location.href);fullGuide.searchParams.set('lang',lang);fullGuide.searchParams.set('spec',spec);location.href=fullGuide.href;return;}guideWheel.classList.add('open');guideTrigger.setAttribute('aria-expanded','true');guidePointerType='';});
-  document.addEventListener('click',event=>{if(!guideWheel.contains(event.target)){guideWheel.classList.remove('open');guideTrigger.setAttribute('aria-expanded','false');}});
+  guideTrigger.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'&&compactGuide())openGuideWheel();});
+  guideTrigger.addEventListener('click',()=>{if(guidePointerType!=='touch'){if(guideWheel.classList.contains('open'))fullGuide();else if(compactGuide())openGuideWheel();else fullGuide();return;}if(guideWheel.classList.contains('open')){fullGuide();return;}openGuideWheel();guidePointerType='';});
+  guidePanel.addEventListener('pointerenter',()=>clearTimeout(guideCloseTimer));
+  guidePanel.addEventListener('pointerleave',()=>{if(!compactGuide())guideCloseTimer=setTimeout(closeGuideWheel,180);});
+  guideWheel.addEventListener('pointerleave',()=>{if(!compactGuide()&&guideWheel.classList.contains('open'))guideCloseTimer=setTimeout(closeGuideWheel,180);});
+  document.addEventListener('click',event=>{if(!guideWheel.contains(event.target)&&!guidePanel.contains(event.target))closeGuideWheel();});
+  window.addEventListener('resize',()=>{if(guideWheel.classList.contains('open')){guidePanel.classList.toggle('floating',compactGuide());if(compactGuide()&&guidePanel.parentElement!==document.body)document.body.appendChild(guidePanel);else if(!compactGuide()&&guidePanel.parentElement!==guidePanelHome)guidePanelHome.appendChild(guidePanel);}});
   titles=lang==='ru'?[
     ['Ротация одной цели','Кровожадность → Вихрь → Казнь','/startattack\n/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка\n/cast Победный раж\n/cast Кровожадность\n/cast Вихрь\n/cast Казнь','inv_axe_66'],
     ['Бой с группой','Вихрь и Рассекающий удар','/targetenemy [noharm][dead]\n/startattack\n/cast [combat,nostance:3]Стойка берсерка\n/cast Перехват\n/cast Вихрь\n/cast Кровожадность\n/cast Рассекающий удар\n/stopmacro [combat]\n/run s="Боевой крик"if not UnitBuff("player",s)then CastSpellByName(s)end','ability_whirlwind'],

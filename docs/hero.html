@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Герой — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261115c">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116b">
 <style>
   .h-layout { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr);width:100%;margin-inline:auto; }
   #doll{display:flex;flex-direction:column;border:1px solid #927b49;background:radial-gradient(ellipse at 50% 35%,#252a37 0,transparent 55%),linear-gradient(145deg,#24242a,#11141c 62%,#181713);box-shadow:inset 0 0 0 1px #f0d58a18,inset 0 0 48px #a8833512,0 12px 40px #0009}
@@ -59,7 +59,6 @@
   .hero-stat-tooltip .tip-title{padding:8px 11px;border-bottom:1px solid #8a704188;background:linear-gradient(90deg,#46351d,#211a12 72%);color:#ffe6a0;font:700 14px/1.25 Georgia,serif;text-shadow:0 1px #000}
   .hero-stat-tooltip .tip-value{padding:6px 11px 0;color:#62e877;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
   .hero-stat-tooltip .tip-copy{padding:5px 11px 10px;font-size:13px;line-height:1.45;color:#e1dccf}
-  .hero-stats-note{margin-top:6px;color:#aaa493;font-size:10px;line-height:1.3}
   .legacy-warn { display: none; margin-top: 8px; font-size: 12px; line-height: 1.45; color: #ffd35c;
     background: rgba(64,48,10,.35); border: 1px solid #6d5a1f; border-radius: 9px; padding: 8px 10px; }
   .tipcard { position: fixed; z-index: 100; display: none; width: 288px; background: rgba(3,5,10,.96);
@@ -72,7 +71,6 @@
   .tipcard .item-source{margin-top:8px;padding:7px 8px;border:1px solid #806a39;border-radius:5px;background:linear-gradient(110deg,#302719,#171612);color:#f1dfb5}
   .tipcard .item-source strong{display:block;margin-bottom:3px;color:#e7c75e;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
   .tipcard .item-source a{color:#d9c58f;text-decoration:underline;text-underline-offset:2px}
-  .hero-cap-guide[open]{padding-bottom:5px}
   .q0 { color: #9d9d9d; } .q1 { color: #fff; } .q2 { color: #1eff00; } .q3 { color: #0070dd; }
   .q4 { color: #a335ee; } .q5 { color: #ff8000; } .q6 { color: #e6cc80; }
   .import { display: flex; flex-direction: column; gap: 7px; height: 100%; overflow:hidden; }
@@ -113,7 +111,7 @@
     #doll{flex-direction:column;gap:4px}
   .char-head{margin-bottom:2px}.char-head .nm{font-size:16px}.char-head .sub{font-size:10px}.hero-util{width:32px;height:32px}
     .doll-grid{grid-template-columns:30px minmax(0,1fr) 30px;grid-template-rows:minmax(0,1fr) auto;gap:1px}
-    .hero-stats{grid-column:1/-1;max-height:34vh;padding:5px 8px}.hero-stats-title{margin-bottom:4px;padding:4px;font-size:13px}.hero-stats-section{margin-top:4px;padding:3px;font-size:12px}.hero-stat-row{font-size:11px;padding:2px}.hero-stats-note{font-size:9px}
+    .hero-stats{grid-column:1/-1;max-height:34vh;padding:5px 8px}.hero-stats-title{margin-bottom:4px;padding:4px;font-size:13px}.hero-stats-section{margin-top:4px;padding:3px;font-size:12px}.hero-stat-row{font-size:11px;padding:2px}
     .doll-col{gap:2px}.slot{width:26px;height:26px}.slot img{width:22px;height:22px}
     .doll-center{gap:3px;padding:0}
     .character-stage{height:clamp(210px,40vh,330px);min-height:210px;max-height:40vh;width:100%}
@@ -163,11 +161,11 @@
 </div>
 <div class="tipcard" id="itemtip"></div>
 <div class="hero-stat-tooltip" id="heroStatTooltip" role="tooltip"><div class="tip-title"></div><div class="tip-value"></div><div class="tip-copy"></div></div>
-<script src="assets/js/app.js?v=20261115c"></script>
-<script src="assets/js/macros-data.js?v=20261115c"></script>
+<script src="assets/js/app.js?v=20261116b"></script>
+<script src="assets/js/macros-data.js?v=20261116b"></script>
 <script src="assets/js/talents-data.js"></script>
 <script src="assets/data/wotlk-item-displayids.js"></script>
-<script src="assets/js/leveling-gear.js?v=20261115c"></script>
+<script src="assets/js/leveling-gear.js?v=20261116b"></script>
 <script>
 (() => {
   const lang = window.W.lang;
@@ -253,9 +251,10 @@
     const equipped = Object.values(state.gear).filter(Boolean);
     const itemLevels = equipped.map(itemLevelOf).filter(Boolean);
     const avg = itemLevels.length ? Math.round(itemLevels.reduce((a,b)=>a+b,0)/itemLevels.length) : 0;
-    const number = n => Number.isFinite(+n) ? Math.round(+n).toLocaleString(lang==='ru'?'ru-RU':'en-US') : '—';
-    const decimal = n => Number.isFinite(+n) ? (+n).toLocaleString(lang==='ru'?'ru-RU':'en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
-    const pct = n => Number.isFinite(+n) ? `${decimal(n)}%` : '—';
+    const hasNumber = n => n !== null && n !== undefined && n !== '' && Number.isFinite(Number(n));
+    const number = n => hasNumber(n) ? Math.round(Number(n)).toLocaleString(lang==='ru'?'ru-RU':'en-US') : '—';
+    const decimal = n => hasNumber(n) ? Number(n).toLocaleString(lang==='ru'?'ru-RU':'en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+    const pct = n => hasNumber(n) ? `${decimal(n)}%` : '—';
     const row = (label,value,positive=false,title='') => {const shown=String(value).trim();if(!shown||/^(?:—\s*[·–]\s*)*—$/.test(shown))return '';return `<div class="hero-stat-row"${title?` data-stat-tip="${encodeURIComponent(title)}" tabindex="0" aria-describedby="heroStatTooltip"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${shown}</span></div>`;};
     const cap = {
       strength:lang==='ru'?'Даёт воину силу атаки и немного блокирования щитом. Универсального капа нет.':'Adds warrior attack power and a small amount of shield block. No universal cap.',
@@ -269,50 +268,53 @@
     };
     const ratings=c.ratings||{};
     const rating=(id)=>ratings[id]||{};
-    const ratingVal=(id,field='rating')=>Number.isFinite(+rating(id)[field])?number(rating(id)[field]):'—';
-    const ratingPct=(id)=>Number.isFinite(+rating(id).bonus)?pct(rating(id).bonus):'—';
-    const getRes=(id)=>Number.isFinite(+c.resistances?.[id])?number(c.resistances[id]):'—';
-    const resilienceRatings=[15,16,17].map(id=>+rating(id).rating).filter(Number.isFinite);
+    const ratingVal=(id,field='rating')=>hasNumber(rating(id)[field])?number(rating(id)[field]):'—';
+    const ratingPct=(id)=>hasNumber(rating(id).bonus)?pct(rating(id).bonus):'—';
+    const getRes=(id)=>hasNumber(c.resistances?.[id])?number(c.resistances[id]):'—';
+    const resilienceRatings=[15,16,17].map(id=>rating(id).rating).filter(hasNumber).map(Number);
     const resilience=resilienceRatings.length?number(Math.min(...resilienceRatings)):'—';
-    const ratingNames=lang==='ru'
-      ? ['Навык владения оружием','Защита','Уклонение','Парирование','Блок','Меткость ближнего боя','Меткость дальнего боя','Меткость заклинаний','Крит ближнего боя','Крит дальнего боя','Крит заклинаний','Избегание попаданий ближнего боя','Избегание попаданий дальнего боя','Избегание попаданий заклинаний','Сопротивление криту ближнего боя','Сопротивление криту дальнего боя','Сопротивление криту заклинаний','Скорость ближнего боя','Скорость дальнего боя','Скорость заклинаний','Навык оружия в правой руке','Навык оружия в левой руке','Навык дальнобойного оружия','Мастерство','Бронепробивание']
-      : ['Weapon skill','Defense','Dodge','Parry','Block','Melee hit','Ranged hit','Spell hit','Melee crit','Ranged crit','Spell crit','Melee hit avoidance','Ranged hit avoidance','Spell hit avoidance','Melee crit resistance','Ranged crit resistance','Spell crit resistance','Melee haste','Ranged haste','Spell haste','Main-hand weapon skill','Off-hand weapon skill','Ranged weapon skill','Expertise','Armor penetration'];
-    const warriorRatingIds=new Set([1,2,3,4,5,6,9,12,15,16,17,18,21,22,24,25]);
-    const allRatings=ratingNames.map((name,index)=>warriorRatingIds.has(index+1)?row(name,`${ratingVal(index+1)} · ${ratingPct(index+1)}`,false,lang==='ru'?'Первое число — рейтинг из игры, второе — его текущий процентный эффект.':'First value is the in-game rating; second is its current percentage effect.'):'').join('');
-    const complete=Number.isFinite(+c.hp)&&Number.isFinite(+c.armor)&&Number.isFinite(+c.ap)&&!!c.ratings&&Number.isFinite(+c.damageMin);
-    const note=lang==='ru'
-      ? (complete?'Значения сняты из клиента игры. Капы указаны для ориентира на 80-м уровне и зависят от цели, талантов и группы.':'Показываются только полученные данные. Запусти команды 2–4 в настройках героя, чтобы добавить боевые характеристики; пустые поля скрываются.')
-      : (complete?'Values are read from the game client. Level-80 caps are reference points and depend on target, talents, and group.':'Only received data is shown. Run commands 2–4 in Hero settings to add combat stats; empty fields stay hidden.');
+    const tip=(ru,en)=>lang==='ru'?ru:en;
+    const valueWithRating=(id,bonus=true)=>`${ratingVal(id)}${bonus?` · ${ratingPct(id)}`:''}`;
+    const defenseChance=(chance,id)=>{const values=[hasNumber(chance)?pct(chance):'',ratingVal(id)!=='—'?`${ratingVal(id)} ${lang==='ru'?'рейтинга':'rating'}`:''].filter(Boolean);return values.length?values.join(' · '):'—';};
     pane.innerHTML = `${avg?`<div class="hero-stats-title">${lang==='ru'?'Средний уровень предметов':'Average item level'} <span class="value">${avg}</span></div>`:''}
       <div class="hero-stats-section">${lang==='ru'?'Основные':'Basic'}</div>
       ${row(lang==='ru'?'Сила':'Strength',number(c.str),true,cap.strength)}
       ${row(lang==='ru'?'Ловкость':'Agility',number(c.agi),false,cap.agility)}
       ${row(lang==='ru'?'Выносливость':'Stamina',number(c.sta),true,cap.stamina)}
+      ${row(lang==='ru'?'Интеллект':'Intellect',number(c.int),false,tip('Повышает запас маны и шанс заклинательного критического удара; у воина обычно не приоритетная характеристика.','Increases mana and spell critical chance; generally not a warrior gearing priority.'))}
       ${row(lang==='ru'?'Здоровье':'Health',number(c.hp),true,lang==='ru'?'Максимальный запас здоровья персонажа из клиента игры.':'Character maximum health reported by the game client.')}
       ${row(lang==='ru'?'Броня':'Armor',number(c.armor),false,lang==='ru'?'Снижает входящий физический урон; не защищает от магии.':'Reduces incoming physical damage, not magic damage.')}
       <div class="hero-stats-section">${lang==='ru'?'Ближний бой':'Melee'}</div>
       ${row(lang==='ru'?'Урон':'Damage',`${decimal(c.damageMin)}–${decimal(c.damageMax)}`,false,lang==='ru'?'Диапазон урона основного оружия из игрового листа персонажа.':'Main-hand weapon damage range from the character sheet.')}
-      ${row(lang==='ru'?'Скорость':'Speed',`${decimal(c.meleeSpeed)} ${lang==='ru'?'с':'s'}`,false,lang==='ru'?'Скорость взмаха основного оружия в секундах; рейтинг скорости повышает частоту ударов.':'Main-hand swing time in seconds; haste rating increases swing frequency.')}
+      ${row(lang==='ru'?'Скорость основного оружия':'Main-hand speed',`${decimal(c.meleeSpeed)} ${lang==='ru'?'с':'s'}`,false,lang==='ru'?'Время между взмахами основного оружия в секундах.':'Time between main-hand swings, in seconds.')}
+      ${row(lang==='ru'?'Скорость второй руки':'Off-hand speed',`${decimal(c.offhandSpeed)} ${lang==='ru'?'с':'s'}`,false,tip('Время между взмахами оружия во второй руке в секундах.','Time between off-hand swings, in seconds.'))}
       ${row(lang==='ru'?'Сила атаки':'Attack power',number(c.ap),true,lang==='ru'?'Повышает физический урон. Для воина сила даёт 2 силы атаки за единицу до модификаторов.':'Increases physical damage. Warrior strength grants 2 attack power per point before modifiers.')}
-      ${row(lang==='ru'?'Меткость':'Hit',`${ratingVal(6)} · ${ratingPct(6)}`,false,cap.hit)}
+      ${row(lang==='ru'?'Меткость':'Hit',valueWithRating(6),false,cap.hit)}
       ${row(lang==='ru'?'Критический удар':'Critical strike',pct(c.crit),false,cap.noCap)}
-      ${row(lang==='ru'?'Рейтинг крит. удара':'Critical rating',`${ratingVal(9)} · ${ratingPct(9)}`,false,cap.noCap)}
-      ${row(lang==='ru'?'Скорость':'Haste',`${ratingVal(18)} · ${ratingPct(18)}`,false,cap.noCap)}
+      ${row(lang==='ru'?'Рейтинг крит. удара':'Critical rating',valueWithRating(9),false,cap.noCap)}
+      ${row(lang==='ru'?'Скорость':'Haste',valueWithRating(18),false,tip('Ускоряет автоатаки и некоторые эффекты; постоянного капа для всех боёв нет.','Speeds up auto-attacks and some effects; there is no universal cap.'))}
       ${row(lang==='ru'?'Мастерство':'Expertise',`${number(c.expertise)} · ${pct(c.expertisePct)}`,false,cap.expertise)}
       ${row(lang==='ru'?'Бронепробивание':'Armor penetration',`${ratingVal(25)} · ${pct(c.armorPen)}`,false,cap.arp)}
-      <div class="hero-stats-section">${lang==='ru'?'Защита и сопротивления':'Defense & resistances'}</div>
+      <div class="hero-stats-section">${lang==='ru'?'Дальний бой':'Ranged'}</div>
+      ${row(lang==='ru'?'Урон дальнего боя':'Ranged damage',`${decimal(c.rangedMin)}–${decimal(c.rangedMax)}`,false,tip('Диапазон урона дальнобойного оружия из листа персонажа.','Ranged weapon damage range from the character sheet.'))}
+      ${row(lang==='ru'?'Скорость дальнего боя':'Ranged speed',`${decimal(c.rangedSpeed)} ${lang==='ru'?'с':'s'}`,false,tip('Время между выстрелами в секундах.','Time between ranged attacks, in seconds.'))}
+      ${row(lang==='ru'?'Сила атаки дальнего боя':'Ranged attack power',number(c.rangedAP),false,tip('Бонус силы атаки для дальнобойного оружия.','Attack power bonus for ranged weapons.'))}
+      ${row(lang==='ru'?'Меткость дальнего боя':'Ranged hit',valueWithRating(7),false,cap.noCap)}
+      ${row(lang==='ru'?'Крит дальнего боя':'Ranged critical strike',pct(c.rangedCrit),false,cap.noCap)}
+      <div class="hero-stats-section">${lang==='ru'?'Защита':'Defense'}</div>
       ${row(lang==='ru'?'Защита':'Defense',c.defense==null?'—':`${number(c.defense)} (+${number(c.defenseBonus||0)})`,false,cap.defense)}
-      ${row(lang==='ru'?'Уклонение':'Dodge',`${pct(c.dodge)} · ${ratingVal(3)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
-      ${row(lang==='ru'?'Парирование':'Parry',`${pct(c.parry)} · ${ratingVal(4)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
-      ${row(lang==='ru'?'Блок':'Block',`${pct(c.block)} · ${ratingVal(5)} ${lang==='ru'?'рейтинга':'rating'}`,false,cap.noCap)}
+      ${row(lang==='ru'?'Рейтинг защиты':'Defense rating',valueWithRating(2),false,cap.defense)}
+      ${row(lang==='ru'?'Уклонение':'Dodge',defenseChance(c.dodge,3),false,cap.noCap)}
+      ${row(lang==='ru'?'Парирование':'Parry',defenseChance(c.parry,4),false,cap.noCap)}
+      ${row(lang==='ru'?'Блок':'Block',defenseChance(c.block,5),false,cap.noCap)}
       ${row(lang==='ru'?'Устойчивость':'Resilience',`${resilience} ${lang==='ru'?'рейтинга':'rating'}`,false,lang==='ru'?'Снижает входящий критический урон и шанс получить крит; игра сводит три рейтинга к минимальному значению. Универсального PvP-капа нет.':'Reduces incoming critical damage and chance to be critically hit; the game uses the lowest of three ratings. No universal PvP cap.')}
+      <div class="hero-stats-section">${lang==='ru'?'Сопротивления':'Resistances'}</div>
       ${row(lang==='ru'?'Тайная магия':'Arcane resistance',getRes(7),false,cap.noCap)}
       ${row(lang==='ru'?'Огонь':'Fire resistance',getRes(3),false,cap.noCap)}
       ${row(lang==='ru'?'Природа':'Nature resistance',getRes(4),false,cap.noCap)}
       ${row(lang==='ru'?'Лёд':'Frost resistance',getRes(5),false,cap.noCap)}
       ${row(lang==='ru'?'Тьма':'Shadow resistance',getRes(6),false,cap.noCap)}
-      <details class="hero-cap-guide" open><summary>${lang==='ru'?'Все рейтинги и пояснения':'All ratings and notes'}</summary>${allRatings}<p>${cap.hit}</p><p>${cap.expertise}</p><p>${cap.defense}</p><p>${cap.arp}</p><p>${cap.noCap}</p></details>
-      <div class="hero-stats-note">${note}</div>`;
+      `;
   }
 
   function refreshLevelPreview() {
@@ -490,11 +492,11 @@
       } else if(m[1] === '4') {
         char.int=+p[0];char.spi=+p[1];char.defense=+p[2];char.defenseBonus=+p[3];
         char.expertisePct=+p[4];char.offhandExpertisePct=+p[5];char.rangedExpertisePct=+p[6];char.rangedCrit=+p[7];
-        for(let i=1;i<=25;i++){const pair=(p[i+7]||'').split(':');char.ratings[i]={rating:+pair[0]||0,bonus:+pair[1]||0};}
+        for(let i=1;i<=25;i++){const pair=(p[i+7]||'').split(':');if(pair.length===2&&pair[0]!==''&&pair[1]!==''&&Number.isFinite(+pair[0])&&Number.isFinite(+pair[1]))char.ratings[i]={rating:+pair[0],bonus:+pair[1]};}
         char.expertise=char.ratings[24]?.bonus||0;
       } else if(m[1] === '5') {
-        char.damageMin=+p[0];char.damageMax=+p[1];char.meleeSpeed=+p[2];char.rangedMin=+p[3];char.rangedMax=+p[4];
-        char.resistances={3:+p[5],4:+p[6],5:+p[7],6:+p[8],7:+p[9]};char.spellPen=+p[10];char.armorPen=+p[11];
+        char.damageMin=+p[0];char.damageMax=+p[1];char.meleeSpeed=+p[2];char.offhandSpeed=+p[3];char.rangedSpeed=+p[4];char.rangedMin=+p[5];char.rangedMax=+p[6];
+        char.resistances={3:+p[7],4:+p[8],5:+p[9],6:+p[10],7:+p[11]};char.spellPen=+p[12];char.armorPen=+p[13];
       }
     }
     if (!found) { if(!silent) alert(L[lang].err); return; }
@@ -710,8 +712,10 @@
     let activeModel=null, modelRequest=0;
     const convertedItems=new Map(Object.entries(JSON.parse(localStorage.getItem('wotlkDisplayIds')||'{}')));
     // Keep known appearances available even when the public conversion API is down.
-    for(const [key,id] of Object.entries({'10763:28783':178483,'7719:15811':15562}))
-      if(!convertedItems.has(key))convertedItems.set(key,id);
+    for(const [key,id] of Object.entries({'4724:21302':178149,'13010:28438':28438,'10763:28783':178483,'7719:15811':15562})){
+      convertedItems.set(key,id);
+      try{localStorage.setItem('wotlkDisplayIds',JSON.stringify(Object.fromEntries(convertedItems)));}catch(_){}
+    }
     const convertingItems=new Map();
     const displayConversionQueue=[];let activeDisplayConversions=0;
     const queueDisplayConversion=task=>new Promise((resolve,reject)=>{
