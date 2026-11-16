@@ -137,7 +137,7 @@
       state.rippleAt = performance.now();
       if (reduceMotion) state.raf = requestAnimationFrame(render);
     };
-    const zoneFrom = target => target instanceof Element ? target.closest('.map-zone,.map-label') : null;
+    const zoneFrom = target => target instanceof Element ? target.closest('.map-label,.map-destination') : null;
     card.addEventListener('pointerover', event => { const zone = zoneFrom(event.target); if (zone) { state.hovered = zoneIndex[zone.dataset.spec] ?? -1; if (reduceMotion) state.raf = requestAnimationFrame(render); } });
     card.addEventListener('pointerout', event => { const zone = zoneFrom(event.target); if (zone && !zone.contains(event.relatedTarget)) { state.hovered = -1; if (reduceMotion) state.raf = requestAnimationFrame(render); } });
     card.addEventListener('pointerdown', event => { if (zoneFrom(event.target)) ripple(event); });
