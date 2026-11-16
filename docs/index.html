@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WoW 3.3.5 · Fury Warrior — умные макросы</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261116g">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116h">
 <style>
   .hero-grid { grid-template-columns: 1fr; grid-template-rows: 1fr; overflow:hidden; }
   .hero-main { position:relative; display:flex; flex-direction:column; justify-content:center; gap:14px; overflow:hidden;
@@ -139,6 +139,55 @@
     #app .hero-main .map-destination img{width:20px;height:20px}
   }
   @media(prefers-reduced-motion:reduce){.map-destination{transition:none}}
+  /* The map controls use a shared brass-and-parchment language instead of app-like pills. */
+  #app .hero-main>.map-label{
+    min-width:0!important;width:max-content;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;
+    transition:transform .24s ease,filter .24s ease;filter:drop-shadow(0 5px 5px #130a05aa)
+  }
+  #app .hero-main>.map-label img{
+    width:clamp(42px,4.8vw,58px)!important;height:clamp(42px,4.8vw,58px)!important;padding:4px;
+    border:1px solid #eed187!important;border-radius:50%!important;background:radial-gradient(circle at 34% 27%,#dcae5a,#72431e 65%,#29180e 100%);
+    box-shadow:0 0 0 3px #27190ec9,0 2px 5px #080503,inset 0 1px 2px #fff2c466
+  }
+  #app .hero-main>.map-label span{display:block;padding:2px 10px 3px;border:1px solid #d7b968;border-radius:4px 4px 8px 8px;background:linear-gradient(180deg,#493018f2,#21160ff2);box-shadow:inset 0 1px #ffe5a144;line-height:1.1}
+  #app .hero-main>.map-label b{color:#f5dfa0!important;font:700 clamp(11px,1.05vw,14px)/1.1 Georgia,serif!important;letter-spacing:.045em;text-shadow:0 1px 2px #1a0e05}
+  #app .hero-main>.map-label:hover,#app .hero-main>.map-label:focus-visible{transform:translate(-50%,-58%) scale(1.09)!important;filter:drop-shadow(0 9px 10px #0b0602) brightness(1.12);outline:none}
+  #app .hero-main>.map-label.selected{filter:drop-shadow(0 10px 10px #0b0602) brightness(1.1)}
+  #app .hero-main>.map-label.selected img{box-shadow:0 0 0 3px #291a0edb,0 0 0 5px #f0d47a,0 0 22px #ffc84caa,inset 0 1px 2px #fff2c466}
+  #app .hero-main>.map-label.selected span{border-color:#ffe28b;background:linear-gradient(180deg,#775124f5,#2c1b0ff5)}
+  #app .hero-main>.map-label[data-spec="arms"]{left:24%;top:78%}
+  #app .hero-main>.map-label[data-spec="fury"]{left:55%;top:28%}
+  #app .hero-main>.map-label[data-spec="prot"]{left:80%;top:73%}
+  #app .hero-main>.world-markers a.map-destination{
+    width:max-content;min-width:62px;max-width:112px;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;
+    transform:translate(-50%,-50%);transition:transform .24s ease,filter .24s ease;filter:drop-shadow(0 5px 5px #130a05aa);text-align:center
+  }
+  #app .hero-main>.world-markers a.map-destination::before{display:none}
+  #app .hero-main>.world-markers a.map-destination img{
+    width:clamp(38px,4vw,50px)!important;height:clamp(38px,4vw,50px)!important;padding:4px;border:1px solid #e5c87b;border-radius:50%;
+    background:radial-gradient(circle at 34% 27%,#dcae5a,#72431e 65%,#29180e 100%);box-shadow:0 0 0 3px #27190ec9,0 2px 5px #080503,inset 0 1px 2px #fff2c466
+  }
+  #app .hero-main>.world-markers a.map-destination span{padding:2px 8px 3px;border:1px solid #c9a95e;border-radius:4px 4px 8px 8px;background:linear-gradient(180deg,#493018ed,#21160ff2);box-shadow:inset 0 1px #ffe5a133;color:#f5dfa0;font:700 clamp(10px,.85vw,12px)/1.1 Georgia,serif;white-space:nowrap;text-shadow:0 1px 2px #1a0e05}
+  #app .hero-main>.world-markers a.map-destination:hover,#app .hero-main>.world-markers a.map-destination:focus-visible{transform:translate(-50%,-57%) scale(1.09);filter:drop-shadow(0 9px 10px #0b0602) brightness(1.13);outline:none}
+  #app .hero-main>.world-markers a.map-destination:focus-visible img{box-shadow:0 0 0 3px #291a0edb,0 0 0 5px #f0d47a,0 0 20px #ffc84c99}
+  #app .hero-main>.map-guide-wheel{filter:drop-shadow(0 8px 9px #170d06aa)}
+  #app .hero-main .map-guide-trigger{border:2px solid #f0d47a;background:radial-gradient(circle at 35% 28%,#cda55a,#70451e 56%,#27180d 76%);box-shadow:0 0 0 4px #291a0ecc,0 0 24px #f2c75c88,inset 0 1px 4px #fff0b266}
+  #app .hero-main .map-guide-trigger span{border:1px solid #e8cf84;border-radius:4px 4px 9px 9px;background:linear-gradient(180deg,#57391fed,#21160ff5);color:#f9e6ad;font-family:Georgia,serif;letter-spacing:.04em}
+  #app .hero-main.map-live{background-image:linear-gradient(90deg,#110c08aa,#100b0877 38%,#100b0833 74%),url('assets/icons/northrend-map.png');background-color:#18120b}
+  #app .hero-main.map-live::after{background:radial-gradient(ellipse at 50% 48%,transparent 58%,#100d0855 100%),linear-gradient(180deg,#07090b11,transparent 24%,transparent 78%,#090b0e55)}
+  #app .hero-main.map-live .map-shader{opacity:.54!important;mix-blend-mode:screen}
+  @media(max-width:860px){
+    #app .hero-main>.map-label[data-spec="arms"]{left:23%!important;top:78%!important}
+    #app .hero-main>.map-label[data-spec="fury"]{left:55%!important;top:29%!important}
+    #app .hero-main>.map-label[data-spec="prot"]{left:79%!important;top:75%!important}
+    #app .hero-main>.map-label img{width:clamp(32px,8vw,44px)!important;height:clamp(32px,8vw,44px)!important}
+    #app .hero-main>.map-label span{padding:2px 7px 3px}
+    #app .hero-main>.world-markers a.map-destination img{width:clamp(30px,7vw,40px)!important;height:clamp(30px,7vw,40px)!important}
+    #app .hero-main>.world-markers a.map-destination span{font-size:clamp(9px,2.5vw,11px);padding:2px 6px}
+  }
+  @media(prefers-reduced-motion:reduce){#app .hero-main>.map-label,#app .hero-main>.world-markers a.map-destination{transition:none!important}}
 </style>
 </head>
 <body>
@@ -151,9 +200,9 @@
       <nav class="world-markers" aria-label="Разделы сайта на карте">
         <a class="map-destination" data-destination="hero" href="hero.html?lang=ru&amp;spec=fury"><img src="assets/icons/nav-hero.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Мой воин" data-en="My Warrior">Мой воин</span></a>
         <a class="map-destination" data-destination="talents" href="talents.html?lang=ru&amp;spec=fury"><img src="assets/icons/nav-talents.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Ветка развития" data-en="Talent Path">Ветка развития</span></a>
-        <a class="map-destination" data-destination="macro-single" href="macros.html?macro=0&amp;lang=ru&amp;spec=fury" aria-label="Макрос для одной цели"><img src="assets/icons/nav-macros.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Одна цель" data-en="Single target">Одна цель</span></a>
-        <a class="map-destination" data-destination="macro-pack" href="macros.html?macro=1&amp;lang=ru&amp;spec=fury" aria-label="Макрос для группы целей"><img src="assets/icons/nav-macros.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Группа" data-en="Group">Группа</span></a>
-        <a class="map-destination" data-destination="macro-control" href="macros.html?macro=2&amp;lang=ru&amp;spec=fury" aria-label="Макрос для контроля"><img src="assets/icons/nav-macros.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Контроль" data-en="Control">Контроль</span></a>
+        <a class="map-destination" data-destination="macro-single" href="macros.html?macro=0&amp;lang=ru&amp;spec=fury" aria-label="Макрос для одной цели"><img src="assets/icons/nav-macro-single.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Одна цель" data-en="Single target">Одна цель</span></a>
+        <a class="map-destination" data-destination="macro-pack" href="macros.html?macro=1&amp;lang=ru&amp;spec=fury" aria-label="Макрос для группы целей"><img src="assets/icons/nav-macro-pack.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Группа" data-en="Group">Группа</span></a>
+        <a class="map-destination" data-destination="macro-control" href="macros.html?macro=2&amp;lang=ru&amp;spec=fury" aria-label="Макрос для контроля"><img src="assets/icons/nav-macro-control.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Контроль" data-en="Control">Контроль</span></a>
       </nav>
       <h1 data-ru="Умные макросы для <b>воина-неистовства</b>" data-en="Smart macros for the <b>Fury Warrior</b>">Умные макросы для <b>воина-неистовства</b></h1>
       <p data-ru="WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку."
