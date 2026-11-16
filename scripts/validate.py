@@ -57,7 +57,7 @@ def main()->int:
     for lang,items in sources.items():
         for key,body in items.items():
             if web.get(lang,{}).get(key)!=body: errors.append(f"Web catalog mismatch: {lang}/{key}")
-        for extra in ("04-buff-check","export-part1","export-part2","export-character","export-stats","export-ratings","export-weapons"):
+        for extra in ("04-buff-check","export-part1","export-part2","export-character","export-stats","export-ratings","export-weapons","export-melee"):
             expected=(ROOT/"macros"/"warrior-smart"/lang/(extra+".txt")).read_text(encoding="utf-8-sig").strip()
             if web.get(lang,{}).get(extra)!=expected: errors.append(f"Web export macro mismatch: {lang}/{extra}")
             if extra.startswith("export-"):

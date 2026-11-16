@@ -1,2 +1,2 @@
 # Экспорт урона, скорости оружия, сопротивлений и пробивания заклинаний.
-/run u="player"r={}for i=3,7 do _,r[i]=UnitResistance(u,i)end a,b=UnitDamage(u)x,y,z=UnitRangedDamage(u)m,n=UnitAttackSpeed(u)print("WEXP5|"..table.concat({a,b,m,n,x,y,z,r[3],r[4],r[5],r[6],r[7],GetSpellPenetration(),GetArmorPenetration()},"|"))
+/run u="player"r={}for i=3,7 do _,r[i]=UnitResistance(u,i)end x,y,z=UnitRangedDamage(u)print("WEXP5|"..table.concat({x or 0,y or 0,z or 0,r[3],r[4],r[5],r[6],r[7],GetSpellPenetration(),GetArmorPenetration()},"|"))

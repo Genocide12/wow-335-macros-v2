@@ -152,6 +152,7 @@
       <div class="export-copy"><span data-ru="2 · Здоровье, броня, атака и защита" data-en="2 · Health, armor, attack, and defense">2 · Здоровье, броня, атака и защита</span><span class="macro-box" id="mStats"></span></div>
       <div class="export-copy"><span data-ru="3 · Все рейтинги боя, интеллект и дух" data-en="3 · Combat ratings, intellect, and spirit">3 · Все рейтинги боя, интеллект и дух</span><span class="macro-box" id="mRatings"></span></div>
       <div class="export-copy"><span data-ru="4 · Урон оружия и сопротивления" data-en="4 · Weapon damage and resistances">4 · Урон оружия и сопротивления</span><span class="macro-box" id="mWeapons"></span></div>
+      <div class="export-copy"><span data-ru="5 · Урон и скорость ближнего боя" data-en="5 · Melee damage and speed">5 · Урон и скорость ближнего боя</span><span class="macro-box" id="mMelee"></span></div>
       <textarea id="paste" placeholder="WEXP1|…&#10;WEXP2|…"></textarea>
       <div class="import-progress" id="importProgress" aria-live="polite">Запускай команды по порядку и вставляй ответ из чата после каждой; сайт объединит данные.</div>
       <div class="import-actions"><button class="btn" id="pasteClipboard" data-ru="Вставить ответ из игры" data-en="Paste response from game">Вставить ответ из игры</button><button class="btn ghost" id="resetHeroDemo" type="button" data-ru="Сбросить к демо · 1 уровень" data-en="Reset to demo · level 1">Сбросить к демо · 1 уровень</button></div>
@@ -162,7 +163,7 @@
 <div class="tipcard" id="itemtip"></div>
 <div class="hero-stat-tooltip" id="heroStatTooltip" role="tooltip"><div class="tip-title"></div><div class="tip-value"></div><div class="tip-copy"></div></div>
 <script src="assets/js/app.js?v=20261116b"></script>
-<script src="assets/js/macros-data.js?v=20261116b"></script>
+<script src="assets/js/macros-data.js?v=20261116e"></script>
 <script src="assets/js/talents-data.js"></script>
 <script src="assets/data/wotlk-item-displayids.js"></script>
 <script src="assets/js/leveling-gear.js?v=20261116b"></script>
@@ -255,6 +256,7 @@
     const number = n => hasNumber(n) ? Math.round(Number(n)).toLocaleString(lang==='ru'?'ru-RU':'en-US') : '—';
     const decimal = n => hasNumber(n) ? Number(n).toLocaleString(lang==='ru'?'ru-RU':'en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
     const pct = n => hasNumber(n) ? `${decimal(n)}%` : '—';
+    const damageRange = (min,max) => hasNumber(min)&&hasNumber(max)?`${Math.max(Math.floor(Number(min)),1)}–${Math.max(Math.ceil(Number(max)),1)}`:'—';
     const row = (label,value,positive=false,title='') => {const shown=String(value).trim();if(!shown||/^(?:—\s*[·–]\s*)*—$/.test(shown))return '';return `<div class="hero-stat-row"${title?` data-stat-tip="${encodeURIComponent(title)}" tabindex="0" aria-describedby="heroStatTooltip"`:''}><span class="label">${label}</span><span class="value${positive?' positive':''}">${shown}</span></div>`;};
     const cap = {
       strength:lang==='ru'?'Даёт воину силу атаки и немного блокирования щитом. Универсального капа нет.':'Adds warrior attack power and a small amount of shield block. No universal cap.',
@@ -273,6 +275,8 @@
     const getRes=(id)=>hasNumber(c.resistances?.[id])?number(c.resistances[id]):'—';
     const resilienceRatings=[15,16,17].map(id=>rating(id).rating).filter(hasNumber).map(Number);
     const resilience=resilienceRatings.length?number(Math.min(...resilienceRatings)):'—';
+    const hasOffhand=hasNumber(c.offhandSpeed)&&Number(c.offhandSpeed)>0&&hasNumber(c.offhandMin)&&hasNumber(c.offhandMax);
+    const hasRanged=!!state.gear[18];
     const tip=(ru,en)=>lang==='ru'?ru:en;
     const valueWithRating=(id,bonus=true)=>`${ratingVal(id)}${bonus?` · ${ratingPct(id)}`:''}`;
     const defenseChance=(chance,id)=>{const values=[hasNumber(chance)?pct(chance):'',ratingVal(id)!=='—'?`${ratingVal(id)} ${lang==='ru'?'рейтинга':'rating'}`:''].filter(Boolean);return values.length?values.join(' · '):'—';};
@@ -282,13 +286,17 @@
       ${row(lang==='ru'?'Ловкость':'Agility',number(c.agi),false,cap.agility)}
       ${row(lang==='ru'?'Выносливость':'Stamina',number(c.sta),true,cap.stamina)}
       ${row(lang==='ru'?'Интеллект':'Intellect',number(c.int),false,tip('Повышает запас маны и шанс заклинательного критического удара; у воина обычно не приоритетная характеристика.','Increases mana and spell critical chance; generally not a warrior gearing priority.'))}
+      ${row(lang==='ru'?'Дух':'Spirit',number(c.spi),false,tip('Влияет на восстановление здоровья вне боя; игровой клиент показывает итоговое значение.','Affects health regeneration outside combat; this is the effective value reported by the game client.'))}
       ${row(lang==='ru'?'Здоровье':'Health',number(c.hp),true,lang==='ru'?'Максимальный запас здоровья персонажа из клиента игры.':'Character maximum health reported by the game client.')}
       ${row(lang==='ru'?'Броня':'Armor',number(c.armor),false,lang==='ru'?'Снижает входящий физический урон; не защищает от магии.':'Reduces incoming physical damage, not magic damage.')}
       <div class="hero-stats-section">${lang==='ru'?'Ближний бой':'Melee'}</div>
-      ${row(lang==='ru'?'Урон':'Damage',`${decimal(c.damageMin)}–${decimal(c.damageMax)}`,false,lang==='ru'?'Диапазон урона основного оружия из игрового листа персонажа.':'Main-hand weapon damage range from the character sheet.')}
+      ${row(lang==='ru'?'Урон':'Damage',damageRange(c.damageMin,c.damageMax),false,lang==='ru'?'Диапазон урона основного оружия из игрового листа персонажа.':'Main-hand weapon damage range from the character sheet.')}
+      ${hasOffhand?row(lang==='ru'?'Урон второй руки':'Off-hand damage',damageRange(c.offhandMin,c.offhandMax),false,tip('Урон оружия во второй руке по данным игрового клиента.','Off-hand weapon damage reported by the game client.')):''}
       ${row(lang==='ru'?'Скорость основного оружия':'Main-hand speed',`${decimal(c.meleeSpeed)} ${lang==='ru'?'с':'s'}`,false,lang==='ru'?'Время между взмахами основного оружия в секундах.':'Time between main-hand swings, in seconds.')}
-      ${row(lang==='ru'?'Скорость второй руки':'Off-hand speed',`${decimal(c.offhandSpeed)} ${lang==='ru'?'с':'s'}`,false,tip('Время между взмахами оружия во второй руке в секундах.','Time between off-hand swings, in seconds.'))}
+      ${hasOffhand?row(lang==='ru'?'Скорость второй руки':'Off-hand speed',`${decimal(c.offhandSpeed)} ${lang==='ru'?'с':'s'}`,false,tip('Время между взмахами оружия во второй руке в секундах.','Time between off-hand swings, in seconds.')):''}
       ${row(lang==='ru'?'Сила атаки':'Attack power',number(c.ap),true,lang==='ru'?'Повышает физический урон. Для воина сила даёт 2 силы атаки за единицу до модификаторов.':'Increases physical damage. Warrior strength grants 2 attack power per point before modifiers.')}
+      ${hasNumber(c.mainSkill)&&c.mainSkill>0?row(lang==='ru'?'Навык оружия':'Weapon skill',number(c.mainSkill),false,tip('Итоговый навык основного оружия из окна персонажа игры.','Effective main-hand weapon skill from the game character pane.')):''}
+      ${hasOffhand&&hasNumber(c.offhandSkill)&&c.offhandSkill>0?row(lang==='ru'?'Навык второй руки':'Off-hand weapon skill',number(c.offhandSkill),false,tip('Итоговый навык оружия во второй руке из игры.','Effective off-hand weapon skill from the game.')):''}
       ${row(lang==='ru'?'Меткость':'Hit',valueWithRating(6),false,cap.hit)}
       ${row(lang==='ru'?'Критический удар':'Critical strike',pct(c.crit),false,cap.noCap)}
       ${row(lang==='ru'?'Рейтинг крит. удара':'Critical rating',valueWithRating(9),false,cap.noCap)}
@@ -296,17 +304,20 @@
       ${row(lang==='ru'?'Мастерство':'Expertise',`${number(c.expertise)} · ${pct(c.expertisePct)}`,false,cap.expertise)}
       ${row(lang==='ru'?'Бронепробивание':'Armor penetration',`${ratingVal(25)} · ${pct(c.armorPen)}`,false,cap.arp)}
       <div class="hero-stats-section">${lang==='ru'?'Дальний бой':'Ranged'}</div>
-      ${row(lang==='ru'?'Урон дальнего боя':'Ranged damage',`${decimal(c.rangedMin)}–${decimal(c.rangedMax)}`,false,tip('Диапазон урона дальнобойного оружия из листа персонажа.','Ranged weapon damage range from the character sheet.'))}
-      ${row(lang==='ru'?'Скорость дальнего боя':'Ranged speed',`${decimal(c.rangedSpeed)} ${lang==='ru'?'с':'s'}`,false,tip('Время между выстрелами в секундах.','Time between ranged attacks, in seconds.'))}
-      ${row(lang==='ru'?'Сила атаки дальнего боя':'Ranged attack power',number(c.rangedAP),false,tip('Бонус силы атаки для дальнобойного оружия.','Attack power bonus for ranged weapons.'))}
-      ${row(lang==='ru'?'Меткость дальнего боя':'Ranged hit',valueWithRating(7),false,cap.noCap)}
-      ${row(lang==='ru'?'Крит дальнего боя':'Ranged critical strike',pct(c.rangedCrit),false,cap.noCap)}
+      ${hasRanged?row(lang==='ru'?'Урон дальнего боя':'Ranged damage',`${decimal(c.rangedMin)}–${decimal(c.rangedMax)}`,false,tip('Диапазон урона дальнобойного оружия из листа персонажа.','Ranged weapon damage from the character sheet.')):''}
+      ${hasRanged?row(lang==='ru'?'Скорость дальнего боя':'Ranged speed',`${decimal(c.rangedSpeed)} ${lang==='ru'?'с':'s'}`,false,tip('Время между выстрелами в секундах.','Time between ranged attacks, in seconds.')):''}
+      ${hasRanged?row(lang==='ru'?'Сила атаки дальнего боя':'Ranged attack power',number(c.rangedAP),false,tip('Бонус силы атаки для дальнобойного оружия.','Ranged attack power reported by the game client.')):''}
+      ${hasRanged?row(lang==='ru'?'Меткость дальнего боя':'Ranged hit',valueWithRating(7),false,cap.noCap):''}
+      ${hasRanged?row(lang==='ru'?'Крит дальнего боя':'Ranged critical strike',pct(c.rangedCrit),false,cap.noCap):''}
+      ${hasRanged&&hasNumber(c.rangedSkill)&&c.rangedSkill>0?row(lang==='ru'?'Навык дальнего боя':'Ranged weapon skill',number(c.rangedSkill),false,tip('Итоговый навык дальнобойного оружия из игры.','Effective ranged weapon skill from the game.')):''}
+      ${hasNumber(c.spellPen)&&c.spellPen>0?`<div class="hero-stats-section">${lang==='ru'?'Магия':'Spell'}</div>${row(lang==='ru'?'Пробивание заклинаний':'Spell penetration',number(c.spellPen),false,tip('Уменьшает сопротивление цели заклинаниям.','Reduces a target’s resistance to spells.'))}`:''}
       <div class="hero-stats-section">${lang==='ru'?'Защита':'Defense'}</div>
       ${row(lang==='ru'?'Защита':'Defense',c.defense==null?'—':`${number(c.defense)} (+${number(c.defenseBonus||0)})`,false,cap.defense)}
       ${row(lang==='ru'?'Рейтинг защиты':'Defense rating',valueWithRating(2),false,cap.defense)}
       ${row(lang==='ru'?'Уклонение':'Dodge',defenseChance(c.dodge,3),false,cap.noCap)}
       ${row(lang==='ru'?'Парирование':'Parry',defenseChance(c.parry,4),false,cap.noCap)}
       ${row(lang==='ru'?'Блок':'Block',defenseChance(c.block,5),false,cap.noCap)}
+      ${row(lang==='ru'?'Сила блокирования':'Block value',number(c.blockValue),false,tip('Урон, поглощаемый щитом при успешном блокировании.','Damage absorbed by your shield on a successful block.'))}
       ${row(lang==='ru'?'Устойчивость':'Resilience',`${resilience} ${lang==='ru'?'рейтинга':'rating'}`,false,lang==='ru'?'Снижает входящий критический урон и шанс получить крит; игра сводит три рейтинга к минимальному значению. Универсального PvP-капа нет.':'Reduces incoming critical damage and chance to be critically hit; the game uses the lowest of three ratings. No universal PvP cap.')}
       <div class="hero-stats-section">${lang==='ru'?'Сопротивления':'Resistances'}</div>
       ${row(lang==='ru'?'Тайная магия':'Arcane resistance',getRes(7),false,cap.noCap)}
@@ -401,28 +412,29 @@
     $('mStats').innerHTML=exportButton('copyStats','export-stats',lang==='ru'?'Здоровье и бой':'Health and combat');
     $('mRatings').innerHTML=exportButton('copyRatings','export-ratings',lang==='ru'?'Рейтинги':'Ratings');
     $('mWeapons').innerHTML=exportButton('copyWeapons','export-weapons',lang==='ru'?'Оружие и защита':'Weapons and resistances');
+    $('mMelee').innerHTML=exportButton('copyMelee','export-melee',lang==='ru'?'Ближний бой':'Melee combat');
     $('importStepNumber').textContent='1';
     $('importInstruction').textContent=lang==='ru'
-      ?'Иди по пунктам 1–4: для каждой команды создай игровой макрос, запусти его, скопируй ответ из чата и нажми «Вставить данные из игры». Ответы объединятся, герой и экипировка сохранятся.'
-      :'Follow steps 1–4: create and run a game macro for each command, copy its chat output, then choose “Paste game data”. Responses merge into the saved character.';
+      ?'Иди по пунктам 1–5: для каждой команды создай игровой макрос, запусти его, скопируй ответ из чата и нажми «Вставить данные из игры». Ответы объединятся, герой и экипировка сохранятся.'
+      :'Follow steps 1–5: create and run a game macro for each command, copy its chat output, then choose “Paste game data”. Responses merge into the saved character.';
     $('pasteClipboard').textContent=lang==='ru'?'Вставить данные из чата':'Paste chat data';
     drawDoll();
     bindStatTooltips();
     let pasteTimer;
     const mergeExportText=input=>{
       const entries=new Map();
-      const add=line=>{const m=line.match(/^WEXP([0-5])\|(.*)$/);if(!m)return;const key=m[1]==='2'?`2:${m[2].split('|')[0]}`:m[1];entries.set(key,line);};
+      const add=line=>{const m=line.match(/^WEXP([0-6])\|(.*)$/);if(!m)return;const key=m[1]==='2'?`2:${m[2].split('|')[0]}`:m[1];entries.set(key,line);};
       (localStorage.getItem('wheroData')||'').split(/\n+/).forEach(add);
       input.split(/\n+/).map(line=>line.trim()).forEach(add);
-      const order=[...entries.values()].sort((a,b)=>{const ma=a.match(/^WEXP([0-5])\|(.*)$/),mb=b.match(/^WEXP([0-5])\|(.*)$/);const rank=x=>x[1]==='1'?0:x[1]==='0'?1:x[1]==='2'?2:+x[1]+1;return rank(ma)-rank(mb)||(ma[1]==='2'?+ma[2].split('|')[0]-+mb[2].split('|')[0]:0);});
+      const order=[...entries.values()].sort((a,b)=>{const ma=a.match(/^WEXP([0-6])\|(.*)$/),mb=b.match(/^WEXP([0-6])\|(.*)$/);const rank=x=>x[1]==='1'?0:x[1]==='0'?1:x[1]==='2'?2:+x[1]+1;return rank(ma)-rank(mb)||(ma[1]==='2'?+ma[2].split('|')[0]-+mb[2].split('|')[0]:0);});
       $('paste').value=order.join('\n');
       parse(true,false,true);
     };
     $('paste').addEventListener('input',()=>{clearTimeout(pasteTimer);pasteTimer=setTimeout(()=>mergeExportText($('paste').value),180);});
-    $('pasteClipboard').onclick=async()=>{try{const text=await navigator.clipboard.readText();if(!/^\s*WEXP[0-5]\|/m.test(text)){ $('importProgress').textContent=lang==='ru'?'В буфере не найдены строки экспорта WEXP. Скопируй ответ игрового макроса.':'No WEXP export lines found in clipboard. Copy the output of an in-game macro.';return;}mergeExportText(text);const codes=new Set(($('paste').value.match(/^WEXP[0-5]\|/gm)||[]).map(line=>line.slice(4,5)));$('importProgress').textContent=lang==='ru'?`Данные добавлены (${codes.size}/5 команд). Ответы можно вставлять по одному.`:`Data merged (${codes.size}/5 command groups). Paste each response separately.`;}catch(_){document.querySelector('.import').classList.add('paste-fallback');$('importInstruction').textContent=lang==='ru'?'Вставляй ответы команд по одному в поле ниже — данные объединятся автоматически.':'Paste command responses one at a time below; they will merge automatically.';$('paste').focus();}};
-    $('openHeroImport').onclick=()=>{ $('paste').value=localStorage.getItem('wheroData')||'';$('importProgress').textContent=lang==='ru'?'Шаг 1 из 4 · скопируй первую команду, запусти макрос в игре и добавь ответ.':'Step 1 of 4 · copy the first command, run it in game, and add its output.';$('heroImportDialog').showModal();};
+    $('pasteClipboard').onclick=async()=>{try{const text=await navigator.clipboard.readText();if(!/^\s*WEXP[0-6]\|/m.test(text)){ $('importProgress').textContent=lang==='ru'?'В буфере не найдены строки экспорта WEXP. Скопируй ответ игрового макроса.':'No WEXP export lines found in clipboard. Copy the output of an in-game macro.';return;}mergeExportText(text);const codes=new Set(($('paste').value.match(/^WEXP[0-6]\|/gm)||[]).map(line=>line.slice(4,5)));$('importProgress').textContent=lang==='ru'?`Данные добавлены (${codes.size} групп). Ответы можно вставлять по одному.`:`Data merged (${codes.size} groups). Paste each response separately.`;}catch(_){document.querySelector('.import').classList.add('paste-fallback');$('importInstruction').textContent=lang==='ru'?'Вставляй ответы команд по одному в поле ниже — данные объединятся автоматически.':'Paste command responses one at a time below; they will merge automatically.';$('paste').focus();}};
+    $('openHeroImport').onclick=()=>{ $('paste').value=localStorage.getItem('wheroData')||'';$('importProgress').textContent=lang==='ru'?'Шаг 1 из 5 · скопируй первую команду, запусти макрос в игре и добавь ответ.':'Step 1 of 5 · copy the first command, run it in game, and add its output.';$('heroImportDialog').showModal();};
     $('resetHeroDemo').onclick=()=>{localStorage.removeItem('wheroData');localStorage.removeItem('wheroLevel');localStorage.removeItem('wheroImportedSpec');state.imported=false;$('paste').value=DEMO.join('\n');parse(true,true);$('paste').value='';$('heroImportDialog').close();};
-    [['m1','1/4'],['mStats','2/4'],['mRatings','3/4'],['mWeapons','4/4']].forEach(([id,step])=>$(id).addEventListener('click',e=>{if(e.target.closest('.copy-btn')){$('importProgress').textContent=lang==='ru'?`Команда ${step} скопирована. Запусти её макросом в игре, скопируй ответ из чата и вставь сюда.`:`Command ${step} copied. Run it as a game macro, copy its chat output, and paste it here.`;}}));
+    [['m1','1/5'],['mStats','2/5'],['mRatings','3/5'],['mWeapons','4/5'],['mMelee','5/5']].forEach(([id,step])=>$(id).addEventListener('click',e=>{if(e.target.closest('.copy-btn')){$('importProgress').textContent=lang==='ru'?`Команда ${step} скопирована. Запусти её макросом в игре, скопируй ответ из чата и вставь сюда.`:`Command ${step} copied. Run it as a game macro, copy its chat output, and paste it here.`;}}));
     $('cname').onclick=()=>{if(!state.imported)$('openHeroImport').click();};
     $('closeHeroImport').onclick=()=>$('heroImportDialog').close();
     $('heroImportDialog').addEventListener('click',e=>{if(e.target===$('heroImportDialog'))$('heroImportDialog').close();});
@@ -448,7 +460,7 @@
     const gear = {};
     let found = false, hasCharacter=false, hasRace=false, hasGear=false, legacy = false;
     for (const ln of lines) {
-      const m = ln.match(/^WEXP([0-5])\|(.*)$/);
+      const m = ln.match(/^WEXP([0-6])\|(.*)$/);
       if (!m) continue;
       found = true;
       const p = m[2].split('|');
@@ -488,15 +500,19 @@
           if(!displayId)legacy=true;
         }
       } else if(m[1] === '3') {
-        char.hp=+p[0];char.armor=+p[1];char.ap=+p[2];char.rangedAP=+p[3];char.crit=+p[4];char.dodge=+p[5];char.parry=+p[6];char.block=+p[7];char.expertise=+p[8]||0;
+        char.hp=+p[0];char.armor=+p[1];char.ap=+p[2];char.rangedAP=+p[3];char.crit=+p[4];char.dodge=+p[5];char.parry=+p[6];char.block=+p[7];
+        if(p.length>=15){char.blockValue=+p[8];char.damageMin=+p[9];char.damageMax=+p[10];char.offhandMin=+p[11];char.offhandMax=+p[12];char.meleeSpeed=+p[13];char.offhandSpeed=+p[14];}
+        else{char.blockValue=p.length>8?+p[8]:null;char.expertise=p.length>9?+p[9]||0:0;}
       } else if(m[1] === '4') {
         char.int=+p[0];char.spi=+p[1];char.defense=+p[2];char.defenseBonus=+p[3];
         char.expertisePct=+p[4];char.offhandExpertisePct=+p[5];char.rangedExpertisePct=+p[6];char.rangedCrit=+p[7];
         for(let i=1;i<=25;i++){const pair=(p[i+7]||'').split(':');if(pair.length===2&&pair[0]!==''&&pair[1]!==''&&Number.isFinite(+pair[0])&&Number.isFinite(+pair[1]))char.ratings[i]={rating:+pair[0],bonus:+pair[1]};}
         char.expertise=char.ratings[24]?.bonus||0;
       } else if(m[1] === '5') {
-        char.damageMin=+p[0];char.damageMax=+p[1];char.meleeSpeed=+p[2];char.offhandSpeed=+p[3];char.rangedSpeed=+p[4];char.rangedMin=+p[5];char.rangedMax=+p[6];
-        char.resistances={3:+p[7],4:+p[8],5:+p[9],6:+p[10],7:+p[11]};char.spellPen=+p[12];char.armorPen=+p[13];
+        if(p.length===10){char.rangedSpeed=+p[0];char.rangedMin=+p[1];char.rangedMax=+p[2];char.resistances={3:+p[3],4:+p[4],5:+p[5],6:+p[6],7:+p[7]};char.spellPen=+p[8];char.armorPen=+p[9];}
+        else{char.damageMin=+p[0];char.damageMax=+p[1];char.meleeSpeed=+p[2];char.offhandSpeed=+p[3];char.rangedSpeed=+p[4];char.rangedMin=+p[5];char.rangedMax=+p[6];char.resistances={3:+p[7],4:+p[8],5:+p[9],6:+p[10],7:+p[11]};char.spellPen=+p[12];char.armorPen=+p[13];}
+      } else if(m[1] === '6') {
+        char.damageMin=+p[0];char.damageMax=+p[1];char.offhandMin=+p[2];char.offhandMax=+p[3];char.meleeSpeed=+p[4];char.offhandSpeed=+p[5];char.mainSkill=p.length>6?+p[6]:null;char.offhandSkill=p.length>7?+p[7]:null;char.rangedSkill=p.length>8?+p[8]:null;
       }
     }
     if (!found) { if(!silent) alert(L[lang].err); return; }

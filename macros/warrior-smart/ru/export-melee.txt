@@ -1,0 +1,2 @@
+# Экспорт урона обеих рук и скорости атаки из игрового окна.
+/run u="player"a,b,c,d=UnitDamage(u)m,n=UnitAttackSpeed(u)x,y,z,w=UnitAttackBothHands(u)e,f=UnitRangedAttack(u)print("WEXP6|"..table.concat({a or 0,b or 0,c or 0,d or 0,m or 0,n or 0,(x or 0)+(z or 0),(y or 0)+(w or 0),(e or 0)+(f or 0)},"|"))
