@@ -3,17 +3,17 @@
 window.WARRIOR_MACRO_BODIES = {
   "arms": {
     "ru": [
+      "#showtooltip Смертельный удар\n/cast [nostance:1]Боевая стойка\n/startattack\n/cast Смертельный удар\n/cast Превосходство\n/cast Мощный удар\n/cast Казнь",
+      "#showtooltip Рассекающий удар\n/cast [nostance:1]Боевая стойка\n/startattack\n/cast Удар грома\n/cast Вихрь\n/cast Рассекающий удар",
+      "#showtooltip [combat]Перехват;Рывок\n/cast [nocombat,nostance:1]Боевая стойка;[combat,nostance:3]Стойка берсерка\n/cast [nocombat,stance:1]Рывок;[combat,stance:3]Перехват",
       "#showtooltip Зуботычина\n/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина",
-      "#showtooltip Смертельный удар\n/cast [nostance:1]Боевая стойка\n/cast Смертельный удар",
-      "#showtooltip [combat]Перехват;Рывок\n/cast [combat,nostance:3]Стойка берсерка;[nocombat,nostance:1]Боевая стойка\n/cast [combat,stance:3]Перехват;[nocombat,stance:1]Рывок",
-      "#showtooltip Разоружение\n/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение",
       "#showtooltip Каждый за себя\n/cast Каждый за себя\n/cast Неистовство героя\n/cast Ярость берсерка"
     ],
     "en": [
+      "#showtooltip Mortal Strike\n/cast [nostance:1]Battle Stance\n/startattack\n/cast Mortal Strike\n/cast Overpower\n/cast Slam\n/cast Execute",
+      "#showtooltip Cleave\n/cast [nostance:1]Battle Stance\n/startattack\n/cast Thunder Clap\n/cast Whirlwind\n/cast Cleave",
+      "#showtooltip [combat]Intercept;Charge\n/cast [nocombat,nostance:1]Battle Stance;[combat,nostance:3]Berserker Stance\n/cast [nocombat,stance:1]Charge;[combat,stance:3]Intercept",
       "#showtooltip Pummel\n/cast [nostance:3]Berserker Stance\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Pummel",
-      "#showtooltip Mortal Strike\n/cast [nostance:1]Battle Stance\n/cast Mortal Strike",
-      "#showtooltip [combat]Intercept;Charge\n/cast [combat,nostance:3]Berserker Stance;[nocombat,nostance:1]Battle Stance\n/cast [combat,stance:3]Intercept;[nocombat,stance:1]Charge",
-      "#showtooltip Disarm\n/cast [nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Disarm",
       "#showtooltip Every Man for Himself\n/cast Every Man for Himself\n/cast Heroic Fury\n/cast Berserker Rage"
     ]
   },
@@ -36,8 +36,8 @@ window.WARRIOR_MACRO_BODIES = {
 };
 window.WARRIOR_MACRO_LABELS = {
   "arms": {
-    "ru": [["Зуботычина по фокусу","Прерывание; после смены стойки нажми повторно.","inv_gauntlets_04"],["Смертельный удар","Главный удар Оружия; при смене стойки нажми повторно.","ability_warrior_savageblow"],["Рывок и Перехват","Вне боя — Рывок; в бою — Перехват.","ability_warrior_charge"]],
-    "en": [["Focus Pummel","Interrupt; press again after a stance change.","inv_gauntlets_04"],["Mortal Strike","Arms core attack; press again after a stance change.","ability_warrior_savageblow"],["Charge and Intercept","Charge out of combat; Intercept in combat.","ability_warrior_charge"]]
+    "ru": [["Одна цель — приоритет Arms","Смертельный удар → Превосходство → Мощный удар → Казнь.","ability_warrior_savageblow"],["Несколько целей — Arms","Удар грома → Вихрь → Рассекающий удар.","ability_warrior_cleave"],["Рывок и Перехват","Вне боя — Рывок; в бою — стойка берсерка и Перехват.","ability_warrior_charge"]],
+    "en": [["Arms single-target priority","Mortal Strike → Overpower → Slam → Execute.","ability_warrior_savageblow"],["Arms multi-target","Thunder Clap → Whirlwind → Cleave.","ability_warrior_cleave"],["Charge and Intercept","Charge out of combat; Berserker Stance and Intercept in combat.","ability_warrior_charge"]]
   },
   "fury": {
     "ru": [["Ротация одной цели","Кровожадность → Вихрь → Казнь","inv_axe_66"],["Бой с группой","Вихрь и Рассекающий удар","ability_whirlwind"],["Прерывание","Зуботычина по наведению","inv_gauntlets_04"]],

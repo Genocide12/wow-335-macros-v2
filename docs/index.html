@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WoW 3.3.5 · Fury Warrior — умные макросы</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261116d">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116g">
 <style>
   .hero-grid { grid-template-columns: 1fr; grid-template-rows: 1fr; overflow:hidden; }
   .hero-main { position:relative; display:flex; flex-direction:column; justify-content:center; gap:14px; overflow:hidden;
@@ -108,9 +108,12 @@
   .map-destination{position:absolute;z-index:6;display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 13px;border:1px solid #d8c07899;border-radius:14px;background:linear-gradient(145deg,#17202ad9,#090e14e8);color:#f5e6b7;text-decoration:none;font-weight:750;letter-spacing:.02em;box-shadow:0 8px 24px #000b,inset 0 0 15px #e8c96a12;backdrop-filter:blur(5px);transform:translate(-50%,-50%);transition:transform .22s ease,filter .22s ease,box-shadow .22s ease,border-color .22s ease}
   .map-destination img{width:30px;height:30px;border-radius:8px;box-shadow:0 2px 9px #000a}
   .map-destination:hover,.map-destination:focus-visible{z-index:8;transform:translate(-50%,-62%) scale(1.08);filter:brightness(1.2);border-color:#ffe28b;box-shadow:0 16px 32px #000e,0 0 28px #e8c96a66;outline:2px solid #f4d67666;outline-offset:3px}
-  .map-destination[data-destination="hero"]{left:28%;top:39%}
-  .map-destination[data-destination="talents"]{left:76%;top:41%}
-  .map-destination[data-destination="macros"]{left:35%;top:78%}
+  .map-destination[data-destination="hero"]{left:83%;top:89%}
+  .map-destination[data-destination="talents"]{left:72%;top:35%}
+  .map-destination[data-destination^="macro-"]{min-height:42px;padding:5px 10px;font-size:12px}
+  .map-destination[data-destination="macro-single"]{left:8%;top:39%}
+  .map-destination[data-destination="macro-pack"]{left:9%;top:49%}
+  .map-destination[data-destination="macro-control"]{left:10%;top:59%}
   .map-destination.selected-spec{border-color:#ffe28b;box-shadow:0 0 20px #e8c96a44,0 8px 24px #000b}
   @media(max-width:860px){
     #app .hero-main>.world-markers{display:block!important;z-index:7}
@@ -120,9 +123,12 @@
     #app .hero-main>.map-label[data-spec="prot"]{left:79%!important;top:69%!important;max-width:none!important}
     #app .hero-main .map-destination{min-height:38px;gap:5px;padding:4px 8px;border-radius:11px;font-size:12px;max-width:35vw;white-space:nowrap}
     #app .hero-main .map-destination img{width:23px;height:23px}
-    #app .hero-main .map-destination[data-destination="hero"]{left:23%!important;top:49%!important}
-    #app .hero-main .map-destination[data-destination="talents"]{left:78%!important;top:49%!important}
-    #app .hero-main .map-destination[data-destination="macros"]{left:34%!important;top:85%!important}
+    #app .hero-main .map-destination[data-destination="hero"]{left:80%!important;top:87%!important}
+    #app .hero-main .map-destination[data-destination="talents"]{left:78%!important;top:42%!important}
+    #app .hero-main .map-destination[data-destination="macro-single"]{left:11%!important;top:44%!important}
+    #app .hero-main .map-destination[data-destination="macro-pack"]{left:11%!important;top:53%!important}
+    #app .hero-main .map-destination[data-destination="macro-control"]{left:11%!important;top:62%!important}
+    #app .hero-main .map-destination[data-destination^="macro-"]{min-height:34px;max-width:31vw;padding:3px 6px;font-size:10px}
     #app .hero-main>.map-guide-wheel{left:54%;top:58%}
   }
   @media(max-width:420px){
@@ -143,9 +149,11 @@
     <section class="card hero-main">
       <canvas class="map-shader" id="worldMapShader" aria-hidden="true"></canvas>
       <nav class="world-markers" aria-label="Разделы сайта на карте">
-        <a class="map-destination" data-destination="hero" href="hero.html?lang=ru&amp;spec=fury"><img src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_human_male.jpg" alt=""><span data-ru="Герой" data-en="Character">Герой</span></a>
-        <a class="map-destination" data-destination="talents" href="talents.html?lang=ru&amp;spec=fury"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_savageblow.jpg" alt=""><span data-ru="Таланты" data-en="Talents">Таланты</span></a>
-        <a class="map-destination" data-destination="macros" href="macros.html?lang=ru&amp;spec=fury"><img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_note_06.jpg" alt=""><span data-ru="Макросы" data-en="Macros">Макросы</span></a>
+        <a class="map-destination" data-destination="hero" href="hero.html?lang=ru&amp;spec=fury"><img src="assets/icons/nav-hero.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Мой воин" data-en="My Warrior">Мой воин</span></a>
+        <a class="map-destination" data-destination="talents" href="talents.html?lang=ru&amp;spec=fury"><img src="assets/icons/nav-talents.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Ветка развития" data-en="Talent Path">Ветка развития</span></a>
+        <a class="map-destination" data-destination="macro-single" href="macros.html?macro=0&amp;lang=ru&amp;spec=fury" aria-label="Макрос для одной цели"><img src="assets/icons/nav-macros.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Одна цель" data-en="Single target">Одна цель</span></a>
+        <a class="map-destination" data-destination="macro-pack" href="macros.html?macro=1&amp;lang=ru&amp;spec=fury" aria-label="Макрос для группы целей"><img src="assets/icons/nav-macros.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Группа" data-en="Group">Группа</span></a>
+        <a class="map-destination" data-destination="macro-control" href="macros.html?macro=2&amp;lang=ru&amp;spec=fury" aria-label="Макрос для контроля"><img src="assets/icons/nav-macros.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Контроль" data-en="Control">Контроль</span></a>
       </nav>
       <h1 data-ru="Умные макросы для <b>воина-неистовства</b>" data-en="Smart macros for the <b>Fury Warrior</b>">Умные макросы для <b>воина-неистовства</b></h1>
       <p data-ru="WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку."
@@ -156,12 +164,12 @@
         <path class="map-zone" data-spec="fury" d="M626 270 595 246 573 215 589 183 615 159 626 122 651 91 684 66 725 45 761 38 795 55 829 54 856 77 893 88 922 116 949 145 972 176 1002 205 1009 240 1000 269 1009 300 997 331 980 366 955 388 937 365 916 347 908 319 884 303 871 273 842 260 809 274 777 260 746 277 713 270 684 286 653 278Z" />
         <path class="map-zone" data-spec="prot" d="M1100 409 1091 380 1104 350 1128 332 1150 305 1174 280 1188 248 1212 218 1238 194 1265 178 1290 192 1314 222 1339 248 1360 281 1374 313 1391 345 1390 382 1374 412 1355 435 1333 458 1307 475 1280 478 1257 466 1235 486 1213 514 1197 540 1174 560 1149 554 1132 533 1115 511 1100 488 1089 461Z M1169 583 1194 560 1224 568 1249 581 1271 565 1303 568 1327 591 1341 624 1352 660 1367 691 1360 727 1371 758 1353 788 1344 821 1324 849 1300 869 1273 873 1246 861 1223 845 1200 826 1178 809 1157 787 1147 758 1153 727 1143 694 1150 662 1142 633 1153 604Z M1170 873 1192 850 1223 856 1249 879 1265 913 1256 947 1234 969 1206 956 1185 931 1166 905Z" />
       </svg>
-      <button class="map-label" data-spec="arms" aria-label="Выбрать Arms" aria-pressed="false"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_rogue_eviscerate.jpg" alt=""><span><b>Arms</b></span></button>
-      <button class="map-label selected" data-spec="fury" aria-label="Выбрать Fury" aria-pressed="true"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_racial_avatar.jpg" alt=""><span><b>Fury</b></span></button>
-      <button class="map-label" data-spec="prot" aria-label="Выбрать специализацию защиты" aria-pressed="false"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_defensivestance.jpg" alt=""><span><b data-ru="Защита" data-en="Protection">Защита</b></span></button>
+      <button class="map-label" data-spec="arms" aria-label="Выбрать Arms" aria-pressed="false"><img src="assets/icons/spec-arms.svg" width="64" height="64" decoding="async" alt=""><span><b>Arms</b></span></button>
+      <button class="map-label selected" data-spec="fury" aria-label="Выбрать Fury" aria-pressed="true"><img src="assets/icons/spec-fury.svg" width="64" height="64" decoding="async" alt=""><span><b>Fury</b></span></button>
+      <button class="map-label" data-spec="prot" aria-label="Выбрать специализацию защиты" aria-pressed="false"><img src="assets/icons/spec-protection.svg" width="64" height="64" decoding="async" alt=""><span><b data-ru="Защита" data-en="Protection">Защита</b></span></button>
       <div class="map-guide-wheel" id="mapGuideWheel">
         <button class="map-guide-trigger" id="mapGuideTrigger" type="button" data-sound-kind="open" aria-expanded="false" aria-label="Гайд по выбранному пути">
-          <img src="https://wow.zamimg.com/images/wow/icons/large/inv_scroll_03.jpg" alt=""><span data-ru="Гайд" data-en="Guide">Гайд</span>
+          <img src="assets/icons/nav-guide.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Гайд" data-en="Guide">Гайд</span>
         </button>
         <div class="guide-wheel-panel" id="guideWheelPanel" aria-label="Колесо гайда выбранной специализации">
           <iframe id="guideWheelFrame" aria-label="Колесо гайдов" src="guide.html?lang=ru&amp;spec=fury&amp;embed=1"></iframe>
@@ -172,9 +180,9 @@
   </div>
 </main>
 </div>
-<script src="assets/js/app.js?v=20261116d"></script>
-<script src="assets/js/macros-data.js?v=20261116e"></script>
-<script src="assets/js/macro-bodies.js?v=20261116d"></script>
+<script src="assets/js/app.js?v=20261116g"></script>
+<script src="assets/js/macros-data.js?v=20261116g"></script>
+<script src="assets/js/macro-bodies.js?v=20261116g"></script>
 <script src="assets/js/world-map.js?v=20261116f"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -183,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const v = el.getAttribute('data-' + lang);
     if (v != null) el.innerHTML = v;
   });
-  const paths={arms:['Воин Оружия · PvP','Arms Warrior · PvP','Макросы контроля и прерываний · таланты Arms · гайд по арене.','Control and interrupt macros · Arms talents · arena guide.'],fury:['Воин Неистовства · PvE ДД','Fury Warrior · PvE DPS','Приоритеты урона · таланты Fury · гайд по PvE.','Damage priorities · Fury talents · PvE guide.'],prot:['Воин Защиты · PvE танк','Protection Warrior · PvE tank','Угроза и защита · таланты Protection · гайд танка.','Threat and mitigation · Protection talents · tank guide.']};
+  const paths={arms:['Воин Оружия · PvE ДД','Arms Warrior · PvE DPS','Приоритеты урона по одной и нескольким целям · таланты Arms · гайд по PvE.','Single- and multi-target damage priorities · Arms talents · PvE guide.'],fury:['Воин Неистовства · PvE ДД','Fury Warrior · PvE DPS','Приоритеты урона · таланты Fury · гайд по PvE.','Damage priorities · Fury talents · PvE guide.'],prot:['Воин Защиты · PvE танк','Protection Warrior · PvE tank','Угроза и защита · таланты Protection · гайд танка.','Threat and mitigation · Protection talents · tank guide.']};
   let spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';if(!['arms','fury','prot'].includes(spec))spec='fury';
   let titles=[];
   const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);window.WorldMap?.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>{const selected=x.dataset.spec===value;x.classList.toggle('selected',selected);if(x.matches('.map-label'))x.setAttribute('aria-pressed',String(selected));});document.querySelectorAll('.map-destination').forEach(link=>{const target=new URL(link.href,location.href);target.searchParams.set('lang',lang);target.searchParams.set('spec',value);link.href=target.href;});document.querySelector('.hero-main h1').innerHTML=lang==='ru'?'<b>Путь воина</b>':'<b>Warrior paths</b>';document.querySelector('.hero-main>p').textContent=`${paths[value][0]} · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';

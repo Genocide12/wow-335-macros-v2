@@ -1,5 +1,7 @@
+#showtooltip [combat]Intercept;Charge
+/cast [nocombat,nostance:1]Battle Stance;[combat,nostance:3]Berserker Stance
+/cast [nocombat,stance:1]Charge;[combat,stance:3]Intercept
 /startattack
-/cast [stance:1,nocombat]Charge;[nocombat]Battle Stance;Berserker Stance
 /cast Victory Rush
 /cast Bloodthirst
 /cast Whirlwind

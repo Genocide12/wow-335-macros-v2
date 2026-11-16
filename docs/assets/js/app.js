@@ -116,15 +116,15 @@
     const cur = location.pathname.split('/').pop() || 'index.html';
     const requestedSpec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
     const activeSpec=['arms','fury','prot'].includes(requestedSpec)?requestedSpec:'fury';
-    const specNames={arms:{ru:'Оружие · PvP',en:'Arms · PvP'},fury:{ru:'Неистовство · PvE ДД',en:'Fury · PvE DPS'},prot:{ru:'Защита · PvE танк',en:'Protection · PvE Tank'}};
-    const specIcons={arms:'ability_rogue_eviscerate',fury:'ability_racial_avatar',prot:'ability_warrior_defensivestance'};
+    const specNames={arms:{ru:'Оружие · PvE ДД',en:'Arms · PvE DPS'},fury:{ru:'Неистовство · PvE ДД',en:'Fury · PvE DPS'},prot:{ru:'Защита · PvE танк',en:'Protection · PvE Tank'}};
+    const specIcons={arms:'assets/icons/spec-arms.svg',fury:'assets/icons/spec-fury.svg',prot:'assets/icons/spec-protection.svg'};
     const nav = PAGES.map(([f, n]) =>
       `<a href="${f}?lang=${lang}&spec=${activeSpec}" class="${f === cur ? 'on' : ''}">${n[lang]}</a>`
     ).join('');
     app.prepend(h(`
       <header class="top">
         <a class="logo" href="index.html?lang=${lang}&spec=${activeSpec}" aria-label="${lang==='ru'?'На главную':'Home'}">
-          <img src="https://wow.zamimg.com/images/wow/icons/large/${specIcons[activeSpec]}.jpg" alt="">
+          <img src="${specIcons[activeSpec]}" width="64" height="64" decoding="async" alt="">
           <span class="t">WoW 3.3.5 · ${specNames[activeSpec][lang]}</span>
         </a>
         <nav>${nav}</nav>
@@ -214,15 +214,15 @@
     setSpec(spec) {
       if (!['arms', 'fury', 'prot'].includes(spec)) return;
       localStorage.setItem('warriorSpec', spec);
-      const names={arms:{ru:'Оружие · PvP',en:'Arms · PvP'},fury:{ru:'Неистовство · PvE ДД',en:'Fury · PvE DPS'},prot:{ru:'Защита · PvE танк',en:'Protection · PvE Tank'}};
-      const icons={arms:'ability_rogue_eviscerate',fury:'ability_racial_avatar',prot:'ability_warrior_defensivestance'};
+      const names={arms:{ru:'Оружие · PvE ДД',en:'Arms · PvE DPS'},fury:{ru:'Неистовство · PvE ДД',en:'Fury · PvE DPS'},prot:{ru:'Защита · PvE танк',en:'Protection · PvE Tank'}};
+      const icons={arms:'assets/icons/spec-arms.svg',fury:'assets/icons/spec-fury.svg',prot:'assets/icons/spec-protection.svg'};
       const logo=document.querySelector('header.top .logo');
-      if(logo){logo.href=`index.html?lang=${lang}&spec=${spec}`;logo.querySelector('img').src=`https://wow.zamimg.com/images/wow/icons/large/${icons[spec]}.jpg`;logo.querySelector('.t').textContent=`WoW 3.3.5 · ${names[spec][lang]}`;}
+      if(logo){logo.href=`index.html?lang=${lang}&spec=${spec}`;logo.querySelector('img').src=icons[spec];logo.querySelector('.t').textContent=`WoW 3.3.5 · ${names[spec][lang]}`;}
       document.querySelectorAll('header.top nav a').forEach(a=>{const url=new URL(a.href);url.searchParams.set('spec',spec);a.href=url.href;});
       document.body.dataset.spec=spec;
       window.dispatchEvent(new CustomEvent('warrior-spec-change',{detail:{spec}}));
     },
-    // Wowhead CDN serves every WotLK icon — nothing is stored in the repo
+    // Ability and item icons stay game-authentic; navigation art is local SVG.
     icon(name, size) {
       return `https://wow.zamimg.com/images/wow/icons/${size || 'large'}/${name}.jpg`;
     },

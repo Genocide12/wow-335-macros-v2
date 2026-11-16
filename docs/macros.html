@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Макросы — WoW 3.3.5 Fury</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261114f">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116g">
 <style>
   .macro-page{min-height:0;flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
   .m-tabs{display:none}
@@ -16,15 +16,15 @@
   .m-card { display:flex; flex-direction: column; gap: 8px; overflow: hidden; min-height:0; cursor:pointer }
   .m-card .macro-box{display:none}
   .m-card .m-extra{display:none}
-  .m-card { position:relative; border-color:#5a4d34; background:linear-gradient(145deg,rgba(42,39,32,.84),rgba(17,19,27,.86)); box-shadow:inset 0 0 0 1px rgba(218,183,103,.08),0 10px 26px #0005; animation:arrive .45s both; }
-  .m-card:nth-child(2){animation-delay:.08s}.m-card:nth-child(3){animation-delay:.16s}.m-card:nth-child(4){animation-delay:.24s}
+  .m-card { position:relative; border-color:#5a4d34; background:linear-gradient(145deg,rgba(42,39,32,.84),rgba(17,19,27,.86)); box-shadow:inset 0 0 0 1px rgba(218,183,103,.08),0 10px 26px #0005; }
   @keyframes arrive{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   .npc-dialog { display:flex;align-items:center;gap:11px;padding:9px 11px;background:linear-gradient(90deg,#302a1d,#1c1d25);border:1px solid #79643c;border-radius:10px;color:#e4d9bd;font-size:12px;line-height:1.45; }
   .npc-dialog img{width:48px;height:48px;object-fit:cover;border:2px solid #b59858;border-radius:7px;box-shadow:0 0 15px #c8a95135}
   .npc-dialog b{display:block;color:#f1d791;font-size:13px;margin-bottom:2px}
   .m-card pre { font-size: 10.5px; line-height: 1.35; white-space:pre-wrap;overflow-wrap:anywhere;overflow:hidden;max-height:min(150px,20vh); }
   .m-head { display: flex; align-items: center; gap: 10px; }
-  .m-head img { width: 40px; height: 40px; border-radius: 9px; border: 1px solid var(--gold); }
+  .m-icon-frame{display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;padding:3px;border:1px solid #d7bd71;border-radius:11px;background:linear-gradient(145deg,#3d3423,#11151b);box-shadow:inset 0 0 0 1px #f6e7b233,0 4px 12px #000b}
+  .m-icon-frame img{display:block;width:100%;height:100%;aspect-ratio:1;object-fit:cover;border:1px solid #74613a;border-radius:7px}
   .m-head .t b { display: block; font-size: 15px; color: #fff; }
   .m-head .t span { font-size: 12px; color: var(--dim); }
   .key { display: inline-flex; width: 26px; height: 26px; border-radius: 7px; background: #0a0c12;
@@ -37,12 +37,12 @@
   .m-feats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 10px; border-top: 1px dashed var(--line); padding-top: 7px; }
   .m-cues{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;margin-top:auto;padding-top:8px;border-top:1px dashed #b99a5055}
   .m-cue{display:flex;align-items:center;gap:7px;min-width:0;color:#c8c2b2;font-size:12px;line-height:1.25}
-  .m-cue img{width:26px;height:26px;flex:0 0 auto;border:1px solid #705e38;border-radius:6px}.m-cue span{min-width:0}
+  .m-cue img{display:block;width:26px;height:26px;aspect-ratio:1;object-fit:cover;flex:0 0 26px;border:1px solid #705e38;border-radius:6px}.m-cue span{min-width:0}
   .m-card-context{font-size:12.5px;line-height:1.4;color:#aaa9a1;border-top:1px dashed #b99a5040;padding-top:7px}
   .m-install-hint{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:9px 13px;border:1px solid #685535;border-radius:11px;background:linear-gradient(100deg,#211e18e8,#11141be8);color:#d9d1bd;font-size:13px;line-height:1.4}
   .m-install-hint b{color:var(--gold2)}.m-install-hint img{width:30px;height:30px;border-radius:7px;flex:0 0 auto}
   .mf { display: flex; gap: 8px; align-items: center; }
-  .mf img { width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; }
+  .mf img { display:block;width:22px;height:22px;aspect-ratio:1;object-fit:cover;border-radius:6px;flex:0 0 22px; }
   .mf .t { font-size: 11.5px; line-height: 1.3; color: var(--dim); }
   .mf .t b { color: var(--gold2); font-size: 12px; }
   .m-note { font-size: 11.5px; color: var(--dim); border-top: 1px dashed var(--line); padding-top: 7px; line-height: 1.45; }
@@ -67,9 +67,9 @@
     .m-grid.count-4,.m-grid.count-5{grid-template-columns:minmax(0,1fr);grid-template-rows:auto}
     .m-card { grid-column: auto !important; }
     .m-card{padding:8px 9px;gap:6px}.npc-dialog{padding:4px 7px;font-size:10px}.npc-dialog img{width:30px;height:30px}.npc-dialog b{font-size:11px}
-    .m-head img{width:30px;height:30px}.m-head .t b{font-size:13px}.m-head .t span{font-size:10px}
+    .m-icon-frame{width:38px;height:38px;flex-basis:38px;padding:2px}.m-head .t b{font-size:13px}.m-head .t span{font-size:10px}
     .m-feats { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    .m-cues{gap:4px;padding-top:5px}.m-cue{font-size:10px;gap:4px}.m-cue img{width:21px;height:21px}.m-install-hint{padding:6px 8px;font-size:10px;gap:7px}.m-install-hint img{width:24px;height:24px}
+    .m-cues{gap:4px;padding-top:5px}.m-cue{font-size:10px;gap:4px}.m-cue img{width:21px;height:21px;flex-basis:21px}.m-install-hint{padding:6px 8px;font-size:10px;gap:7px}.m-install-hint img{width:24px;height:24px}
     .m-card-context{font-size:10px;line-height:1.3;padding-top:4px}
     .m-card pre { max-height:min(130px,18vh); }
   }
@@ -90,14 +90,14 @@
   <div class="macro-page">
     <div class="m-tabs" id="macroTabs"></div>
     <div class="grid m-grid" id="cards"></div>
-    <div class="m-install-hint"><img src="assets/icons/logo.jpg" alt=""><span><b data-ru="Как поставить:" data-en="How to add:">Как поставить:</b> <span data-ru="в игре открой Escape → Макросы, создай новый макрос, вставь текст из открытой карточки и назначь любую удобную кнопку." data-en="in game, press Escape → Macros, create a macro, paste the text from a card, and bind any button you prefer.">в игре открой Escape → Макросы, создай новый макрос, вставь текст из открытой карточки и назначь любую удобную кнопку.</span></span></div>
+    <div class="m-install-hint"><img src="assets/icons/nav-macros.svg" width="64" height="64" decoding="async" alt=""><span><b data-ru="Как поставить:" data-en="How to add:">Как поставить:</b> <span data-ru="в игре открой Escape → Макросы, создай новый макрос, вставь текст из открытой карточки и назначь любую удобную кнопку." data-en="in game, press Escape → Macros, create a macro, paste the text from a card, and bind any button you prefer.">в игре открой Escape → Макросы, создай новый макрос, вставь текст из открытой карточки и назначь любую удобную кнопку.</span></span></div>
   </div>
 </main>
 </div>
 <dialog class="m-dialog" id="macroDetails"><div class="m-dialog-head"><span id="macroDetailsTitle"></span><button class="macro-close" id="closeMacroDetails" aria-label="Close">×</button></div><div class="m-dialog-body" id="macroDetailsBody"></div></dialog>
-<script src="assets/js/app.js?v=20261114f"></script>
-<script src="assets/js/macros-data.js?v=20261116e"></script>
-<script src="assets/js/macro-bodies.js?v=20261114e"></script>
+<script src="assets/js/app.js?v=20261116g"></script>
+<script src="assets/js/macros-data.js?v=20261116g"></script>
+<script src="assets/js/macro-bodies.js?v=20261116g"></script>
 <script>
 const L10N = { ru: { copy: 'копировать' }, en: { copy: 'copy' } };
 // macro bodies come from macros-data.js (embedded, no fetch)
@@ -180,25 +180,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const L = L10N[lang] || L10N.ru;
   const requestedSpec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';
   const spec=['arms','fury','prot'].includes(requestedSpec)?requestedSpec:'fury';
-  const names={arms:lang==='ru'?'Arms PvP — макросы контроля':'Arms PvP — control macros',fury:lang==='ru'?'Fury PvE — макросы урона':'Fury PvE — damage macros',prot:lang==='ru'?'Protection PvE — макросы танка':'Protection PvE — tank macros'};
+  const names={arms:lang==='ru'?'Arms PvE — макросы урона':'Arms PvE — damage macros',fury:lang==='ru'?'Fury PvE — макросы урона':'Fury PvE — damage macros',prot:lang==='ru'?'Protection PvE — макросы танка':'Protection PvE — tank macros'};
   const quickFlows={
     arms:{ru:[[['inv_gauntlets_04','Стойка берсерка → Зуботычина'],['inv_misc_key_02','Фокус / цель под курсором']], [['ability_warrior_savageblow','Боевая стойка → Смертельный удар']], [['ability_warrior_charge','Рывок вне боя'],['ability_rogue_sprint','Перехват в бою']], [['ability_warrior_disarm','Оборонительная стойка → Разоружение']], [['ability_racial_avatar','Каждый за себя → Неистовство героя → Ярость берсерка']]],en:[[['inv_gauntlets_04','Berserker Stance → Pummel'],['inv_misc_key_02','Focus / mouseover target']], [['ability_warrior_savageblow','Battle Stance → Mortal Strike']], [['ability_warrior_charge','Charge out of combat'],['ability_rogue_sprint','Intercept in combat']], [['ability_warrior_disarm','Defensive Stance → Disarm']], [['ability_racial_avatar','Every Man for Himself → Heroic Fury → Berserker Rage']]]},
     prot:{ru:[[['ability_warrior_shieldslam','Мощный удар щитом → Реванш'],['ability_warrior_devastate','Сокрушение']], [['ability_thunderclap','Оборонительная стойка → Удар грома'],['ability_warrior_shockwave','Ударная волна']], [['spell_nature_reincarnation','Провокация под курсором']], [['inv_shield_05','Оборонительная стойка → Удар щитом']], [['ability_racial_avatar','Каждый за себя → Неистовство героя → Ярость берсерка']]],en:[[['ability_warrior_shieldslam','Shield Slam → Revenge'],['ability_warrior_devastate','Devastate']], [['ability_thunderclap','Defensive Stance → Thunder Clap'],['ability_warrior_shockwave','Shockwave']], [['spell_nature_reincarnation','Mouseover Taunt']], [['inv_shield_05','Defensive Stance → Shield Bash']], [['ability_racial_avatar','Every Man for Himself → Heroic Fury → Berserker Rage']]]}
   };
+  quickFlows.arms.ru=[[['ability_warrior_savageblow','Боевая стойка → Смертельный удар'],['ability_meleedamage','Превосходство → Мощный удар'],['inv_sword_48','Казнь']], [['ability_thunderclap','Удар грома'],['ability_whirlwind','Вихрь'],['ability_warrior_cleave','Рассекающий удар']], [['ability_warrior_charge','Рывок вне боя'],['ability_rogue_sprint','В бою — стойка берсерка → Перехват']], [['inv_gauntlets_04','Стойка берсерка → Зуботычина по фокусу/наведению']], [['ability_racial_avatar','Каждый за себя → Неистовство героя → Ярость берсерка']]];
+  quickFlows.arms.en=[[['ability_warrior_savageblow','Battle Stance → Mortal Strike'],['ability_meleedamage','Overpower → Slam'],['inv_sword_48','Execute']], [['ability_thunderclap','Thunder Clap'],['ability_whirlwind','Whirlwind'],['ability_warrior_cleave','Cleave']], [['ability_warrior_charge','Charge out of combat'],['ability_rogue_sprint','In combat: Berserker Stance → Intercept']], [['inv_gauntlets_04','Berserker Stance → focus/mouseover Pummel']], [['ability_racial_avatar','Every Man for Himself → Heroic Fury → Berserker Rage']]];
   document.title = names[spec]+' — WoW 3.3.5';
   if(spec!=='fury'){
     const rows=spec==='arms'?(lang==='ru'?
       [
-        ['Зуботычина по фокусу или наведению','Прерывание без смены основной цели.','#showtooltip Зуботычина\n/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина','inv_gauntlets_04'],
-        ['Смертельный удар','Главный удар Arms; при смене стойки нажми повторно.','#showtooltip Смертельный удар\n/cast [nostance:1]Боевая стойка\n/cast Смертельный удар','ability_warrior_savageblow'],
+        ['Одна цель — приоритет Arms','Смертельный удар, Превосходство, Мощный удар и Казнь.','#showtooltip Смертельный удар\n/cast [nostance:1]Боевая стойка\n/startattack\n/cast Смертельный удар\n/cast Превосходство\n/cast Мощный удар\n/cast Казнь','ability_warrior_savageblow'],
+        ['Несколько целей — Arms','Удар грома, Вихрь и Рассекающий удар.','#showtooltip Рассекающий удар\n/cast [nostance:1]Боевая стойка\n/startattack\n/cast Удар грома\n/cast Вихрь\n/cast Рассекающий удар','ability_warrior_cleave'],
         ['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','#showtooltip [combat]Перехват;Рывок\n/cast [combat,nostance:3]Стойка берсерка;[nocombat,nostance:1]Боевая стойка\n/cast [combat,stance:3]Перехват;[nocombat,stance:1]Рывок','ability_warrior_charge'],
-        ['Разоружение по наведению','Защитная стойка и разоружение выбранного противника.','#showtooltip Разоружение\n/cast [nostance:2]Оборонительная стойка\n/cast [@mouseover,harm,nodead][]Разоружение','ability_warrior_disarm'],
+        ['Зуботычина по фокусу или наведению','Прерывание без смены основной цели.','#showtooltip Зуботычина\n/cast [nostance:3]Стойка берсерка\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Зуботычина','inv_gauntlets_04'],
         ['Снять контроль','Человек: оглушение/обездвиживание; Неистовство героя: корни; Ярость берсерка: страх.','#showtooltip Каждый за себя\n/cast Каждый за себя\n/cast Неистовство героя\n/cast Ярость берсерка','ability_racial_avatar']
       ]:[
-        ['Pummel focus or mouseover','Interrupt without changing your main target.','#showtooltip Pummel\n/cast [nostance:3]Berserker Stance\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Pummel','inv_gauntlets_04'],
-        ['Mortal Strike','Arms core attack; press again after a stance change.','#showtooltip Mortal Strike\n/cast [nostance:1]Battle Stance\n/cast Mortal Strike','ability_warrior_savageblow'],
+        ['Arms single-target priority','Mortal Strike, Overpower, Slam, and Execute.','#showtooltip Mortal Strike\n/cast [nostance:1]Battle Stance\n/startattack\n/cast Mortal Strike\n/cast Overpower\n/cast Slam\n/cast Execute','ability_warrior_savageblow'],
+        ['Arms multi-target','Thunder Clap, Whirlwind, and Cleave.','#showtooltip Cleave\n/cast [nostance:1]Battle Stance\n/startattack\n/cast Thunder Clap\n/cast Whirlwind\n/cast Cleave','ability_warrior_cleave'],
         ['Charge and Intercept','Charge out of combat; Intercept in combat.','#showtooltip [combat]Intercept;Charge\n/cast [combat,nostance:3]Berserker Stance;[nocombat,nostance:1]Battle Stance\n/cast [combat,stance:3]Intercept;[nocombat,stance:1]Charge','ability_warrior_charge'],
-        ['Mouseover Disarm','Defensive Stance, then disarm the selected enemy.','#showtooltip Disarm\n/cast [nostance:2]Defensive Stance\n/cast [@mouseover,harm,nodead][]Disarm','ability_warrior_disarm'],
+        ['Focus or mouseover Pummel','Interrupt without changing your main target.','#showtooltip Pummel\n/cast [nostance:3]Berserker Stance\n/cast [@focus,harm,nodead][@mouseover,harm,nodead][]Pummel','inv_gauntlets_04'],
         ['Break control','Human racial: stun/root; Heroic Fury: roots; Berserker Rage: fear.','#showtooltip Every Man for Himself\n/cast Every Man for Himself\n/cast Heroic Fury\n/cast Berserker Rage','ability_racial_avatar']
       ]) : (lang==='ru'?
       [
@@ -224,18 +226,18 @@ document.addEventListener('DOMContentLoaded', () => {
   MACROS=MACROS.map((m,i)=>{const label=sharedLabels[i];return label?{...m,icon:label[2],[lang]:[label[0],label[1]]}:m;});
   const wrap = document.getElementById('cards');
   const rows = [];
-  for (const m of MACROS) {
+  for (const [i,m] of MACROS.entries()) {
     const body = (m.body || (((window.MACRO_TXT || {})[lang] || {})[m.file] || '')).trim();
     const [name, sub] = m[lang];
     const tags = (m.tags[lang] || []).map(t => `<span class="tag">${t}</span>`).join('');
     const cueSource=(m.feats[lang]||[]).slice(0,4);
-    const cues=cueSource.length?cueSource.map(f=>`<div class="m-cue"><img src="${I(f.i)}" alt=""><span>${f.t}</span></div>`).join(''):`<div class="m-cue"><img src="${I(m.icon)}" alt=""><span>${sub}</span></div>`;
+    const cues=cueSource.length?cueSource.map(f=>`<div class="m-cue"><img src="${I(f.i)}" width="26" height="26" decoding="async" alt=""><span>${f.t}</span></div>`).join(''):`<div class="m-cue"><img src="${I(m.icon)}" width="26" height="26" decoding="async" alt=""><span>${sub}</span></div>`;
     const feats = (m.feats[lang] || []).map(f =>
-      `<div class="mf"><img src="${I(f.i)}" alt=""><div class="t"><b>${f.t}</b> — ${f.d}</div></div>`).join('');
+      `<div class="mf"><img src="${I(f.i)}" width="22" height="22" decoding="async" alt=""><div class="t"><b>${f.t}</b> — ${f.d}</div></div>`).join('');
     rows.push(`
-    <section class="card m-card">
+    <section class="card m-card" id="macro-card-${i}">
       <div class="m-head">
-        <img src="${I(m.icon)}" alt="">
+        <span class="m-icon-frame"><img src="${I(m.icon)}" width="64" height="64" decoding="async" alt=""></span>
         <div class="t"><b>${name}</b><span>${sub}</span></div>
 
       </div>
@@ -263,6 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
     card.onclick=event=>{if(event.target.closest('[data-copy]'))return;openDetails()};
     card.onkeydown=event=>{if((event.key==='Enter'||event.key===' ')&&!event.target.closest('[data-copy]')){event.preventDefault();openDetails();}};
   });
+  const requestedMacro=new URLSearchParams(location.search).get('macro');
+  if(requestedMacro!==null){const index=Number(requestedMacro);if(Number.isInteger(index)&&index>=0&&index<MACROS.length)requestAnimationFrame(()=>wrap.querySelector(`#macro-card-${index}`)?.click());}
   document.getElementById('closeMacroDetails').onclick=()=>document.getElementById('macroDetails').close();
 });
 </script>

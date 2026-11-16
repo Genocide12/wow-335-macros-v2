@@ -42,7 +42,7 @@ header.top {
   border-bottom: 1px solid var(--line);
 }
 header.top .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .4px; color: var(--gold2); text-decoration: none; font-size: 17px; }
-header.top .logo img { width: 30px; height: 30px; border-radius: 8px; }
+header.top .logo img { display:block; width: 30px; height: 30px; aspect-ratio:1; flex:0 0 30px; object-fit:cover; border-radius: 8px; }
 header.top nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 header.top nav::-webkit-scrollbar { display: none; }
 header.top nav a {

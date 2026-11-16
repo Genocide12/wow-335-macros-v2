@@ -1,5 +1,7 @@
+#showtooltip [combat]Перехват;Рывок
+/cast [nocombat,nostance:1]Боевая стойка;[combat,nostance:3]Стойка берсерка
+/cast [nocombat,stance:1]Рывок;[combat,stance:3]Перехват
 /startattack
-/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка
 /cast Победный раж
 /cast Кровожадность
 /cast Вихрь

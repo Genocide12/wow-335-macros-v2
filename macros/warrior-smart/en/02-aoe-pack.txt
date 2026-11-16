@@ -1,7 +1,8 @@
 /targetenemy [noharm][dead]
+#showtooltip Whirlwind
+/cast [nocombat,nostance:1]Battle Stance;[combat,nostance:3]Berserker Stance
+/cast [nocombat,stance:1]Charge;[combat,stance:3]Intercept
 /startattack
-/cast [combat,nostance:3]Berserker Stance
-/cast Intercept
 /cast Whirlwind
 /cast Bloodthirst
 /cast Cleave

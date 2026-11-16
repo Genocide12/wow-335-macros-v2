@@ -1,7 +1,8 @@
 /targetenemy [noharm][dead]
+#showtooltip Вихрь
+/cast [nocombat,nostance:1]Боевая стойка;[combat,nostance:3]Стойка берсерка
+/cast [nocombat,stance:1]Рывок;[combat,stance:3]Перехват
 /startattack
-/cast [combat,nostance:3]Стойка берсерка
-/cast Перехват
 /cast Вихрь
 /cast Кровожадность
 /cast Рассекающий удар

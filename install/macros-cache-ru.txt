@@ -1,6 +1,8 @@
 ﻿MACRO 16777216 "Одна цель" INV_Axe_67
+#showtooltip [combat]Перехват;Рывок
+/cast [nocombat,nostance:1]Боевая стойка;[combat,nostance:3]Стойка берсерка
+/cast [nocombat,stance:1]Рывок;[combat,stance:3]Перехват
 /startattack
-/cast [stance:1,nocombat]Рывок;[nocombat]Боевая стойка;Стойка берсерка
 /cast Победный раж
 /cast Кровожадность
 /cast Вихрь
@@ -8,9 +10,10 @@
 END
 MACRO 16777217 "AoE + бафф" Ability_Whirlwind
 /targetenemy [noharm][dead]
+#showtooltip Вихрь
+/cast [nocombat,nostance:1]Боевая стойка;[combat,nostance:3]Стойка берсерка
+/cast [nocombat,stance:1]Рывок;[combat,stance:3]Перехват
 /startattack
-/cast [combat,nostance:3]Стойка берсерка
-/cast Перехват
 /cast Вихрь
 /cast Кровожадность
 /cast Рассекающий удар
