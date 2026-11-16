@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WoW 3.3.5 · Fury Warrior — умные макросы</title>
-<link rel="stylesheet" href="assets/css/app.css?v=20261116h">
+<link rel="stylesheet" href="assets/css/app.css?v=20261116j">
 <style>
   .hero-grid { grid-template-columns: 1fr; grid-template-rows: 1fr; overflow:hidden; }
   .hero-main { position:relative; display:flex; flex-direction:column; justify-content:center; gap:14px; overflow:hidden;
@@ -58,7 +58,7 @@
   .path-card b{display:block;color:var(--gold2);font-size:17px}.path-card small{display:block;color:#e2ded4;font-size:14px;margin-top:3px}
   .path-actions{display:none;align-items:center;gap:8px;flex-wrap:wrap}.path-actions.open{display:flex;animation:drop-in .2s ease-out}
   .path-actions a{font-size:13px;padding:8px 12px}
-  .hero-main>*:not(.map-shader):not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.krow):not(.map-label):not(.map-guide-wheel){position:relative;z-index:5;max-width:48%}
+  .hero-main>*:not(.map-shader):not(.world-markers):not(.macro-dropdown):not(.macro-backdrop):not(.path-picker):not(.krow):not(.map-label):not(.map-guide-wheel){position:relative;z-index:5;max-width:48%}
   .hero-main>.map-label{position:absolute;max-width:none}
   .hero-main>.cta,.hero-main>#pathActions{display:none}
   .hero-main>.path-title{font-size:clamp(21px,3vw,32px);max-width:48%;margin:0}
@@ -71,7 +71,7 @@
   .world-markers a{pointer-events:auto;position:absolute;display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #e6cf86a8;border-radius:999px;background:#101722d9;color:#f1e6c3;text-decoration:none;font-size:14px;font-weight:700;box-shadow:0 0 18px #aebfc033;backdrop-filter:blur(7px);transition:transform .18s,background .18s,box-shadow .18s}
   .world-markers a::before{content:"";width:9px;height:9px;border-radius:50%;background:#e8c96a;box-shadow:0 0 12px #e8c96a;flex:0 0 auto}
   .world-markers a:hover,.world-markers a:focus-visible{transform:translateY(-2px) scale(1.04);background:#30291bd9;box-shadow:0 0 24px #e8c96a55;outline:2px solid #e8c96a}
-  @media(max-width:700px){.hero-main{background:linear-gradient(90deg,rgba(10,12,18,.91),rgba(10,12,18,.73)),url('assets/icons/northrend-map.png') center/100% 100% no-repeat;gap:7px;padding:12px;justify-content:flex-start;overflow:hidden}.hero-main>*:not(.map-shader):not(.world-markers):not(.macro-dropdown):not(.path-picker):not(.map-label):not(.krow):not(.map-guide-wheel){position:relative;max-width:100%}.hero-main h1,.hero-main>p,.hero-main>.path-title{position:relative!important;left:auto;top:auto;width:100%;max-width:100%;z-index:6}.hero-main h1{font-size:clamp(22px,7vw,28px);line-height:1.04}.world-markers{display:none}#app .hero-main>.path-picker{position:absolute;inset:0;z-index:4;display:block;width:100%;height:100%;pointer-events:auto}.map-zone{display:block;stroke-width:11}#app .hero-main>.map-label{position:absolute;left:auto;top:auto;transform:translate(-50%,-50%);z-index:5;padding:5px 7px;border-radius:10px;pointer-events:auto;max-width:min(44vw,190px);gap:5px}#app .hero-main>.map-label[data-spec="arms"]{left:23%;top:70%}#app .hero-main>.map-label[data-spec="fury"]{left:53%;top:58%}#app .hero-main>.map-label[data-spec="prot"]{left:81%;top:70%}.map-label img{width:27px;height:27px}.map-label b{font-size:10px}.map-label small{font-size:9px}.hero-main>.macro-dropdown{left:12px;transform:none}.hero-main>.path-title{display:block;max-width:100%;font-size:20px}}
+  @media(max-width:700px){.hero-main{background:linear-gradient(90deg,rgba(10,12,18,.91),rgba(10,12,18,.73)),url('assets/icons/northrend-map.png') center/100% 100% no-repeat;gap:7px;padding:12px;justify-content:flex-start;overflow:hidden}.hero-main>*:not(.map-shader):not(.world-markers):not(.macro-dropdown):not(.macro-backdrop):not(.path-picker):not(.map-label):not(.krow):not(.map-guide-wheel){position:relative;max-width:100%}.hero-main h1,.hero-main>p,.hero-main>.path-title{position:relative!important;left:auto;top:auto;width:100%;max-width:100%;z-index:6}.hero-main h1{font-size:clamp(22px,7vw,28px);line-height:1.04}.world-markers{display:none}#app .hero-main>.path-picker{position:absolute;inset:0;z-index:4;display:block;width:100%;height:100%;pointer-events:auto}.map-zone{display:block;stroke-width:11}#app .hero-main>.map-label{position:absolute;left:auto;top:auto;transform:translate(-50%,-50%);z-index:5;padding:5px 7px;border-radius:10px;pointer-events:auto;max-width:min(44vw,190px);gap:5px}#app .hero-main>.map-label[data-spec="arms"]{left:23%;top:70%}#app .hero-main>.map-label[data-spec="fury"]{left:53%;top:58%}#app .hero-main>.map-label[data-spec="prot"]{left:81%;top:70%}.map-label img{width:27px;height:27px}.map-label b{font-size:10px}.map-label small{font-size:9px}.hero-main>.macro-dropdown{left:12px;transform:none}.hero-main>.path-title{display:block;max-width:100%;font-size:20px}}
   @media(max-width:700px){.map-guide-wheel{top:48%}.map-guide-trigger{width:48px}.guide-wheel-panel.floating{width:min(82vw,430px);height:min(42dvh,390px)}}
   @media(max-width:860px){.hero-grid{grid-template-rows:1fr}.hero-main{min-height:0;padding:22px}#app .hero-main>.path-picker{position:absolute;inset:0;height:100%}#app .hero-main>.map-label{position:absolute;z-index:5;pointer-events:auto}.macro-dropdown{left:12px;bottom:12px;width:calc(100% - 24px);max-height:48%}}
   /* Narrow windows: keep both the path choices and quick macro buttons inside
@@ -154,24 +154,40 @@
   #app .hero-main>.map-label b{color:#f5dfa0!important;font:700 clamp(11px,1.05vw,14px)/1.1 Georgia,serif!important;letter-spacing:.045em;text-shadow:0 1px 2px #1a0e05}
   #app .hero-main>.map-label:hover,#app .hero-main>.map-label:focus-visible{transform:translate(-50%,-58%) scale(1.09)!important;filter:drop-shadow(0 9px 10px #0b0602) brightness(1.12);outline:none}
   #app .hero-main>.map-label.selected{filter:drop-shadow(0 10px 10px #0b0602) brightness(1.1)}
-  #app .hero-main>.map-label.selected img{box-shadow:0 0 0 3px #291a0edb,0 0 0 5px #f0d47a,0 0 22px #ffc84caa,inset 0 1px 2px #fff2c466}
+  #app .hero-main>.map-label img{object-fit:cover;border:2px solid #6f6b60;border-radius:5px;background:#151515;box-shadow:inset 0 0 0 1px #d7d0bc,0 2px 5px #080503}
+  #app .hero-main>.map-label.selected img{border-color:#f0d47a;box-shadow:0 0 0 2px #291a0edb,0 0 0 4px #f0d47a,0 0 20px #ffc84caa}
   #app .hero-main>.map-label.selected span{border-color:#ffe28b;background:linear-gradient(180deg,#775124f5,#2c1b0ff5)}
   #app .hero-main>.map-label[data-spec="arms"]{left:24%;top:78%}
   #app .hero-main>.map-label[data-spec="fury"]{left:55%;top:28%}
   #app .hero-main>.map-label[data-spec="prot"]{left:80%;top:73%}
-  #app .hero-main>.world-markers a.map-destination{
+  #app .hero-main>.world-markers .map-destination{
     width:max-content;min-width:62px;max-width:112px;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
     padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;
-    transform:translate(-50%,-50%);transition:transform .24s ease,filter .24s ease;filter:drop-shadow(0 5px 5px #130a05aa);text-align:center
+    transform:translate(-50%,-50%);transition:transform .24s ease,filter .24s ease;filter:drop-shadow(0 5px 5px #130a05aa);text-align:center;pointer-events:auto
   }
-  #app .hero-main>.world-markers a.map-destination::before{display:none}
-  #app .hero-main>.world-markers a.map-destination img{
-    width:clamp(38px,4vw,50px)!important;height:clamp(38px,4vw,50px)!important;padding:4px;border:1px solid #e5c87b;border-radius:50%;
-    background:radial-gradient(circle at 34% 27%,#dcae5a,#72431e 65%,#29180e 100%);box-shadow:0 0 0 3px #27190ec9,0 2px 5px #080503,inset 0 1px 2px #fff2c466
+  #app .hero-main>.world-markers .map-destination::before{display:none}
+  #app .hero-main>.world-markers .map-destination img{
+    width:clamp(38px,4vw,50px)!important;height:clamp(38px,4vw,50px)!important;padding:2px;border:2px solid #77766e;border-radius:5px;
+    background:linear-gradient(145deg,#bbb5a3,#373831 42%,#141512);box-shadow:0 0 0 2px #24170ec9,0 2px 5px #080503,inset 0 1px 1px #fff6d855;object-fit:cover
   }
-  #app .hero-main>.world-markers a.map-destination span{padding:2px 8px 3px;border:1px solid #c9a95e;border-radius:4px 4px 8px 8px;background:linear-gradient(180deg,#493018ed,#21160ff2);box-shadow:inset 0 1px #ffe5a133;color:#f5dfa0;font:700 clamp(10px,.85vw,12px)/1.1 Georgia,serif;white-space:nowrap;text-shadow:0 1px 2px #1a0e05}
-  #app .hero-main>.world-markers a.map-destination:hover,#app .hero-main>.world-markers a.map-destination:focus-visible{transform:translate(-50%,-57%) scale(1.09);filter:drop-shadow(0 9px 10px #0b0602) brightness(1.13);outline:none}
-  #app .hero-main>.world-markers a.map-destination:focus-visible img{box-shadow:0 0 0 3px #291a0edb,0 0 0 5px #f0d47a,0 0 20px #ffc84c99}
+  #app .hero-main>.world-markers .map-destination span{padding:2px 8px 3px;border:1px solid #c9a95e;border-radius:4px 4px 8px 8px;background:linear-gradient(180deg,#493018ed,#21160ff2);box-shadow:inset 0 1px #ffe5a133;color:#f5dfa0;font:700 clamp(10px,.85vw,12px)/1.1 Georgia,serif;white-space:nowrap;text-shadow:0 1px 2px #1a0e05}
+  #app .hero-main>.world-markers .map-destination:hover,#app .hero-main>.world-markers .map-destination:focus-visible{transform:translate(-50%,-57%) scale(1.09);filter:drop-shadow(0 9px 10px #0b0602) brightness(1.13);outline:none}
+  #app .hero-main>.world-markers .map-destination:focus-visible img{box-shadow:0 0 0 3px #291a0edb,0 0 0 5px #f0d47a,0 0 20px #ffc84c99}
+  #app .hero-main>.world-markers button.map-destination{appearance:none;-webkit-appearance:none;color:inherit;font:inherit;cursor:pointer}
+  #app .hero-main>.world-markers .map-destination[data-destination="macro-single"]{left:14%;top:88%}
+  #app .hero-main>.world-markers .map-destination[data-destination="macro-pack"]{left:33%;top:88%}
+  #app .hero-main>.world-markers .map-destination[data-destination="macro-control"]{left:52%;top:88%}
+  .macro-backdrop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:18px;background:#080704b8;backdrop-filter:blur(3px)}
+  .macro-backdrop[hidden]{display:none!important}
+  #app .macro-backdrop .macro-dropdown{position:relative;inset:auto;left:auto;bottom:auto;transform:none;width:min(480px,calc(100vw - 32px));max-width:none;max-height:min(64dvh,560px);overflow:auto;padding:18px 20px;border:1px solid #d6b964;border-radius:10px;background:linear-gradient(155deg,#271d13f5,#0b0d12f7 70%);box-shadow:0 22px 70px #000e,inset 0 0 24px #e4bd5421}
+  #app .macro-backdrop .macro-dropdown:not(.open){display:none}
+  #app .macro-backdrop .macro-dropdown.open{display:block;animation:macro-panel-in .18s ease-out}
+  @keyframes macro-panel-in{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+  #app .macro-backdrop .macro-dropdown h2{padding-right:30px;color:#f0d27d;font:700 20px/1.2 Georgia,serif}
+  #app .macro-backdrop .macro-dropdown p{color:#dbcfb5;font-size:13px;line-height:1.4}
+  #app .macro-backdrop .macro-dropdown pre{margin-top:12px;border:1px solid #605039;background:#080a0d;color:#e9e3d6;font:12px/1.5 ui-monospace,Consolas,monospace}
+  #app .macro-backdrop .macro-dropdown .copy-btn{margin:8px 0 0;padding:7px 12px;border:1px solid #d7b968;border-radius:6px;background:linear-gradient(180deg,#9b7131,#503519);color:#fff0be;font-weight:700;cursor:pointer}
+  #app .macro-backdrop .macro-close{position:absolute;top:10px;right:12px;float:none;width:28px;height:28px;border:1px solid #836c42;border-radius:50%;color:#f5dfa0;font-size:20px;line-height:1;cursor:pointer}
   #app .hero-main>.map-guide-wheel{filter:drop-shadow(0 8px 9px #170d06aa)}
   #app .hero-main .map-guide-trigger{border:2px solid #f0d47a;background:radial-gradient(circle at 35% 28%,#cda55a,#70451e 56%,#27180d 76%);box-shadow:0 0 0 4px #291a0ecc,0 0 24px #f2c75c88,inset 0 1px 4px #fff0b266}
   #app .hero-main .map-guide-trigger span{border:1px solid #e8cf84;border-radius:4px 4px 9px 9px;background:linear-gradient(180deg,#57391fed,#21160ff5);color:#f9e6ad;font-family:Georgia,serif;letter-spacing:.04em}
@@ -182,12 +198,15 @@
     #app .hero-main>.map-label[data-spec="arms"]{left:23%!important;top:78%!important}
     #app .hero-main>.map-label[data-spec="fury"]{left:55%!important;top:29%!important}
     #app .hero-main>.map-label[data-spec="prot"]{left:79%!important;top:75%!important}
+    #app .hero-main>.world-markers .map-destination[data-destination="macro-single"]{left:14%!important;top:88%!important}
+    #app .hero-main>.world-markers .map-destination[data-destination="macro-pack"]{left:35%!important;top:88%!important}
+    #app .hero-main>.world-markers .map-destination[data-destination="macro-control"]{left:56%!important;top:88%!important}
     #app .hero-main>.map-label img{width:clamp(32px,8vw,44px)!important;height:clamp(32px,8vw,44px)!important}
     #app .hero-main>.map-label span{padding:2px 7px 3px}
-    #app .hero-main>.world-markers a.map-destination img{width:clamp(30px,7vw,40px)!important;height:clamp(30px,7vw,40px)!important}
-    #app .hero-main>.world-markers a.map-destination span{font-size:clamp(9px,2.5vw,11px);padding:2px 6px}
+    #app .hero-main>.world-markers .map-destination img{width:clamp(30px,7vw,40px)!important;height:clamp(30px,7vw,40px)!important}
+    #app .hero-main>.world-markers .map-destination span{font-size:clamp(9px,2.5vw,11px);padding:2px 6px}
   }
-  @media(prefers-reduced-motion:reduce){#app .hero-main>.map-label,#app .hero-main>.world-markers a.map-destination{transition:none!important}}
+  @media(prefers-reduced-motion:reduce){#app .hero-main>.map-label,#app .hero-main>.world-markers .map-destination{transition:none!important}}
 </style>
 </head>
 <body>
@@ -198,11 +217,11 @@
     <section class="card hero-main">
       <canvas class="map-shader" id="worldMapShader" aria-hidden="true"></canvas>
       <nav class="world-markers" aria-label="Разделы сайта на карте">
-        <a class="map-destination" data-destination="hero" href="hero.html?lang=ru&amp;spec=fury"><img src="assets/icons/nav-hero.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Мой воин" data-en="My Warrior">Мой воин</span></a>
-        <a class="map-destination" data-destination="talents" href="talents.html?lang=ru&amp;spec=fury"><img src="assets/icons/nav-talents.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Ветка развития" data-en="Talent Path">Ветка развития</span></a>
-        <a class="map-destination" data-destination="macro-single" href="macros.html?macro=0&amp;lang=ru&amp;spec=fury" aria-label="Макрос для одной цели"><img src="assets/icons/nav-macro-single.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Одна цель" data-en="Single target">Одна цель</span></a>
-        <a class="map-destination" data-destination="macro-pack" href="macros.html?macro=1&amp;lang=ru&amp;spec=fury" aria-label="Макрос для группы целей"><img src="assets/icons/nav-macro-pack.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Группа" data-en="Group">Группа</span></a>
-        <a class="map-destination" data-destination="macro-control" href="macros.html?macro=2&amp;lang=ru&amp;spec=fury" aria-label="Макрос для контроля"><img src="assets/icons/nav-macro-control.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Контроль" data-en="Control">Контроль</span></a>
+        <a class="map-destination" data-destination="hero" href="hero.html?lang=ru&amp;spec=fury"><img src="assets/icons/talents/inv_helmet_21.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Мой воин" data-en="My Warrior">Мой воин</span></a>
+        <a class="map-destination" data-destination="talents" href="talents.html?lang=ru&amp;spec=fury"><img src="assets/icons/talents/ability_warrior_weaponmastery.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Ветка развития" data-en="Talent Path">Ветка развития</span></a>
+        <button class="map-destination macro-marker" data-destination="macro-single" data-macro-index="0" type="button" aria-label="Показать макрос для одной цели" aria-haspopup="dialog" aria-controls="macroDropdown"><img src="assets/icons/talents/ability_warrior_savageblow.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Одна цель" data-en="Single target">Одна цель</span></button>
+        <button class="map-destination macro-marker" data-destination="macro-pack" data-macro-index="1" type="button" aria-label="Показать макрос для группы целей" aria-haspopup="dialog" aria-controls="macroDropdown"><img src="assets/icons/talents/ability_whirlwind.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Группа" data-en="Group">Группа</span></button>
+        <button class="map-destination macro-marker" data-destination="macro-control" data-macro-index="2" type="button" aria-label="Показать макрос для контроля" aria-haspopup="dialog" aria-controls="macroDropdown"><img src="assets/icons/talents/ability_warrior_shieldbash.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Контроль" data-en="Control">Контроль</span></button>
       </nav>
       <h1 data-ru="Умные макросы для <b>воина-неистовства</b>" data-en="Smart macros for the <b>Fury Warrior</b>">Умные макросы для <b>воина-неистовства</b></h1>
       <p data-ru="WotLK 3.3.5a · воин Неистовства · русскоязычный клиент. Макрос проверяет команды по порядку; одно нажатие не запускает всю ротацию. Открой карточку приёма и настрой его в игре на удобную кнопку."
@@ -213,23 +232,26 @@
         <path class="map-zone" data-spec="fury" d="M626 270 595 246 573 215 589 183 615 159 626 122 651 91 684 66 725 45 761 38 795 55 829 54 856 77 893 88 922 116 949 145 972 176 1002 205 1009 240 1000 269 1009 300 997 331 980 366 955 388 937 365 916 347 908 319 884 303 871 273 842 260 809 274 777 260 746 277 713 270 684 286 653 278Z" />
         <path class="map-zone" data-spec="prot" d="M1100 409 1091 380 1104 350 1128 332 1150 305 1174 280 1188 248 1212 218 1238 194 1265 178 1290 192 1314 222 1339 248 1360 281 1374 313 1391 345 1390 382 1374 412 1355 435 1333 458 1307 475 1280 478 1257 466 1235 486 1213 514 1197 540 1174 560 1149 554 1132 533 1115 511 1100 488 1089 461Z M1169 583 1194 560 1224 568 1249 581 1271 565 1303 568 1327 591 1341 624 1352 660 1367 691 1360 727 1371 758 1353 788 1344 821 1324 849 1300 869 1273 873 1246 861 1223 845 1200 826 1178 809 1157 787 1147 758 1153 727 1143 694 1150 662 1142 633 1153 604Z M1170 873 1192 850 1223 856 1249 879 1265 913 1256 947 1234 969 1206 956 1185 931 1166 905Z" />
       </svg>
-      <button class="map-label" data-spec="arms" aria-label="Выбрать Arms" aria-pressed="false"><img src="assets/icons/spec-arms.svg" width="64" height="64" decoding="async" alt=""><span><b>Arms</b></span></button>
-      <button class="map-label selected" data-spec="fury" aria-label="Выбрать Fury" aria-pressed="true"><img src="assets/icons/spec-fury.svg" width="64" height="64" decoding="async" alt=""><span><b>Fury</b></span></button>
-      <button class="map-label" data-spec="prot" aria-label="Выбрать специализацию защиты" aria-pressed="false"><img src="assets/icons/spec-protection.svg" width="64" height="64" decoding="async" alt=""><span><b data-ru="Защита" data-en="Protection">Защита</b></span></button>
+      <button class="map-label" data-spec="arms" aria-label="Выбрать Arms" aria-pressed="false"><img src="assets/icons/talents/ability_warrior_savageblow.jpg" width="64" height="64" decoding="async" alt=""><span><b>Arms</b></span></button>
+      <button class="map-label selected" data-spec="fury" aria-label="Выбрать Fury" aria-pressed="true"><img src="assets/icons/talents/ability_warrior_rampage.jpg" width="64" height="64" decoding="async" alt=""><span><b>Fury</b></span></button>
+      <button class="map-label" data-spec="prot" aria-label="Выбрать специализацию защиты" aria-pressed="false"><img src="assets/icons/talents/ability_warrior_defensivestance.jpg" width="64" height="64" decoding="async" alt=""><span><b data-ru="Защита" data-en="Protection">Защита</b></span></button>
       <div class="map-guide-wheel" id="mapGuideWheel">
         <button class="map-guide-trigger" id="mapGuideTrigger" type="button" data-sound-kind="open" aria-expanded="false" aria-label="Гайд по выбранному пути">
-          <img src="assets/icons/nav-guide.svg" width="64" height="64" decoding="async" alt=""><span data-ru="Гайд" data-en="Guide">Гайд</span>
+          <img src="assets/icons/talents/ability_warrior_warcry.jpg" width="64" height="64" decoding="async" alt=""><span data-ru="Гайд" data-en="Guide">Гайд</span>
         </button>
         <div class="guide-wheel-panel" id="guideWheelPanel" aria-label="Колесо гайда выбранной специализации">
           <iframe id="guideWheelFrame" aria-label="Колесо гайдов" src="guide.html?lang=ru&amp;spec=fury&amp;embed=1"></iframe>
         </div>
+      </div>
+      <div class="macro-backdrop" id="macroBackdrop" hidden>
+        <section class="macro-dropdown" id="macroDropdown" role="dialog" aria-modal="true" aria-labelledby="macroTitle" tabindex="-1"></section>
       </div>
     </section>
 
   </div>
 </main>
 </div>
-<script src="assets/js/app.js?v=20261116g"></script>
+<script src="assets/js/app.js?v=20261116j"></script>
 <script src="assets/js/macros-data.js?v=20261116g"></script>
 <script src="assets/js/macro-bodies.js?v=20261116g"></script>
 <script src="assets/js/world-map.js?v=20261116f"></script>
@@ -243,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const paths={arms:['Воин Оружия · PvE ДД','Arms Warrior · PvE DPS','Приоритеты урона по одной и нескольким целям · таланты Arms · гайд по PvE.','Single- and multi-target damage priorities · Arms talents · PvE guide.'],fury:['Воин Неистовства · PvE ДД','Fury Warrior · PvE DPS','Приоритеты урона · таланты Fury · гайд по PvE.','Damage priorities · Fury talents · PvE guide.'],prot:['Воин Защиты · PvE танк','Protection Warrior · PvE tank','Угроза и защита · таланты Protection · гайд танка.','Threat and mitigation · Protection talents · tank guide.']};
   let spec=new URLSearchParams(location.search).get('spec')||localStorage.getItem('warriorSpec')||'fury';if(!['arms','fury','prot'].includes(spec))spec='fury';
   let titles=[];
-  const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);window.WorldMap?.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>{const selected=x.dataset.spec===value;x.classList.toggle('selected',selected);if(x.matches('.map-label'))x.setAttribute('aria-pressed',String(selected));});document.querySelectorAll('.map-destination').forEach(link=>{const target=new URL(link.href,location.href);target.searchParams.set('lang',lang);target.searchParams.set('spec',value);link.href=target.href;});document.querySelector('.hero-main h1').innerHTML=lang==='ru'?'<b>Путь воина</b>':'<b>Warrior paths</b>';document.querySelector('.hero-main>p').textContent=`${paths[value][0]} · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
+  const setPath=value=>{spec=value;localStorage.setItem('warriorSpec',value);window.W.setSpec(value);window.WorldMap?.setSpec(value);const u=new URL(location.href);u.searchParams.set('spec',value);history.replaceState(null,'',u);document.querySelectorAll('.map-zone,.map-label').forEach(x=>{const selected=x.dataset.spec===value;x.classList.toggle('selected',selected);if(x.matches('.map-label'))x.setAttribute('aria-pressed',String(selected));});document.querySelectorAll('.map-destination[href]').forEach(link=>{const target=new URL(link.href,location.href);target.searchParams.set('lang',lang);target.searchParams.set('spec',value);link.href=target.href;});document.querySelector('.hero-main h1').innerHTML=lang==='ru'?'<b>Путь воина</b>':'<b>Warrior paths</b>';document.querySelector('.hero-main>p').textContent=`${paths[value][0]} · ${lang==='ru'?paths[value][2]:paths[value][3]}`;document.title=paths[value][1]+' — WoW 3.3.5a';
     const wheelUrl=new URL('guide.html',location.href);wheelUrl.searchParams.set('lang',lang);wheelUrl.searchParams.set('spec',value);wheelUrl.searchParams.set('embed','1');wheelUrl.searchParams.set('v','20261116d');document.getElementById('guideWheelFrame').src=wheelUrl.href;
     const sets={
       arms:lang==='ru'?[['Зуботычина по фокусу','Прерывание; после смены стойки нажми повторно.','', 'inv_gauntlets_04'],['Смертельный удар','Главный удар Оружия; может потребоваться смена стойки.','','ability_warrior_savageblow'],['Рывок и Перехват','Вне боя — Рывок; в бою — Перехват.','','ability_warrior_charge']]:[['Focus Pummel','Interrupt; press again after a stance change.','','inv_gauntlets_04'],['Mortal Strike','Arms core attack; may need a stance change.','','ability_warrior_savageblow'],['Charge and Intercept','Charge out of combat; Intercept in combat.','','ability_warrior_charge']],
@@ -278,18 +300,23 @@ document.addEventListener('DOMContentLoaded', () => {
     ['Interrupt & defense','Pummel and defensive abilities','/cast [@mouseover,harm,nodead][]Pummel\n/cast [nostance:3]Berserker Stance\n/cast Berserker Rage\n/cast Every Man for Himself\n/cast Intimidating Shout\n/cast Defensive Stance\n/cast Disarm\n/cast Taunt','inv_gauntlets_04']
   ];
   setPath(spec);
-  const dropdown=document.getElementById('macroDropdown');
+  const dropdown=document.getElementById('macroDropdown'),macroBackdrop=document.getElementById('macroBackdrop');
   const openMacro=i=>{
     const [name,sub,fallback,icon]=titles[i];
     const furyFiles=['01-attack-rotation','02-aoe-pack','03-interrupt'];
     const shared=window.WARRIOR_MACRO_BODIES?.[spec]?.[lang]?.[i];
     const body=(spec==='fury'&&window.MACRO_TXT?.[lang]?.[furyFiles[i]])
       ? window.MACRO_TXT[lang][furyFiles[i]].trim() : (shared || fallback);
-    dropdown.innerHTML=`<button class="macro-close" aria-label="Close">×</button><h2>${name}</h2><p>${sub}</p><button class="copy-btn" data-copy="${encodeURIComponent(body)}">${lang==='ru'?'Копировать':'Copy'}</button><pre>${body.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</pre>`;
+    dropdown.innerHTML=`<button class="macro-close" aria-label="${lang==='ru'?'Закрыть':'Close'}">×</button><h2 id="macroTitle">${name}</h2><p>${sub}</p><button class="copy-btn" data-copy="${encodeURIComponent(body)}">${lang==='ru'?'Копировать':'Copy'}</button><pre>${body.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</pre>`;
     dropdown.classList.add('open');
-    dropdown.querySelector('.macro-close').onclick=()=>dropdown.classList.remove('open');
+    macroBackdrop.hidden=false;
+    dropdown.focus();
+    const close=()=>{dropdown.classList.remove('open');macroBackdrop.hidden=true;};
+    dropdown.querySelector('.macro-close').onclick=close;
   };
-  document.querySelectorAll('.krow a').forEach((link,i)=>link.addEventListener('click',event=>{event.preventDefault();openMacro(i);}));
+  document.querySelectorAll('[data-macro-index]').forEach(button=>button.addEventListener('click',()=>openMacro(+button.dataset.macroIndex)));
+  macroBackdrop.addEventListener('click',event=>{if(event.target===macroBackdrop){dropdown.classList.remove('open');macroBackdrop.hidden=true;}});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!macroBackdrop.hidden){dropdown.classList.remove('open');macroBackdrop.hidden=true;}});
 });
 </script>
 </body>

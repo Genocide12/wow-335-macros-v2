@@ -151,7 +151,11 @@
     const dialogBackdrop = target instanceof Element ? target.closest('dialog[open]') : null;
     if (dialogBackdrop && target === dialogBackdrop) dialogBackdrop.close();
     const dropdown = document.querySelector('.macro-dropdown.open');
-    if (dropdown && !dropdown.contains(target) && !target.closest('.krow a')) dropdown.classList.remove('open');
+    if (dropdown && !dropdown.contains(target) && !target.closest('.krow a, [data-macro-index]')) {
+      dropdown.classList.remove('open');
+      const macroBackdrop=document.getElementById('macroBackdrop');
+      if(macroBackdrop)macroBackdrop.hidden=true;
+    }
     if (!target.closest('.tal[data-id], .tipcard, .slot')) {
       document.querySelectorAll('.tipcard').forEach(tip => { tip.style.display = 'none'; });
     }
